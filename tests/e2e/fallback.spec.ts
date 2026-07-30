@@ -1,10 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { disableWebgl, trackConsoleErrors } from './helpers.js';
 
-test('WebGL failure never blanks the page: 2D fallback carries the full workflow', async ({
-  page,
-}) => {
-  const assertClean = trackConsoleErrors(page);
+test('WebGL failure never blanks the page: 2D fallback carries the full workflow', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await disableWebgl(page);
   await page.goto('/');
   // The home screen must announce the fallback.

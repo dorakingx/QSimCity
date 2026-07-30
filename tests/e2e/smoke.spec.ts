@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test';
-import { trackConsoleErrors, runBellFromLab } from './helpers.js';
+import { trackConsoleErrors, runBellFromLab, expectCityRendered } from './helpers.js';
 
-test('home page presents the product and three entry points', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('home page presents the product and three entry points', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await expect(page).toHaveTitle(/QSimCity/);
   await expect(page.getByRole('heading', { name: /QSimCity/ })).toBeVisible();
@@ -13,8 +13,8 @@ test('home page presents the product and three entry points', async ({ page }) =
   assertClean();
 });
 
-test('every mode is reachable from the header without errors', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('every mode is reachable from the header without errors', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   for (const mode of ['Quantum Lab', 'Compare', 'Accessible 2D', 'Explore', 'Guided Tour']) {
     await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: mode }).click();
@@ -25,8 +25,8 @@ test('every mode is reachable from the header without errors', async ({ page }) 
   assertClean();
 });
 
-test('running the Bell sample produces synchronized results in 2D', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('running the Bell sample produces synchronized results in 2D', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await runBellFromLab(page);
   await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
@@ -80,8 +80,8 @@ test('help overlay shows keyboard map and closes with Escape', async ({ page }) 
   await expect(dialog).not.toBeVisible();
 });
 
-test('guided tour walks chapters with camera sync and exits cleanly', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('guided tour walks chapters with camera sync and exits cleanly', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.getByRole('button', { name: 'Guided Tour' }).first().click();
   const tour = page.locator('.tour-overlay');
@@ -93,6 +93,8 @@ test('guided tour walks chapters with camera sync and exits cleanly', async ({ p
   await expect(tour.getByText('Chapter 1 of 16')).toBeVisible();
   await tour.getByRole('button', { name: 'Exit tour' }).click();
   await expect(tour).not.toBeVisible();
+  // A filtered browser warning must never mask a blank canvas.
+  await expectCityRendered(page);
   assertClean();
 });
 

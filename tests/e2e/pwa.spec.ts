@@ -22,11 +22,8 @@ test('registers a service worker that precaches the shell', async ({ page }) => 
   expect(registered).toBe(true);
 });
 
-test('offline startup after first load: full run works without network', async ({
-  page,
-  context,
-}) => {
-  const assertClean = trackConsoleErrors(page);
+test('offline startup after first load: full run works without network', async ({ page, context, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.evaluate(async () => navigator.serviceWorker.ready);
   await page.waitForTimeout(1500);

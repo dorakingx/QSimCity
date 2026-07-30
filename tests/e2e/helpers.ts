@@ -5,31 +5,74 @@ import { expect, type Page } from '@playwright/test';
  * unexpected console errors fail the test (spec §18.5).
  */
 /**
- * Console messages that are not QSimCity defects. Each entry is an exact
- * substring, kept as narrow as possible so real errors still fail.
+ * Environment noise that is never a QSimCity defect, allowed in any browser.
  */
-const IGNORED_CONSOLE_MESSAGES = [
-  'favicon',
-  'Download the React DevTools',
-  // three.js sets UNPACK_FLIP_Y/PREMULTIPLY_ALPHA globally and WebKit rejects
-  // them for its internal 3D texture upload. Emitted by three.js, not by
-  // QSimCity, and rendering is unaffected: a WebKit screenshot shows the full
-  // city (all 12 districts, lighting, labels) drawn correctly. Recorded in
-  // docs/audits/final-release-audit.md.
-  "texImage3D: FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures",
+const UNIVERSAL_IGNORED = ['favicon', 'Download the React DevTools'];
+
+/**
+ * Browser-specific third-party messages. Each entry names the browser, the
+ * exact signature, and the ADR justifying it. Nothing else is filtered: any
+ * other WebGL warning, shader failure, context loss, or three.js error still
+ * fails the test in every browser. See docs/adr/adr-0003-webkit-three-js-texture-warning.md.
+ */
+const BROWSER_SPECIFIC_IGNORED: readonly {
+  browser: string;
+  signature: string;
+  adr: string;
+}[] = [
+  {
+    browser: 'webkit',
+    signature:
+      "texImage3D: FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures",
+    adr: 'adr-0003',
+  },
 ];
 
-export function trackConsoleErrors(page: Page): () => void {
+/**
+ * Fails the test on any unexpected console error, uncaught exception, or
+ * unhandled rejection. The narrow browser-specific exceptions above are the
+ * only messages tolerated, and only in the browser that emits them.
+ */
+export function trackConsoleErrors(page: Page, browserName?: string): () => void {
   const errors: string[] = [];
+  const isIgnored = (text: string): boolean => {
+    if (UNIVERSAL_IGNORED.some((i) => text.includes(i))) return true;
+    return BROWSER_SPECIFIC_IGNORED.some(
+      (entry) => entry.browser === browserName && text.includes(entry.signature),
+    );
+  };
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
       const text = msg.text();
-      if (IGNORED_CONSOLE_MESSAGES.some((ignored) => text.includes(ignored))) return;
+      if (isIgnored(text)) return;
       errors.push(text);
     }
   });
   page.on('pageerror', (error) => errors.push(`pageerror: ${error.message}`));
   return () => expect(errors, 'console must stay clean').toEqual([]);
+}
+
+/**
+ * Positive proof that the 3D city actually rendered: a live WebGL2 context
+ * with non-black pixels. Paired with the WebKit console exception so a
+ * filtered warning can never hide a blank canvas.
+ */
+export async function expectCityRendered(page: Page): Promise<void> {
+  const result = await page.evaluate(() => {
+    const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
+    if (!canvas) return { ok: false, reason: 'no canvas' };
+    const gl = canvas.getContext('webgl2');
+    if (!gl) return { ok: false, reason: 'no webgl2 context' };
+    if (gl.isContextLost()) return { ok: false, reason: 'context lost' };
+    return { ok: true, width: canvas.width, height: canvas.height };
+  });
+  expect(result.ok, `city must render: ${'reason' in result ? result.reason : ''}`).toBe(true);
+  // District labels are drawn by the engine; their presence in the
+  // accessible description proves the scene graph was built.
+  await expect(page.locator('canvas.city-canvas')).toHaveAttribute(
+    'aria-label',
+    /Program Port.*QPU Grid.*Observatory/s,
+  );
 }
 
 /** Runs the default Bell sample from the Lab and waits for the timeline. */

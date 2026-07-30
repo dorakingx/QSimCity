@@ -53,26 +53,26 @@ export function headersFor(pathname: string): Record<string, string> {
   return out;
 }
 
-export function resolvePath(pathname: string): string | null {
+export function resolvePath(pathname: string, distDir: string = DIST): string | null {
   const clean = normalize(pathname).replace(/^(\.\.[/\\])+/, '');
-  const direct = join(DIST, clean);
-  if (!direct.startsWith(DIST)) return null; // path traversal guard
+  const direct = join(distDir, clean);
+  if (!direct.startsWith(distDir)) return null; // path traversal guard
   if (existsSync(direct) && statSync(direct).isFile()) return direct;
   // Vercel matches `source` against the pathname including its leading slash.
   for (const rule of vercelConfig.rewrites) {
     if (matches(rule.source, clean)) {
-      const target = join(DIST, rule.destination);
+      const target = join(distDir, rule.destination);
       if (existsSync(target)) return target;
     }
   }
-  const indexHtml = join(DIST, 'index.html');
+  const indexHtml = join(distDir, 'index.html');
   return existsSync(indexHtml) ? indexHtml : null;
 }
 
-export function createProductionServer(): ReturnType<typeof createServer> {
+export function createProductionServer(distDir: string = DIST): ReturnType<typeof createServer> {
   return createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
-    const filePath = resolvePath(url.pathname);
+    const filePath = resolvePath(url.pathname, distDir);
     if (!filePath) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
       res.end('Not found');

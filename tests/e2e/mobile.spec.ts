@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { trackConsoleErrors } from './helpers.js';
+import { trackConsoleErrors, expectCityRendered } from './helpers.js';
 
 /** Touch interaction checks on the mobile profile (spec §14, §18.5). */
 
-test('mobile: core workflow works with touch', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('mobile: core workflow works with touch', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).tap();
   await page.getByRole('button', { name: 'Run', exact: true }).tap();
@@ -12,8 +12,8 @@ test('mobile: core workflow works with touch', async ({ page }) => {
   assertClean();
 });
 
-test('mobile: 3D city loads and responds to touch drag', async ({ page }) => {
-  const assertClean = trackConsoleErrors(page);
+test('mobile: 3D city loads and responds to touch drag', async ({ page, browserName }) => {
+  const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).tap();
   const canvas = page.locator('.city-canvas');
@@ -25,6 +25,6 @@ test('mobile: 3D city loads and responds to touch drag', async ({ page }) => {
   const cy = box.y + box.height / 2;
   await page.touchscreen.tap(cx, cy);
   await page.waitForTimeout(300);
-  await expect(canvas).toBeVisible();
+  await expectCityRendered(page);
   assertClean();
 });

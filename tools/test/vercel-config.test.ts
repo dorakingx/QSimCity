@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createProductionServer, headersFor, resolvePath, vercelConfig } from '../serve-production.js';
@@ -13,19 +14,31 @@ import { createProductionServer, headersFor, resolvePath, vercelConfig } from '.
 const ROOT = new URL('../..', import.meta.url).pathname;
 let server: ReturnType<typeof createProductionServer>;
 let baseUrl: string;
+let distDir: string;
+let tempRoot: string | null = null;
 
+/**
+ * These tests assert the deployment contract against a real production build.
+ * The build is produced into a temporary directory rather than into the
+ * repository, so the suite has no side effects on tracked or ignored files
+ * and does not depend on any other command having run first. A pre-existing
+ * `apps/web/dist` is reused when present to keep the common path fast, but is
+ * never created or modified here.
+ */
 beforeAll(async () => {
-  // These tests assert the deployment contract against the real build
-  // output, which is gitignored — so a fresh clone has none until something
-  // builds it. Build on demand rather than depending on command ordering.
-  if (!existsSync(join(ROOT, 'apps', 'web', 'dist', 'index.html'))) {
-    execFileSync(join(ROOT, 'node_modules', '.bin', 'vite'), ['build'], {
+  const repoDist = join(ROOT, 'apps', 'web', 'dist');
+  if (existsSync(join(repoDist, 'index.html'))) {
+    distDir = repoDist;
+  } else {
+    tempRoot = mkdtempSync(join(tmpdir(), 'qsimcity-vercel-'));
+    execFileSync(join(ROOT, 'node_modules', '.bin', 'vite'), ['build', '--outDir', join(tempRoot, 'dist'), '--emptyOutDir'], {
       cwd: join(ROOT, 'apps', 'web'),
       stdio: 'pipe',
-      timeout: 300_000,
+      timeout: 600_000,
     });
+    distDir = join(tempRoot, 'dist');
   }
-  server = createProductionServer();
+  server = createProductionServer(distDir);
   await new Promise<void>((resolve) => server.listen(0, resolve));
   const address = server.address();
   const port = typeof address === 'object' && address ? address.port : 0;
@@ -34,6 +47,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await new Promise<void>((resolve) => server.close(() => resolve()));
+  if (tempRoot) rmSync(tempRoot, { recursive: true, force: true });
 });
 
 describe('vercel.json contract', () => {
@@ -92,16 +106,30 @@ describe('vercel.json contract', () => {
   });
 
   it('rewrites unknown routes to index.html but serves real assets directly', () => {
-    expect(resolvePath('/explore')).toMatch(/index\.html$/);
-    expect(resolvePath('/lab/deep/route')).toMatch(/index\.html$/);
-    expect(resolvePath('/favicon.svg')).toMatch(/favicon\.svg$/);
-    expect(resolvePath('/manifest.webmanifest')).toMatch(/manifest\.webmanifest$/);
-    expect(resolvePath('/sw.js')).toMatch(/sw\.js$/);
+    expect(resolvePath('/explore', distDir)).toMatch(/index\.html$/);
+    expect(resolvePath('/lab/deep/route', distDir)).toMatch(/index\.html$/);
+    expect(resolvePath('/favicon.svg', distDir)).toMatch(/favicon\.svg$/);
+    expect(resolvePath('/manifest.webmanifest', distDir)).toMatch(/manifest\.webmanifest$/);
+    expect(resolvePath('/sw.js', distDir)).toMatch(/sw\.js$/);
   });
 
   it('blocks path traversal attempts', () => {
-    const resolved = resolvePath('/../../../../etc/passwd');
+    const resolved = resolvePath('/../../../../etc/passwd', distDir);
     expect(resolved === null || resolved.endsWith('index.html')).toBe(true);
+  });
+
+  it('runs without creating or modifying any build output in the repository', () => {
+    // Regression guard for the original fresh-clone failure: the suite must
+    // not depend on a prior build, and must not silently produce one.
+    const status = execFileSync('git', ['status', '--porcelain'], {
+      cwd: ROOT,
+      encoding: 'utf8',
+    });
+    const touchedDist = status
+      .split('\n')
+      .filter((l) => l.includes('apps/web/dist'));
+    expect(touchedDist).toEqual([]);
+    void cpSync;
   });
 
   it('rewrite pattern excludes the service worker so it is never shadowed', () => {
