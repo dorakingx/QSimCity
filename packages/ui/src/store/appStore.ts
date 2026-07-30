@@ -167,7 +167,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   settings: loadSettings(),
   paletteOpen: false,
   helpOpen: false,
-  inspectorOpen: true,
+  // Closed until something is selected so the city is never occluded on
+  // arrival; selecting anything opens it.
+  inspectorOpen: false,
   scheduleOpen: false,
   toast: null,
   runner: null,

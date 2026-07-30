@@ -25,12 +25,14 @@ export class CameraRig {
   readonly camera: THREE.PerspectiveCamera;
   mode: CameraMode = 'orbit';
   /** Orbit state. */
-  private target = new THREE.Vector3(0, 0, 40);
-  private distance = 260;
+  // Framed on the city centroid at a distance that fits the full 490-unit
+  // east-west span, so no district is cut off on first load.
+  private target = new THREE.Vector3(20, 0, 28);
+  private distance = 330;
   // Camera starts south of the city looking north so the pipeline reads
   // west-to-east, left-to-right — the same direction the data flows.
   private azimuth = Math.PI / 2;
-  private polar = 0.9;
+  private polar = 0.72;
   /** First-person / fly state. */
   private fpPosition = new THREE.Vector3(-190, EYE_HEIGHT, 40);
   private yaw = 0;
@@ -63,14 +65,27 @@ export class CameraRig {
   }
 
   setMode(mode: CameraMode): void {
+    const previous = this.mode;
     this.mode = mode;
     if (mode === 'first-person') {
-      this.fpPosition.y = EYE_HEIGHT;
-      this.yaw = this.azimuth + Math.PI;
-      this.pitch = 0;
+      if (previous === 'orbit' || previous === 'top') {
+        // Step onto the ground just south of whatever the orbit camera was
+        // looking at, facing north into it — never outside the city.
+        this.fpPosition.set(this.target.x, EYE_HEIGHT, this.target.z + 70);
+        this.yaw = Math.PI;
+        this.pitch = -0.05;
+      } else {
+        this.fpPosition.y = EYE_HEIGHT;
+      }
+      this.resolveCollision(this.fpPosition);
     } else if (mode === 'fly') {
-      this.fpPosition.copy(this.camera.position);
-      this.fpPosition.y = Math.max(12, this.fpPosition.y);
+      if (previous === 'orbit' || previous === 'top') {
+        this.fpPosition.set(this.target.x, 55, this.target.z + 110);
+        this.yaw = Math.PI;
+        this.pitch = -0.35;
+      } else {
+        this.fpPosition.y = Math.max(12, this.fpPosition.y);
+      }
     }
     this.updateCamera();
   }
@@ -135,7 +150,7 @@ export class CameraRig {
 
   onWheel(deltaY: number): void {
     if (this.mode === 'orbit' || this.mode === 'top') {
-      this.distance = THREE.MathUtils.clamp(this.distance * (1 + deltaY * 0.001), 25, 600);
+      this.distance = THREE.MathUtils.clamp(this.distance * (1 + deltaY * 0.001), 25, 900);
     } else if (this.mode === 'fly') {
       this.fpPosition.y = THREE.MathUtils.clamp(this.fpPosition.y + deltaY * 0.05, 6, 300);
     }

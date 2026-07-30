@@ -340,6 +340,30 @@ const KITS: Record<DistrictId, KitBuilder> = {
   },
 };
 
+/**
+ * Global building scale. The district plates are sized for legibility from
+ * the skyline camera; the architectural kits are authored at human scale, so
+ * they are scaled up here to fill their districts and form a readable
+ * silhouette. Collision extents scale with the geometry.
+ */
+const BUILDING_SCALE = 2.0;
+
+function scalePart(part: BuildingPart): BuildingPart {
+  return {
+    ...part,
+    offset: [
+      part.offset[0] * BUILDING_SCALE,
+      part.offset[1] * BUILDING_SCALE,
+      part.offset[2] * BUILDING_SCALE,
+    ],
+    size: [
+      part.size[0] * BUILDING_SCALE,
+      part.size[1] * BUILDING_SCALE,
+      part.size[2] * BUILDING_SCALE,
+    ],
+  };
+}
+
 /** Deterministic full building plan for the city. */
 export function generateBuildings(): Building[] {
   const buildings: Building[] = [];
@@ -352,19 +376,22 @@ export function generateBuildings(): Building[] {
       name: landmark.name,
       position: [district.bounds.x, district.bounds.z],
       rotationY: 0,
-      parts: landmark.parts,
+      parts: landmark.parts.map(scalePart),
       isLandmark: true,
-      collisionHalfExtents: landmark.extent,
-      collisionHeight: landmark.height,
+      collisionHalfExtents: [
+        landmark.extent[0] * BUILDING_SCALE,
+        landmark.extent[1] * BUILDING_SCALE,
+      ],
+      collisionHeight: landmark.height * BUILDING_SCALE,
     });
     // Fillers ring the landmark on a deterministic spiral.
     for (let i = 0; i < kit.fillerCount; i++) {
       const r = jitter(`${district.id}-${i}`);
       const angle = (i / kit.fillerCount) * Math.PI * 2 + r * 0.8;
       const radius =
-        Math.min(district.bounds.width, district.bounds.depth) * 0.32 + r * 6 + 8;
+        Math.min(district.bounds.width, district.bounds.depth) * 0.34 + r * 5 + 14;
       const x = district.bounds.x + Math.cos(angle) * radius;
-      const z = district.bounds.z + Math.sin(angle) * radius * 0.8;
+      const z = district.bounds.z + Math.sin(angle) * radius * 0.75;
       const spec = kit.filler(district, i, r);
       if (spec.parts.length === 0) continue;
       buildings.push({
@@ -373,10 +400,13 @@ export function generateBuildings(): Building[] {
         name: `${district.name} block ${i + 1}`,
         position: [x, z],
         rotationY: r * Math.PI * 2,
-        parts: spec.parts,
+        parts: spec.parts.map(scalePart),
         isLandmark: false,
-        collisionHalfExtents: spec.extent,
-        collisionHeight: spec.height,
+        collisionHalfExtents: [
+          spec.extent[0] * BUILDING_SCALE,
+          spec.extent[1] * BUILDING_SCALE,
+        ],
+        collisionHeight: spec.height * BUILDING_SCALE,
       });
     }
   }

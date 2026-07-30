@@ -53,6 +53,9 @@ export class CityEngine {
   private readonly weather: THREE.Points;
   private readonly ambient: THREE.AmbientLight;
   private readonly sun: THREE.DirectionalLight;
+  private readonly grid: THREE.GridHelper;
+  private readonly stars: THREE.Points;
+  private readonly ground: THREE.Mesh;
   private readonly pulses: { mesh: THREE.Mesh; born: number }[] = [];
   private disposed = false;
   /** Set when the user is near an interactive console in first-person mode. */
@@ -77,14 +80,38 @@ export class CityEngine {
     this.city = buildCity();
     this.scene.add(this.city.group);
 
-    // Ground.
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(1400, 1000),
+    // Ground plus a faint survey grid so the terrain reads as a plane
+    // rather than void, at both day and night.
+    this.ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(1800, 1400),
       new THREE.MeshStandardMaterial({ color: '#11141b', roughness: 1 }),
     );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -0.6;
-    this.scene.add(ground);
+    this.ground.rotation.x = -Math.PI / 2;
+    this.ground.position.y = -0.6;
+    this.scene.add(this.ground);
+    this.grid = new THREE.GridHelper(1600, 64, 0x2a3350, 0x1c2438);
+    this.grid.position.y = -0.5;
+    this.scene.add(this.grid);
+
+    // Starfield: visible at night, hidden by day.
+    const starCount = 700;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      // Deterministic dome placement (no Math.random: stable screenshots).
+      const a = (i * 2.399963) % (Math.PI * 2);
+      const t = (i / starCount) * Math.PI * 0.45 + 0.06;
+      const r = 900;
+      starPositions[i * 3] = Math.cos(a) * Math.sin(t) * r;
+      starPositions[i * 3 + 1] = Math.cos(t) * r * 0.8 + 120;
+      starPositions[i * 3 + 2] = Math.sin(a) * Math.sin(t) * r;
+    }
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    this.stars = new THREE.Points(
+      starGeo,
+      new THREE.PointsMaterial({ color: '#c8d4ff', size: 2.4, sizeAttenuation: false }),
+    );
+    this.scene.add(this.stars);
 
     this.ambient = new THREE.AmbientLight('#8899bb', 0.5);
     this.sun = new THREE.DirectionalLight('#ffffff', 1.0);
@@ -167,8 +194,10 @@ export class CityEngine {
           depthTest: false,
         }),
       );
-      sprite.position.set(d.bounds.x, 34, d.bounds.z);
-      sprite.scale.set(46, 8.6, 1);
+      // Labels float above the tallest structure in each district so they
+      // never collide with the silhouette.
+      sprite.position.set(d.bounds.x, d.id === 'scheduling-tower' ? 86 : 62, d.bounds.z);
+      sprite.scale.set(58, 10.9, 1);
       sprite.visible = this.labelsEnabled;
       this.scene.add(sprite);
       this.labelSprites.push(sprite);
@@ -379,12 +408,18 @@ export class CityEngine {
   setNight(night: boolean): void {
     this.night = night;
     this.city.setNight(night);
-    this.scene.background = new THREE.Color(night ? '#0a0d16' : '#a8c8e8');
-    this.scene.fog = new THREE.Fog(night ? '#0a0d16' : '#a8c8e8', 400, 1100);
-    this.ambient.intensity = night ? 0.4 : 0.75;
-    this.ambient.color.set(night ? '#5566aa' : '#ccddee');
-    this.sun.intensity = night ? 0.25 : 1.1;
+    this.scene.background = new THREE.Color(night ? '#070a12' : '#9dc0e4');
+    this.scene.fog = new THREE.Fog(night ? '#070a12' : '#9dc0e4', 520, 1400);
+    this.ambient.intensity = night ? 0.58 : 0.8;
+    this.ambient.color.set(night ? '#6677bb' : '#ccddee');
+    this.sun.intensity = night ? 0.45 : 1.15;
     this.sun.color.set(night ? '#8899ff' : '#fff6e0');
+    this.stars.visible = night;
+    // The ground plane covers most of the frame at the default camera
+    // angle, so it — not the sky color — determines the overall tone.
+    (this.ground.material as THREE.MeshStandardMaterial).color.set(night ? '#11141b' : '#5f6f56');
+    (this.grid.material as THREE.Material).opacity = night ? 0.5 : 0.3;
+    (this.grid.material as THREE.Material).transparent = true;
   }
 
   setQuality(quality: 'high' | 'balanced' | 'low'): void {

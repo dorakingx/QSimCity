@@ -28,6 +28,7 @@ export interface CityMeshes {
   readonly boxes: THREE.InstancedMesh;
   readonly cylinders: THREE.InstancedMesh;
   readonly spheres: THREE.InstancedMesh;
+  readonly windows: THREE.Points;
   readonly pickTargets: Map<THREE.Object3D, PickTarget[]>;
   readonly districtPlates: Map<string, THREE.Mesh>;
   readonly interactiveMeshes: Map<string, THREE.Mesh>;
@@ -37,7 +38,9 @@ export interface CityMeshes {
 }
 
 const BODY_DAY = new THREE.Color('#b8bec8');
-const BODY_NIGHT = new THREE.Color('#3c4250');
+// Night bodies stay light enough to read as architecture against the dark
+// sky while remaining clearly darker than the emissive accents.
+const BODY_NIGHT = new THREE.Color('#4a5266');
 
 interface InstanceRecord {
   readonly matrix: THREE.Matrix4;
@@ -232,7 +235,45 @@ export function buildCity(): CityMeshes {
     pickTargets.set(kiosk, [{ kind: 'interactive', interactiveId: interactive.id }]);
   }
 
+  // Window lights: one deterministic point cloud for the whole city, lit at
+  // night only. Single draw call, no per-frame work.
+  const windowPositions: number[] = [];
+  const windowColors: number[] = [];
+  for (const building of buildings) {
+    const district = DISTRICTS.find((d) => d.id === building.districtId)!;
+    const accent = new THREE.Color(district.accentColor).lerp(new THREE.Color('#fff2cc'), 0.55);
+    for (const part of building.parts) {
+      if (part.kind !== 'block' && part.kind !== 'tower') continue;
+      const [ox, oy, oz] = part.offset;
+      const [sx, sy, sz] = part.size;
+      const rows = Math.max(1, Math.floor(sy / 4));
+      const cols = Math.max(1, Math.floor(sx / 4));
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          // Deterministic sparse occupancy: about half the windows are lit.
+          const h = ((r * 73856093) ^ (c * 19349663) ^ Math.round(building.position[0] * 31)) >>> 0;
+          if (h % 100 > 52) continue;
+          const wx = building.position[0] + ox + (c + 0.5 - cols / 2) * (sx / cols);
+          const wy = oy + (r + 0.6) * (sy / rows);
+          const wz = building.position[1] + oz + sz / 2 + 0.15;
+          windowPositions.push(wx, wy, wz);
+          windowColors.push(accent.r, accent.g, accent.b);
+        }
+      }
+    }
+  }
+  const windowGeo = new THREE.BufferGeometry();
+  windowGeo.setAttribute('position', new THREE.Float32BufferAttribute(windowPositions, 3));
+  windowGeo.setAttribute('color', new THREE.Float32BufferAttribute(windowColors, 3));
+  const windows = new THREE.Points(
+    windowGeo,
+    new THREE.PointsMaterial({ size: 1.6, vertexColors: true, transparent: true, opacity: 0.95 }),
+  );
+  windows.name = 'city-windows';
+  group.add(windows);
+
   const applyTones = (night: boolean): void => {
+    windows.visible = night;
     const body = night ? BODY_NIGHT : BODY_DAY;
     for (const { mesh, records } of [boxes, cylinders, spheres]) {
       records.forEach((r, i) => {
@@ -254,6 +295,7 @@ export function buildCity(): CityMeshes {
     boxes: boxes.mesh,
     cylinders: cylinders.mesh,
     spheres: spheres.mesh,
+    windows,
     pickTargets,
     districtPlates,
     interactiveMeshes,
