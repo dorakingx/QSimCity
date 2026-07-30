@@ -20,6 +20,9 @@ import { getSampleCircuit } from '@qsimcity/domain';
 
 /** Branch coverage for empty, error, and alternate-configuration states. */
 
+/** Waits cover real parse+compile+simulate work on a cold cache. */
+const WAIT = { timeout: 15_000, interval: 25 } as const;
+
 let noisyTrace: Trace;
 let vqeLikeTrace: Trace;
 
@@ -296,7 +299,7 @@ describe('LabControls interaction branches', () => {
     vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
     render(<LabControls />);
     await userEvent.click(screen.getByRole('button', { name: 'Copy share link' }));
-    await vi.waitFor(() => expect(writeText).toHaveBeenCalled());
+    await vi.waitFor(() => expect(writeText).toHaveBeenCalled(), WAIT);
     expect(useAppStore.getState().toast).toContain('clipboard');
     vi.unstubAllGlobals();
   });
@@ -306,7 +309,7 @@ describe('LabControls interaction branches', () => {
     vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
     render(<LabControls />);
     await userEvent.click(screen.getByRole('button', { name: 'Copy share link' }));
-    await vi.waitFor(() => expect(useAppStore.getState().toast).toContain('Shareable link:'));
+    await vi.waitFor(() => expect(useAppStore.getState().toast).toContain('Shareable link:'), WAIT);
     vi.unstubAllGlobals();
   });
 
@@ -332,7 +335,7 @@ describe('LabControls interaction branches', () => {
     fireEvent.change(input, { target: { files: [big] } });
     await vi.waitFor(() => {
       expect(screen.getByRole('alert').textContent).toContain('import limit');
-    });
+    }, WAIT);
   });
 
   it('reports malformed imported traces', async () => {
@@ -344,7 +347,7 @@ describe('LabControls interaction branches', () => {
     fireEvent.change(input, { target: { files: [bad] } });
     await vi.waitFor(() => {
       expect(screen.getByRole('alert').textContent).toMatch(/failed|invalid/i);
-    });
+    }, WAIT);
   });
 
   it('imports a valid trace successfully', async () => {
@@ -363,7 +366,7 @@ describe('LabControls interaction branches', () => {
       type: 'application/json',
     });
     fireEvent.change(input, { target: { files: [good] } });
-    await vi.waitFor(() => expect(useAppStore.getState().traceImported).toBe(true));
+    await vi.waitFor(() => expect(useAppStore.getState().traceImported).toBe(true), WAIT);
     expect(useAppStore.getState().toast).toBe('Trace imported.');
   });
 

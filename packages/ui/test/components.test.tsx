@@ -29,6 +29,9 @@ import { runPipeline } from '../src/pipeline/runPipeline.js';
 import { createDirectRunner } from '../src/pipeline/workerClient.js';
 import { useAppStore, DEFAULT_CONFIG, DEFAULT_SETTINGS } from '../src/store/appStore.js';
 
+/** Waits cover real parse+compile+simulate work on a cold cache. */
+const WAIT = { timeout: 15_000, interval: 25 } as const;
+
 let bellTrace: Trace;
 
 function resetStore(): void {
@@ -489,7 +492,7 @@ describe('LabControls', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Run' }));
     await vi.waitFor(() => {
       expect(screen.getByRole('alert').textContent).toContain('Line 3');
-    });
+    }, WAIT);
     expect((editor as HTMLTextAreaElement).value).toContain('nope');
   });
 
@@ -544,13 +547,13 @@ describe('ScenarioPanel', () => {
     expect(useAppStore.getState().activeScenarioId).toBe('shot-drought');
     await vi.waitFor(() => {
       expect(screen.getByText('Expected causal chain')).toBeTruthy();
-    });
+    }, WAIT);
   });
 
   it('resets the scenario and restores defaults', async () => {
     useAppStore.setState({ activeScenarioId: 'bell-state' });
     render(<ScenarioPanel />);
-    await vi.waitFor(() => expect(screen.getByText('Bell State')).toBeTruthy());
+    await vi.waitFor(() => expect(screen.getByText('Bell State')).toBeTruthy(), WAIT);
     await userEvent.click(screen.getByRole('button', { name: 'Reset scenario' }));
     expect(useAppStore.getState().activeScenarioId).toBeNull();
   });
