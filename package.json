@@ -28,5 +28,14 @@
     "verify": "pnpm typecheck && pnpm lint && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
     "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm test:e2e",
     "goal:check": "tsx tools/check-goal.ts"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@vitest/coverage-v8": "4.1.10",
+    "fast-check": "4.9.0",
+    "prettier": "3.9.6",
+    "tsx": "4.23.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
   }
 }

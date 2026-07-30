@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vitest/globals", "node"],
+    "paths": {
+      "@qsimcity/domain": ["./packages/domain/src/index.ts"],
+      "qsimcity-trace": ["./packages/trace/src/index.ts"],
+      "@qsimcity/simulator": ["./packages/simulator/src/index.ts"],
+      "@qsimcity/reference-compiler": ["./packages/reference-compiler/src/index.ts"],
+      "@qsimcity/world": ["./packages/world/src/index.ts"],
+      "@qsimcity/visual-engine": ["./packages/visual-engine/src/index.ts"],
+      "@qsimcity/ui": ["./packages/ui/src/index.ts"]
+    }
+  },
+  "include": [
+    "packages/*/src/**/*.ts",
+    "packages/*/src/**/*.tsx",
+    "packages/*/test/**/*.ts",
+    "packages/*/test/**/*.tsx",
+    "apps/web/src/**/*.ts",
+    "apps/web/src/**/*.tsx",
+    "apps/web/test/**/*.ts",
+    "tools/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

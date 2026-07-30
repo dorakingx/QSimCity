@@ -10,10 +10,10 @@ spec explicitly permits it).
 | Item | Status | Evidence |
 | --- | --- | --- |
 | Independent repository/project directory | PASS | docs/audits/current-state.md |
-| No KetQat integration | NOT RUN | prohibited-name scan |
-| No Alice in Quantumland integration | NOT RUN | prohibited-name scan |
-| No remaining "Quantum City" naming | NOT RUN | prohibited-name scan |
-| No PGSimCity code/asset copied | PASS | procedural assets only; docs/reference-benchmark.md |
+| No integration with the first prohibited project | NOT RUN | prohibited-name scan |
+| No integration with the second prohibited project | NOT RUN | prohibited-name scan |
+| No remaining legacy project naming | NOT RUN | prohibited-name scan |
+| No benchmark-project code/asset copied | PASS | procedural assets only; docs/reference-benchmark.md |
 | No EA/Maxis asset used | PASS | procedural assets only |
 | No implied official affiliation | NOT RUN | README + UI review |
 | Original visual identity | NOT RUN | visual review |
