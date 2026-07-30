@@ -1,0 +1,491 @@
+{
+  "schemaVersion": "1.0.0",
+  "traceId": "t-d98c7d207cc89512",
+  "createdAt": "2026-07-30T08:15:10.613Z",
+  "generator": {
+    "generator": "qsimcity-qiskit-bridge",
+    "generatorVersion": "1.0.0",
+    "details": {
+      "qiskit": "2.5.1",
+      "backend": "GenericBackendV2/linear-5"
+    }
+  },
+  "seed": "42",
+  "packageVersions": {
+    "qiskit": "2.5.1",
+    "qiskit-aer": "0.17.2",
+    "python": "3.12.12",
+    "qsimcity-qiskit": "1.0.0"
+  },
+  "inputHash": "bb13590407d7e86e",
+  "deviceId": "linear-5",
+  "shots": 1024,
+  "noise": {
+    "readoutError": 0.02,
+    "depolarizing1q": 0.001,
+    "depolarizing2q": 0.01,
+    "amplitudeDamping": 0.005,
+    "phaseDamping": 0.005
+  },
+  "inputCircuit": {
+    "name": "ghz-4",
+    "numQubits": 4,
+    "numClbits": 4,
+    "cregs": [
+      {
+        "name": "c",
+        "size": 4
+      }
+    ],
+    "instructions": [
+      {
+        "id": "i0",
+        "kind": "gate",
+        "name": "h",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i1",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i2",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i3",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          2,
+          3
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i4",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [
+          0
+        ],
+        "condition": null
+      },
+      {
+        "id": "i5",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [
+          1
+        ],
+        "condition": null
+      },
+      {
+        "id": "i6",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [
+          2
+        ],
+        "condition": null
+      },
+      {
+        "id": "i7",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          3
+        ],
+        "params": [],
+        "clbits": [
+          3
+        ],
+        "condition": null
+      }
+    ]
+  },
+  "compiledCircuit": {
+    "name": "ghz-4@linear-5",
+    "numQubits": 5,
+    "numClbits": 4,
+    "cregs": [
+      {
+        "name": "c",
+        "size": 4
+      }
+    ],
+    "instructions": [
+      {
+        "id": "i0",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i1",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i2",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i3",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i4",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i5",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          2,
+          3
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i6",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [
+          0
+        ],
+        "condition": null
+      },
+      {
+        "id": "i7",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [
+          1
+        ],
+        "condition": null
+      },
+      {
+        "id": "i8",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [
+          2
+        ],
+        "condition": null
+      },
+      {
+        "id": "i9",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          3
+        ],
+        "params": [],
+        "clbits": [
+          3
+        ],
+        "condition": null
+      }
+    ]
+  },
+  "initialLayout": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "finalLayout": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "metrics": [
+    {
+      "stage": "input",
+      "gateCount": 4,
+      "twoQubitGateCount": 3,
+      "swapCount": 0,
+      "depth": 5
+    },
+    {
+      "stage": "compiled",
+      "gateCount": 6,
+      "twoQubitGateCount": 3,
+      "swapCount": 0,
+      "depth": 7
+    }
+  ],
+  "results": {
+    "idealCounts": {
+      "counts": {
+        "1111": 518,
+        "0000": 506
+      },
+      "shots": 1024,
+      "source": "qiskit_aer",
+      "certainty": "SAMPLED"
+    },
+    "noisyCounts": {
+      "counts": {
+        "0101": 1,
+        "0010": 12,
+        "1010": 1,
+        "1111": 456,
+        "1101": 8,
+        "1110": 8,
+        "1000": 7,
+        "0000": 470,
+        "0111": 8,
+        "1011": 13,
+        "0110": 1,
+        "1100": 2,
+        "0100": 11,
+        "0011": 3,
+        "0001": 23
+      },
+      "shots": 1024,
+      "source": "qiskit_aer",
+      "certainty": "SAMPLED"
+    }
+  },
+  "events": [
+    {
+      "eventId": "e0",
+      "logicalTick": 1,
+      "eventType": "program.parsed",
+      "stage": "parse",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "numQubits": 4,
+        "instructions": 8
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e1",
+      "logicalTick": 2,
+      "eventType": "layout.assigned",
+      "stage": "layout",
+      "logicalQubits": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "physicalQubits": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "layout": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "deviceId": "linear-5",
+        "method": "qiskit-preset"
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e2",
+      "logicalTick": 3,
+      "eventType": "circuit.optimized",
+      "stage": "optimization",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "passes": [
+          "ContainsInstruction",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "SetLayout",
+          "TrivialLayout",
+          "CheckMap",
+          "FullAncillaAllocation",
+          "EnlargeWithAncilla",
+          "ApplyLayout",
+          "CheckMap",
+          "FilterOpNodes",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "CheckGateDirection",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "Optimize1qGatesDecomposition",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "GatesInBasis",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "ContainsInstruction"
+        ],
+        "passCount": 31,
+        "swapCount": 0
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e3",
+      "logicalTick": 4,
+      "eventType": "gate.translated",
+      "stage": "translation",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "basisGates": [
+          "rz",
+          "sx",
+          "x",
+          "cx",
+          "reset",
+          "delay",
+          "measure"
+        ]
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    }
+  ]
+}

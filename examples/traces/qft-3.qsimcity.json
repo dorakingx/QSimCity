@@ -1,0 +1,1285 @@
+{
+  "schemaVersion": "1.0.0",
+  "traceId": "t-283546268747ff33",
+  "createdAt": "2026-07-30T08:15:10.619Z",
+  "generator": {
+    "generator": "qsimcity-qiskit-bridge",
+    "generatorVersion": "1.0.0",
+    "details": {
+      "qiskit": "2.5.1",
+      "backend": "GenericBackendV2/linear-5"
+    }
+  },
+  "seed": "42",
+  "packageVersions": {
+    "qiskit": "2.5.1",
+    "qiskit-aer": "0.17.2",
+    "python": "3.12.12",
+    "qsimcity-qiskit": "1.0.0"
+  },
+  "inputHash": "01002766d8ea7f47",
+  "deviceId": "linear-5",
+  "shots": 1024,
+  "noise": null,
+  "inputCircuit": {
+    "name": "qft-3",
+    "numQubits": 3,
+    "numClbits": 3,
+    "cregs": [
+      {
+        "name": "c",
+        "size": 3
+      }
+    ],
+    "instructions": [
+      {
+        "id": "i0",
+        "kind": "gate",
+        "name": "x",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i1",
+        "kind": "gate",
+        "name": "h",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i2",
+        "kind": "gate",
+        "name": "cp",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i3",
+        "kind": "gate",
+        "name": "h",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i4",
+        "kind": "gate",
+        "name": "cp",
+        "qubits": [
+          0,
+          2
+        ],
+        "params": [
+          0.7853981633974483
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i5",
+        "kind": "gate",
+        "name": "cp",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i6",
+        "kind": "gate",
+        "name": "h",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i7",
+        "kind": "gate",
+        "name": "swap",
+        "qubits": [
+          0,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i8",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [
+          0
+        ],
+        "condition": null
+      },
+      {
+        "id": "i9",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [
+          1
+        ],
+        "condition": null
+      },
+      {
+        "id": "i10",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [
+          2
+        ],
+        "condition": null
+      }
+    ]
+  },
+  "compiledCircuit": {
+    "name": "qft-3@linear-5",
+    "numQubits": 5,
+    "numClbits": 3,
+    "cregs": [
+      {
+        "name": "c",
+        "size": 3
+      }
+    ],
+    "instructions": [
+      {
+        "id": "i0",
+        "kind": "gate",
+        "name": "x",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i1",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          0.39269908169872414
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i2",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          2
+        ],
+        "params": [
+          2.356194490192345
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i3",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i4",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          2
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i5",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i6",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          -1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i7",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i8",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          -2.356194490192344
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i9",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i10",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          -1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i11",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i12",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i13",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i14",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          2.356194490192345
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i15",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i16",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          -0.39269908169872414
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i17",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i18",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i19",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i20",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i21",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.9634954084936203
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i22",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i23",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i24",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i25",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i26",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i27",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i28",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i29",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i30",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i31",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i32",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i33",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i34",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i35",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i36",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i37",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i38",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i39",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i40",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i41",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          2.356194490192345
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i42",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i43",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          2
+        ],
+        "params": [
+          -0.7853981633974483
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i44",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          1,
+          2
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i45",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i46",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i47",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i48",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i49",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i50",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i51",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i52",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i53",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i54",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i55",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i56",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i57",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i58",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i59",
+        "kind": "gate",
+        "name": "cx",
+        "qubits": [
+          0,
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i60",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i61",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i62",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          0
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i63",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i64",
+        "kind": "gate",
+        "name": "sx",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i65",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          1
+        ],
+        "params": [
+          1.5707963267948966
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i66",
+        "kind": "gate",
+        "name": "rz",
+        "qubits": [
+          2
+        ],
+        "params": [
+          0.7853981633974483
+        ],
+        "clbits": [],
+        "condition": null
+      },
+      {
+        "id": "i67",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          1
+        ],
+        "params": [],
+        "clbits": [
+          0
+        ],
+        "condition": null
+      },
+      {
+        "id": "i68",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          2
+        ],
+        "params": [],
+        "clbits": [
+          1
+        ],
+        "condition": null
+      },
+      {
+        "id": "i69",
+        "kind": "measure",
+        "name": "measure",
+        "qubits": [
+          0
+        ],
+        "params": [],
+        "clbits": [
+          2
+        ],
+        "condition": null
+      }
+    ]
+  },
+  "initialLayout": [
+    0,
+    2,
+    1
+  ],
+  "finalLayout": [
+    1,
+    2,
+    0
+  ],
+  "metrics": [
+    {
+      "stage": "input",
+      "gateCount": 8,
+      "twoQubitGateCount": 4,
+      "swapCount": 1,
+      "depth": 7
+    },
+    {
+      "stage": "compiled",
+      "gateCount": 67,
+      "twoQubitGateCount": 12,
+      "swapCount": 0,
+      "depth": 47
+    }
+  ],
+  "results": {
+    "idealCounts": {
+      "counts": {
+        "111": 112,
+        "011": 151,
+        "110": 122,
+        "100": 136,
+        "001": 140,
+        "010": 118,
+        "000": 117,
+        "101": 128
+      },
+      "shots": 1024,
+      "source": "qiskit_aer",
+      "certainty": "SAMPLED"
+    }
+  },
+  "events": [
+    {
+      "eventId": "e0",
+      "logicalTick": 1,
+      "eventType": "program.parsed",
+      "stage": "parse",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "numQubits": 3,
+        "instructions": 11
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e1",
+      "logicalTick": 2,
+      "eventType": "layout.assigned",
+      "stage": "layout",
+      "logicalQubits": [
+        0,
+        1,
+        2
+      ],
+      "physicalQubits": [
+        0,
+        2,
+        1
+      ],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "layout": [
+          0,
+          2,
+          1
+        ],
+        "deviceId": "linear-5",
+        "method": "qiskit-preset"
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e2",
+      "logicalTick": 3,
+      "eventType": "circuit.optimized",
+      "stage": "optimization",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "passes": [
+          "ContainsInstruction",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "SetLayout",
+          "TrivialLayout",
+          "CheckMap",
+          "VF2Layout",
+          "BarrierBeforeFinalMeasurements",
+          "SabreLayout",
+          "CheckMap",
+          "VF2PostLayout",
+          "FilterOpNodes",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "CheckGateDirection",
+          "GateDirection",
+          "BasisTranslator",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "Optimize1qGatesDecomposition",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "GatesInBasis",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "Optimize1qGatesDecomposition",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "GatesInBasis",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "ContainsInstruction"
+        ],
+        "passCount": 42,
+        "swapCount": 0
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e3",
+      "logicalTick": 4,
+      "eventType": "routing.swap_inserted",
+      "stage": "routing",
+      "logicalQubits": [
+        0,
+        1,
+        2
+      ],
+      "physicalQubits": [
+        1,
+        2,
+        0
+      ],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "finalLayout": [
+          1,
+          2,
+          0
+        ],
+        "note": "Layout permutation after routing"
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    },
+    {
+      "eventId": "e4",
+      "logicalTick": 5,
+      "eventType": "gate.translated",
+      "stage": "translation",
+      "logicalQubits": [],
+      "physicalQubits": [],
+      "instructionId": null,
+      "source": "qiskit_transpiler",
+      "certainty": "COMPUTED",
+      "payload": {
+        "basisGates": [
+          "rz",
+          "sx",
+          "x",
+          "cx",
+          "reset",
+          "delay",
+          "measure"
+        ]
+      },
+      "provenance": {
+        "generator": "qsimcity-qiskit-bridge",
+        "generatorVersion": "1.0.0",
+        "details": {
+          "qiskit": "2.5.1",
+          "optimizationLevel": 1
+        }
+      }
+    }
+  ]
+}
