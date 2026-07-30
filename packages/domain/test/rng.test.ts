@@ -91,3 +91,37 @@ describe('createRng', () => {
     );
   });
 });
+
+describe('algorithm pinning', () => {
+  /**
+   * The PRNG algorithm is part of the reproducibility contract, not an
+   * implementation detail: committed sample traces embed sampled counts, so
+   * changing the mixer, the shift constants, or the warm-up length would
+   * silently invalidate every recorded artifact. These vectors pin the
+   * algorithm so such a change fails loudly here first.
+   */
+  it('produces the exact expected stream for a known seed', () => {
+    const rng = createRng('qsimcity-pinned');
+    const first = Array.from({ length: 6 }, () => rng.next());
+    expect(first.map((v) => v.toFixed(12))).toEqual([
+      '0.457455758937',
+      '0.567580091069',
+      '0.074053023010',
+      '0.973170859274',
+      '0.087350943359',
+      '0.211756491335',
+    ]);
+  });
+
+  it('produces the exact expected uint32 stream for a numeric seed', () => {
+    const rng = createRng(7);
+    expect(Array.from({ length: 4 }, () => rng.nextUint32())).toEqual([
+      3209579116, 760866129, 3577501967, 586756693,
+    ]);
+  });
+
+  it('forked streams are pinned too', () => {
+    const rng = createRng('parent').fork('child');
+    expect(rng.next().toFixed(12)).toBe('0.780727265636');
+  });
+});

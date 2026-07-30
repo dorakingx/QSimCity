@@ -107,3 +107,54 @@ describe('graph operations', () => {
     expect(distanceMatrix(ring)[0]![4]).toBe(4);
   });
 });
+
+describe('topology structure is pinned', () => {
+  /** Edge counts are pinned: a generator bug would silently change routing. */
+  it('each device has exactly the expected number of coupling edges', () => {
+    const expected: Record<string, number> = {
+      'linear-5': 4,
+      'ring-8': 8,
+      'grid-3x3': 12,
+      'tee-7': 6,
+      'full-5': 10,
+    };
+    for (const d of DEVICES) {
+      expect(d.edges.length, d.id).toBe(expected[d.id]);
+    }
+  });
+
+  it('grid-3x3 has exactly the textbook lattice edges', () => {
+    const grid = getDevice('grid-3x3');
+    expect(grid.edges.map(([a, b]) => `${a}-${b}`)).toEqual([
+      '0-1', '0-3', '1-2', '1-4', '2-5', '3-4', '3-6', '4-5', '4-7', '5-8', '6-7', '7-8',
+    ]);
+  });
+
+  it('no device connects a row end to the next row start', () => {
+    const grid = getDevice('grid-3x3');
+    // 2-3 and 5-6 would be wrap-around edges a naive loop bound introduces.
+    for (const forbidden of ['2-3', '5-6']) {
+      expect(grid.edges.some(([a, b]) => `${a}-${b}` === forbidden), forbidden).toBe(false);
+    }
+  });
+});
+
+describe('neighbor ordering is deterministic', () => {
+  /**
+   * Routing tie-breaking depends on neighbor order, so the comparator must
+   * sort ascending even when the underlying edge list is not already ordered.
+   */
+  it('sorts neighbors ascending regardless of edge declaration order', () => {
+    const tee = getDevice('tee-7');
+    // Node 5's edges appear as 3-5, 4-5, 5-6 in declaration order, so a
+    // broken comparator would surface them out of order.
+    expect(neighbors(tee, 5)).toEqual([3, 4, 6]);
+    expect(neighbors(tee, 1)).toEqual([0, 2, 3]);
+    for (const d of DEVICES) {
+      for (let q = 0; q < d.numQubits; q++) {
+        const ns = neighbors(d, q);
+        expect([...ns].sort((a, b) => a - b), `${d.id} q${q}`).toEqual(ns);
+      }
+    }
+  });
+});

@@ -282,3 +282,15 @@ describe('schema migration', () => {
     expect(() => validateTrace(null)).toThrow(TraceValidationError);
   });
 });
+
+describe('TraceValidationError message formatting', () => {
+  it('omits the separator when there are no issues', () => {
+    expect(new TraceValidationError('Something failed').message).toBe('Something failed');
+  });
+
+  it('appends issues when present', () => {
+    const error = new TraceValidationError('Failed', ['a: bad', 'b: worse']);
+    expect(error.message).toBe('Failed: a: bad; b: worse');
+    expect(error.issues).toHaveLength(2);
+  });
+});

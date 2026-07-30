@@ -30,7 +30,8 @@
     "goal:check": "tsx tools/check-goal.ts",
     "check:perf": "tsx tools/check-performance.ts",
     "soak": "tsx tools/soak/run-soak.ts",
-    "lighthouse": "tsx tools/lighthouse/run-lighthouse.ts"
+    "lighthouse": "tsx tools/lighthouse/run-lighthouse.ts",
+    "coverage:check": "tsx tools/coverage/check-coverage.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

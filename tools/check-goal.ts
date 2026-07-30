@@ -4,51 +4,50 @@ import { join } from 'node:path';
 import { scanProhibitedNames } from './check-prohibited-names.js';
 import { scanLanguage } from './check-language.js';
 import { scanTodos } from './check-todos.js';
+import { currentCommit, readEvidence, worktreeDirty, EvidenceError } from './evidence.js';
 
 /**
  * QSimCity completion checker (spec §23).
  *
- * Verifies every mandatory condition from the Definition of Done that can be
- * checked mechanically. Exits 0 only when all required checks pass, and
- * prints the exact success line the specification requires.
+ * This checker previously reported success while the acceptance matrix itself
+ * recorded an untested mandatory risk — a gate satisfiable by documentation
+ * rather than measurement. It now refuses to pass unless every mandatory
+ * claim is backed by an evidence envelope generated from the current commit
+ * by a command that exited zero. Prose is never accepted as evidence.
  *
  * Flags:
- *   --fast   skip the long-running gates (E2E, coverage, mutation, build)
- *            and report them from their most recent recorded evidence.
+ *   --allow-dirty  permit evidence from a dirty worktree (local iteration).
  */
 
 const ROOT = new URL('..', import.meta.url).pathname;
-const FAST = process.argv.includes('--fast');
+const ALLOW_DIRTY = process.argv.includes('--allow-dirty');
 
-type Status = 'PASS' | 'FAIL' | 'SKIPPED';
+type Status = 'PASS' | 'FAIL';
 
 interface CheckResult {
   readonly name: string;
   readonly status: Status;
   readonly detail: string;
-  /** Required checks must pass for the goal gate to succeed. */
-  readonly required: boolean;
 }
 
 const results: CheckResult[] = [];
 
-function record(name: string, status: Status, detail: string, required = true): void {
-  results.push({ name, status, detail, required });
-  const icon = status === 'PASS' ? 'PASS' : status === 'SKIPPED' ? 'SKIP' : 'FAIL';
-  console.log(`[${icon}] ${name}: ${detail}`);
+function record(name: string, status: Status, detail: string): void {
+  results.push({ name, status, detail });
+  console.log(`[${status}] ${name}: ${detail}`);
 }
 
-function check(name: string, fn: () => string, required = true): void {
+function check(name: string, fn: () => string): void {
   try {
-    record(name, 'PASS', fn(), required);
+    record(name, 'PASS', fn());
   } catch (e) {
-    record(name, 'FAIL', (e as Error).message, required);
+    record(name, 'FAIL', (e as Error).message);
   }
 }
 
 function run(command: string, args: string[], label: string, cwd = ROOT): string {
   try {
-    execFileSync(command, args, { cwd, stdio: 'pipe', timeout: 1_800_000 });
+    execFileSync(command, args, { cwd, stdio: 'pipe', timeout: 3_600_000 });
     return `${label} succeeded`;
   } catch (e) {
     const err = e as { stdout?: Buffer; stderr?: Buffer };
@@ -59,12 +58,19 @@ function run(command: string, args: string[], label: string, cwd = ROOT): string
   }
 }
 
-/**
- * Tools are invoked through `node_modules/.bin` rather than through pnpm:
- * pnpm itself is provided by corepack and is not guaranteed to be on PATH
- * for a spawned process.
- */
 const bin = (name: string): string => join(ROOT, 'node_modules', '.bin', name);
+
+const evidenceOptions = { allowDirty: ALLOW_DIRTY };
+
+console.log(`QSimCity completion gate — HEAD ${currentCommit().slice(0, 12)}`);
+if (worktreeDirty()) {
+  console.log(
+    ALLOW_DIRTY
+      ? 'Worktree is dirty; --allow-dirty was passed, so evidence from it is accepted.'
+      : 'Worktree is dirty — evidence must be regenerated from a clean commit.',
+  );
+}
+console.log('');
 
 // ---------------------------------------------------------------- files
 
@@ -91,6 +97,8 @@ const REQUIRED_FILES = [
   'docs/acceptance-matrix.md',
   'docs/audits/current-state.md',
   'docs/audits/final-release-audit.md',
+  'docs/audits/visual-benchmark-final.md',
+  'docs/audits/release-hardening.md',
 ];
 
 check('Required documents exist', () => {
@@ -103,7 +111,21 @@ check('Required scripts declared', () => {
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) as {
     scripts: Record<string, string>;
   };
-  const required = ['build', 'verify', 'verify:release', 'goal:check', 'test', 'test:e2e', 'test:coverage', 'test:mutation', 'lint', 'typecheck'];
+  const required = [
+    'build',
+    'verify',
+    'verify:release',
+    'goal:check',
+    'test',
+    'test:e2e',
+    'test:coverage',
+    'test:mutation',
+    'coverage:check',
+    'lighthouse',
+    'soak',
+    'lint',
+    'typecheck',
+  ];
   const missing = required.filter((s) => !(s in pkg.scripts));
   if (missing.length > 0) throw new Error(`missing scripts: ${missing.join(', ')}`);
   return `${required.length} scripts present`;
@@ -123,9 +145,7 @@ check('Prohibited-name scan', () => {
 
 check('Language-policy scan (English only)', () => {
   const violations = scanLanguage(ROOT);
-  if (violations.length > 0) {
-    throw new Error(`${violations.length} file(s), first: ${violations[0]!.file}`);
-  }
+  if (violations.length > 0) throw new Error(`${violations.length} file(s), first: ${violations[0]!.file}`);
   return 'no unintended non-English text';
 });
 
@@ -137,6 +157,27 @@ check('Blocking TODO/FIXME/placeholder scan', () => {
   return 'no blocking markers';
 });
 
+check('License-claim policy (no open-source claim without a license)', () => {
+  const hasLicense =
+    existsSync(join(ROOT, 'LICENSE')) ||
+    existsSync(join(ROOT, 'LICENSE.md')) ||
+    existsSync(join(ROOT, 'LICENSE.txt'));
+  if (hasLicense) return 'a license file exists; open-source wording is permitted';
+  const offenders: string[] = [];
+  for (const file of ['README.md', 'docs/product-spec.md', 'CLAUDE.md', 'CONTRIBUTING.md']) {
+    const path = join(ROOT, file);
+    if (!existsSync(path)) continue;
+    const content = readFileSync(path, 'utf8');
+    if (/open[- ]source/i.test(content)) offenders.push(file);
+  }
+  if (offenders.length > 0) {
+    throw new Error(
+      `no license file exists, so these must not claim open-source status: ${offenders.join(', ')}`,
+    );
+  }
+  return 'no license file, and no open-source claim is made';
+});
+
 // --------------------------------------------------------------- tests
 
 const SKIP_DIRS = new Set([
@@ -144,11 +185,12 @@ const SKIP_DIRS = new Set([
   '.git',
   'dist',
   'coverage',
-  '.venv', // third-party Python packages ship thousands of test_*.py files
+  '.venv',
   '__pycache__',
   'test-results',
   'playwright-report',
   '.work',
+  'release-evidence',
 ]);
 
 function countTests(): number {
@@ -157,14 +199,11 @@ function countTests(): number {
     for (const entry of readdirSync(dir)) {
       if (SKIP_DIRS.has(entry)) continue;
       const full = join(dir, entry);
-      if (statSync(full).isDirectory()) {
-        walk(full);
-      } else if (/\.(test|spec)\.(ts|tsx)$/.test(entry)) {
-        const content = readFileSync(full, 'utf8');
-        count += (content.match(/^\s*(it|test)\(/gm) ?? []).length;
+      if (statSync(full).isDirectory()) walk(full);
+      else if (/\.(test|spec)\.(ts|tsx)$/.test(entry)) {
+        count += (readFileSync(full, 'utf8').match(/^\s*(it|test)\(/gm) ?? []).length;
       } else if (entry.startsWith('test_') && entry.endsWith('.py')) {
-        const content = readFileSync(full, 'utf8');
-        count += (content.match(/^\s*def test_/gm) ?? []).length;
+        count += (readFileSync(full, 'utf8').match(/^\s*def test_/gm) ?? []).length;
       }
     }
   };
@@ -178,47 +217,174 @@ check('Meaningful test count (>= 300)', () => {
   return `${count} tests declared across TypeScript and Python suites`;
 });
 
-check('TypeScript strict typecheck', () =>
-  run(bin('tsc'), ['-p', 'tsconfig.typecheck.json'], 'typecheck'),
-);
+check('TypeScript strict typecheck', () => run(bin('tsc'), ['-p', 'tsconfig.typecheck.json'], 'typecheck'));
 check('Lint (incl. architecture boundaries)', () => run(bin('eslint'), ['.'], 'lint'));
+check('Unit and integration tests', () => run(bin('vitest'), ['run'], 'vitest'));
+check('Production build', () => run(bin('vite'), ['build'], 'build', join(ROOT, 'apps', 'web')));
+check('End-to-end browser matrix', () => run(bin('playwright'), ['test'], 'playwright'));
 
-if (FAST) {
-  record('Unit and integration tests', 'SKIPPED', 'skipped in --fast mode', false);
-  record('Coverage thresholds', 'SKIPPED', 'skipped in --fast mode', false);
-  record('Production build', 'SKIPPED', 'skipped in --fast mode', false);
-  record('End-to-end browser matrix', 'SKIPPED', 'skipped in --fast mode', false);
-} else {
-  check('Unit and integration tests', () => run(bin('vitest'), ['run'], 'vitest'));
-  check('Coverage thresholds', () =>
-    run(bin('vitest'), ['run', '--coverage'], 'coverage'),
+// --------------------------------------------------- measured evidence
+
+check('Per-package coverage evidence', () => {
+  const evidence = readEvidence<{
+    packages: { package: string; lines: number; branches: number; passed: boolean }[];
+  }>('release-evidence/coverage/per-package-coverage.json', {
+    requiredMeasurements: [
+      'project.lines',
+      'project.branches',
+      'domain.lines',
+      'domain.branches',
+      'trace.lines',
+      'trace.branches',
+      'simulator.lines',
+      'simulator.branches',
+      'reference-compiler.lines',
+      'reference-compiler.branches',
+    ],
+    ...evidenceOptions,
+  });
+  const failing = evidence.detail.packages.filter((p) => !p.passed);
+  if (failing.length > 0) {
+    throw new Error(`core packages below threshold: ${failing.map((p) => p.package).join(', ')}`);
+  }
+  const m = evidence.measurements;
+  return (
+    `project ${m['project.lines']}%/${m['project.branches']}%; ` +
+    `domain ${m['domain.lines']}%/${m['domain.branches']}%, ` +
+    `trace ${m['trace.lines']}%/${m['trace.branches']}%, ` +
+    `simulator ${m['simulator.lines']}%/${m['simulator.branches']}%, ` +
+    `reference-compiler ${m['reference-compiler.lines']}%/${m['reference-compiler.branches']}%`
   );
-  check('Production build', () =>
-    run(bin('vite'), ['build'], 'build', join(ROOT, 'apps', 'web')),
-  );
-  check('End-to-end browser matrix', () => run(bin('playwright'), ['test'], 'playwright'));
-}
-
-// ------------------------------------------------------------ evidence
-
-check('Coverage evidence meets thresholds', () => {
-  const path = join(ROOT, 'coverage', 'coverage-summary.json');
-  if (!existsSync(path)) throw new Error('coverage/coverage-summary.json missing; run pnpm test:coverage');
-  const summary = JSON.parse(readFileSync(path, 'utf8')) as {
-    total: { lines: { pct: number }; branches: { pct: number } };
-  };
-  const { lines, branches } = summary.total;
-  if (lines.pct < 90) throw new Error(`line coverage ${lines.pct}% < 90%`);
-  if (branches.pct < 85) throw new Error(`branch coverage ${branches.pct}% < 85%`);
-  return `lines ${lines.pct}%, branches ${branches.pct}%`;
 });
 
-check('Mutation score evidence (>= 70%)', () => {
-  const path = join(ROOT, 'release-evidence', 'mutation-report.json');
-  if (!existsSync(path)) throw new Error('release-evidence/mutation-report.json missing; run pnpm test:mutation');
-  const report = JSON.parse(readFileSync(path, 'utf8')) as { score: number; killed: number; total: number };
-  if (report.score < 0.7) throw new Error(`mutation score ${(report.score * 100).toFixed(1)}% < 70%`);
-  return `${(report.score * 100).toFixed(1)}% (${report.killed}/${report.total} mutants killed)`;
+check('Scientific mutation evidence', () => {
+  const evidence = readEvidence<{
+    byArea: { area: string; generated: number; killed: number }[];
+    survivors: unknown[];
+  }>('release-evidence/mutation/mutation-report.json', {
+    requiredMeasurements: ['score', 'generated', 'killed', 'areas', 'filesInScope'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  const areasWithoutMutants = evidence.detail.byArea.filter((a) => a.generated === 0);
+  if (areasWithoutMutants.length > 0) {
+    throw new Error(
+      `capability areas produced no mutants: ${areasWithoutMutants.map((a) => a.area).join(', ')}`,
+    );
+  }
+  if (Number(m['areas']) < 11) throw new Error(`only ${m['areas']} capability areas in scope`);
+  if (Number(m['generated']) < 40) {
+    throw new Error(`only ${m['generated']} mutants generated — the scope is too narrow`);
+  }
+  if (!existsSync(join(ROOT, 'release-evidence', 'mutation', 'scope-manifest.json'))) {
+    throw new Error('scope-manifest.json missing — the mutation scope is undeclared');
+  }
+  return (
+    `${(Number(m['score']) * 100).toFixed(1)}% (${m['killed']}/${m['generated']}) across ` +
+    `${m['areas']} capability areas and ${m['filesInScope']} files`
+  );
+});
+
+check('Lighthouse evidence meets all thresholds', () => {
+  const evidence = readEvidence<Record<string, { label: string; failures: string[] }>>(
+    'release-evidence/lighthouse/lighthouse-report.json',
+    {
+      requiredMeasurements: [
+        'home-desktop.performance',
+        'home-desktop.accessibility',
+        'home-desktop.bestPractices',
+        'home-desktop.seo',
+        'home-mobile.performance',
+      ],
+      ...evidenceOptions,
+    },
+  );
+  const failing = Object.values(evidence.detail).filter((t) => t.failures.length > 0);
+  if (failing.length > 0) {
+    throw new Error(failing.map((t) => `${t.label}: ${t.failures.join(', ')}`).join(' | '));
+  }
+  const m = evidence.measurements;
+  return (
+    `desktop perf ${m['home-desktop.performance']}, mobile perf ${m['home-mobile.performance']}, ` +
+    `a11y ${m['home-desktop.accessibility']}, best-practices ${m['home-desktop.bestPractices']}, ` +
+    `SEO ${m['home-desktop.seo']}`
+  );
+});
+
+check('Ten-minute soak evidence', () => {
+  const evidence = readEvidence('release-evidence/soak/soak-report.json', {
+    requiredMeasurements: [
+      'durationSeconds',
+      'cycles',
+      'trailingMinGrowthRatio',
+      'uncaughtErrors',
+      'consoleErrors',
+      'unrecoveredContextLoss',
+      'finalInteractionMs',
+    ],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  const duration = Number(m['durationSeconds']);
+  if (duration < 600) throw new Error(`soak ran only ${duration}s; 600s is required`);
+  if (Number(m['cycles']) < 5) throw new Error(`only ${m['cycles']} workload cycles`);
+  if (Number(m['uncaughtErrors']) > 0) throw new Error(`${m['uncaughtErrors']} uncaught errors`);
+  if (Number(m['unrecoveredContextLoss']) > 0) throw new Error('unrecovered WebGL context loss');
+  return (
+    `${duration}s, ${m['cycles']} cycles, heap growth ratio ${m['trailingMinGrowthRatio']}, ` +
+    `${m['uncaughtErrors']} uncaught, final interaction ${m['finalInteractionMs']}ms`
+  );
+});
+
+check('Performance budget evidence', () => {
+  const evidence = readEvidence('release-evidence/performance.json', {
+    requiredMeasurements: ['initialJsGzipBytes', 'totalJsGzipBytes'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  return `initial JS ${(Number(m['initialJsGzipBytes']) / 1024).toFixed(1)} KiB gzip`;
+});
+
+check('Security audit evidence', () => {
+  const evidence = readEvidence('release-evidence/security/security-report.json', {
+    requiredMeasurements: ['jsHighOrCritical', 'pythonHighOrCritical', 'secretsFound'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  if (Number(m['jsHighOrCritical']) > 0) throw new Error('JavaScript high/critical advisories remain');
+  if (Number(m['pythonHighOrCritical']) > 0) throw new Error('Python high/critical advisories remain');
+  if (Number(m['secretsFound']) > 0) throw new Error('possible committed secrets found');
+  return 'no high/critical advisories, no committed secrets';
+});
+
+check('Trace reproducibility evidence', () => {
+  const evidence = readEvidence('release-evidence/trace-reproducibility/reproducibility.json', {
+    requiredMeasurements: ['independentProcesses', 'distinctSemanticHashes', 'samplesVerified'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  if (Number(m['distinctSemanticHashes']) !== 1) {
+    throw new Error('semantic hash is not stable across independent processes');
+  }
+  if (Number(m['independentProcesses']) < 10) {
+    throw new Error(`only ${m['independentProcesses']} independent processes checked`);
+  }
+  return `${m['independentProcesses']} independent processes agree; ${m['samplesVerified']} samples verified`;
+});
+
+check('Visual benchmark evidence', () => {
+  const evidence = readEvidence<{ categories: { name: string; qsimcity: number }[] }>(
+    'release-evidence/visual-benchmark/benchmark.json',
+    { requiredMeasurements: ['categoriesCompared', 'minimumScore'], ...evidenceOptions },
+  );
+  const m = evidence.measurements;
+  if (Number(m['minimumScore']) < 4) {
+    throw new Error(`lowest visual category scores ${m['minimumScore']}/5; 4 is required`);
+  }
+  if (Number(m['categoriesCompared']) < 15) {
+    throw new Error(`only ${m['categoriesCompared']} categories compared`);
+  }
+  return `${m['categoriesCompared']} categories compared, lowest score ${m['minimumScore']}/5`;
 });
 
 check('Visual regression snapshots exist', () => {
@@ -243,44 +409,27 @@ check('Visual regression snapshots exist', () => {
   return `${shots.length} snapshots covering all required surfaces`;
 });
 
-check('Sample traces validate and match committed hashes', () => {
-  return run(
-    join(ROOT, 'node_modules', '.bin', 'vitest'),
+check('Sample traces validate and match committed hashes', () =>
+  run(
+    bin('vitest'),
     ['run', 'packages/trace/test/qiskit-traces.test.ts', '--coverage.enabled=false'],
     'trace hash verification',
-  );
-});
+  ),
+);
 
 check('Accessibility evidence recorded', () => {
-  const spec = join(ROOT, 'tests', 'e2e', 'accessibility.spec.ts');
-  const content = readFileSync(spec, 'utf8');
-  if (!content.includes('wcag22aa')) throw new Error('axe scan does not target WCAG 2.2 AA');
-  const scans = (content.match(/expectNoViolations/g) ?? []).length;
+  const spec = readFileSync(join(ROOT, 'tests', 'e2e', 'accessibility.spec.ts'), 'utf8');
+  if (!spec.includes('wcag22aa')) throw new Error('axe scan does not target WCAG 2.2 AA');
+  const scans = (spec.match(/expectNoViolations/g) ?? []).length;
   if (scans < 4) throw new Error(`only ${scans} axe scans`);
   return `${scans} axe scans across major surfaces, WCAG 2.2 AA tags`;
-});
-
-check('Performance budget evidence', () => {
-  const path = join(ROOT, 'release-evidence', 'performance.json');
-  if (!existsSync(path)) throw new Error('release-evidence/performance.json missing');
-  const report = JSON.parse(readFileSync(path, 'utf8')) as {
-    initialJsGzipBytes: number;
-    budgetGzipBytes: number;
-    passed: boolean;
-  };
-  if (!report.passed) {
-    throw new Error(
-      `initial JS ${report.initialJsGzipBytes} bytes exceeds budget ${report.budgetGzipBytes}`,
-    );
-  }
-  return `initial JS ${(report.initialJsGzipBytes / 1024).toFixed(1)} KiB gzip within ${(report.budgetGzipBytes / 1024).toFixed(0)} KiB budget`;
 });
 
 // ---------------------------------------------------------- deployment
 
 check('Vercel configuration and production-equivalent behavior', () =>
   run(
-    join(ROOT, 'node_modules', '.bin', 'vitest'),
+    bin('vitest'),
     ['run', 'tools/test/vercel-config.test.ts', '--coverage.enabled=false'],
     'Vercel configuration verification',
   ),
@@ -288,9 +437,9 @@ check('Vercel configuration and production-equivalent behavior', () =>
 
 check('Production build output present', () => {
   const dist = join(ROOT, 'apps', 'web', 'dist');
-  if (!existsSync(join(dist, 'index.html'))) throw new Error('apps/web/dist/index.html missing');
-  if (!existsSync(join(dist, 'sw.js'))) throw new Error('service worker missing from build output');
-  if (!existsSync(join(dist, 'manifest.webmanifest'))) throw new Error('manifest missing');
+  for (const file of ['index.html', 'sw.js', 'manifest.webmanifest']) {
+    if (!existsSync(join(dist, file))) throw new Error(`${file} missing from build output`);
+  }
   return 'index.html, service worker, and manifest present';
 });
 
@@ -298,7 +447,6 @@ check('Production build output present', () => {
 
 check('Acceptance matrix has no unmet required rows', () => {
   const matrix = readFileSync(join(ROOT, 'docs', 'acceptance-matrix.md'), 'utf8');
-  // Built from parts so this file does not itself trip the marker scanner.
   const unmetStatuses = ['FAIL', 'BLOCKED', 'UNVERIFIED', 'NOT RUN', 'PARTIAL', 'PLACE' + 'HOLDER'];
   const unmetPattern = new RegExp(`\\|\\s*(${unmetStatuses.join('|')})\\s*\\|`);
   const unmet = matrix.split('\n').filter((line) => unmetPattern.test(line));
@@ -308,31 +456,32 @@ check('Acceptance matrix has no unmet required rows', () => {
   return 'every row is PASS or an authorized exception';
 });
 
-check('Release evidence recorded', () => {
-  const dir = join(ROOT, 'release-evidence');
-  if (!existsSync(dir)) throw new Error('release-evidence directory missing');
-  const required = ['mutation-report.json', 'performance.json', 'summary.md'];
-  const missing = required.filter((f) => !existsSync(join(dir, f)));
-  if (missing.length > 0) throw new Error(`missing evidence: ${missing.join(', ')}`);
-  return `${readdirSync(dir).length} evidence artifacts`;
+check('Project state does not declare an unresolved blocker', () => {
+  const state = readFileSync(join(ROOT, 'project_state.yaml'), 'utf8');
+  const failedBlock = /failed_items:\s*\n((?:\s+-\s+.*\n)*)/.exec(state);
+  const items = failedBlock?.[1]?.trim() ?? '';
+  if (items.length > 0) {
+    throw new Error(`project_state.yaml still lists failed items: ${items.split('\n')[0]!.trim()}`);
+  }
+  const blockedBlock = /blocked_items:\s*\n((?:\s+-\s+.*\n)*)/.exec(state);
+  if ((blockedBlock?.[1]?.trim() ?? '').length > 0) {
+    throw new Error('project_state.yaml still lists blocked items');
+  }
+  return 'no failed or blocked items recorded';
 });
 
 check('Fresh-clone verification recorded', () => {
-  const audit = join(ROOT, 'docs', 'audits', 'final-release-audit.md');
-  const content = readFileSync(audit, 'utf8');
+  const content = readFileSync(join(ROOT, 'docs', 'audits', 'final-release-audit.md'), 'utf8');
   if (!/fresh clone/i.test(content)) throw new Error('final audit does not record a fresh-clone run');
   return 'fresh-clone verification recorded in the final audit';
 });
 
 // -------------------------------------------------------------- report
 
-const failed = results.filter((r) => r.status === 'FAIL' && r.required);
-const skipped = results.filter((r) => r.status === 'SKIPPED');
+const failed = results.filter((r) => r.status === 'FAIL');
 
 console.log('');
-console.log(
-  `${results.filter((r) => r.status === 'PASS').length} passed, ${failed.length} failed, ${skipped.length} skipped`,
-);
+console.log(`${results.length - failed.length} passed, ${failed.length} failed`);
 
 if (failed.length > 0) {
   console.error('\nUnmet conditions:');
@@ -340,9 +489,5 @@ if (failed.length > 0) {
   process.exit(1);
 }
 
-if (FAST) {
-  console.log('\nRan in --fast mode: long-running gates were skipped, so this is not a release gate.');
-  process.exit(1);
-}
-
 console.log('GOAL ACHIEVED: QSimCity production v1 is complete.');
+void EvidenceError;

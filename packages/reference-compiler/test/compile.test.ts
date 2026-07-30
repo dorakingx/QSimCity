@@ -11,6 +11,7 @@ import {
   type Circuit,
   type Instruction,
 } from '@qsimcity/domain';
+import { TraceBuilder } from 'qsimcity-trace';
 import { compile } from '../src/compile.js';
 import { circuitUnitary, reducedCompiledUnitary } from './utils.js';
 
@@ -294,5 +295,150 @@ describe('compile: structural guarantees', () => {
     expect(s0!.startNs).toBe(0);
     expect(s1!.startNs).toBe(0);
     expect(s2!.startNs).toBeGreaterThanOrEqual(Math.max(s0!.durationNs, s1!.durationNs));
+  });
+});
+
+describe('trace events emitted by the compiler are precise', () => {
+  /**
+   * Event identity and emission conditions are part of the trace contract:
+   * the city animates districts from these event types, so mislabeling a
+   * routing event or emitting an empty optimization event would corrupt
+   * playback while leaving the compiled circuit correct.
+   */
+  function collectEvents(circuit: Circuit, options: Parameters<typeof compile>[1]) {
+    const builder = new TraceBuilder({
+      traceId: 't',
+      seed: 's',
+      generator: 'test',
+      generatorVersion: '1',
+      packageVersions: {},
+      programSource: 'p',
+    });
+    compile(circuit, { ...options, traceBuilder: builder });
+    return builder.build({
+      inputCircuit: {
+        name: 'x',
+        numQubits: circuit.numQubits,
+        numClbits: 0,
+        cregs: [],
+        instructions: [],
+      },
+    }).events;
+  }
+
+  it('routing emits route.selected for paths and routing.swap_inserted for swaps', () => {
+    const circuit = makeCircuit({
+      numQubits: 5,
+      instructions: [makeInstruction({ name: 'cx', qubits: [0, 4] })],
+    });
+    const events = collectEvents(circuit, { device: LINEAR5, layoutMethod: 'trivial' });
+    const routes = events.filter((e) => e.eventType === 'route.selected');
+    const swaps = events.filter((e) => e.eventType === 'routing.swap_inserted');
+    expect(routes).toHaveLength(1);
+    expect(swaps).toHaveLength(3);
+    // The route event carries the path; swap events carry the exchanged pair.
+    expect((routes[0]!.payload as { path: number[] }).path).toEqual([0, 1, 2, 3, 4]);
+    for (const s of swaps) {
+      expect((s.payload as { physicalQubits: number[] }).physicalQubits).toHaveLength(2);
+    }
+  });
+
+  it('emits no gate.translated event when nothing needs translation', () => {
+    const alreadyNative = makeCircuit({
+      numQubits: 2,
+      instructions: [
+        makeInstruction({ name: 'x', qubits: [0] }),
+        makeInstruction({ name: 'cx', qubits: [0, 1] }),
+      ],
+    });
+    const events = collectEvents(alreadyNative, { device: LINEAR5, layoutMethod: 'trivial' });
+    expect(events.filter((e) => e.eventType === 'gate.translated')).toHaveLength(0);
+  });
+
+  it('emits no gate.cancelled event when nothing is cancelled', () => {
+    const nothingToCancel = makeCircuit({
+      numQubits: 1,
+      instructions: [makeInstruction({ name: 'x', qubits: [0] })],
+    });
+    const events = collectEvents(nothingToCancel, { device: LINEAR5, layoutMethod: 'trivial' });
+    expect(events.filter((e) => e.eventType === 'gate.cancelled')).toHaveLength(0);
+  });
+
+  it('emits gate.cancelled with a positive count when gates do cancel', () => {
+    const cancels = makeCircuit({
+      numQubits: 1,
+      instructions: [
+        makeInstruction({ name: 'x', qubits: [0] }),
+        makeInstruction({ name: 'x', qubits: [0] }),
+      ],
+    });
+    const events = collectEvents(cancels, { device: LINEAR5, layoutMethod: 'trivial' });
+    const cancelled = events.filter((e) => e.eventType === 'gate.cancelled');
+    expect(cancelled).toHaveLength(1);
+    expect((cancelled[0]!.payload as { cancelledCount: number }).cancelledCount).toBeGreaterThan(0);
+  });
+});
+
+describe('scheduling and translation event details', () => {
+  function collect(circuit: Circuit, options: Parameters<typeof compile>[1]) {
+    const builder = new TraceBuilder({
+      traceId: 't',
+      seed: 's',
+      generator: 'test',
+      generatorVersion: '1',
+      packageVersions: {},
+      programSource: 'p',
+    });
+    compile(circuit, { ...options, traceBuilder: builder });
+    return builder.build({
+      inputCircuit: { name: 'x', numQubits: circuit.numQubits, numClbits: 0, cregs: [], instructions: [] },
+    }).events;
+  }
+
+  it('all scheduling events share one logical tick', () => {
+    // Scheduling is an analysis of the whole circuit, not a sequence of
+    // playback steps: advancing the tick per instruction would stretch the
+    // timeline with events the city cannot animate.
+    const circuit = makeCircuit({
+      numQubits: 3,
+      instructions: [
+        makeInstruction({ name: 'h', qubits: [0] }),
+        makeInstruction({ name: 'cx', qubits: [0, 1] }),
+        makeInstruction({ name: 'cx', qubits: [1, 2] }),
+      ],
+    });
+    const scheduled = collect(circuit, { device: LINEAR5, layoutMethod: 'trivial' }).filter(
+      (e) => e.eventType === 'instruction.scheduled',
+    );
+    expect(scheduled.length).toBeGreaterThan(3);
+    expect(new Set(scheduled.map((e) => e.logicalTick)).size).toBe(1);
+  });
+
+  it('emits gate.translated when exactly one gate needs translation', () => {
+    const oneNonNative = makeCircuit({
+      numQubits: 1,
+      instructions: [makeInstruction({ name: 'h', qubits: [0] })],
+    });
+    const events = collect(oneNonNative, { device: LINEAR5, layoutMethod: 'trivial' });
+    const translated = events.filter((e) => e.eventType === 'gate.translated');
+    expect(translated).toHaveLength(1);
+    expect((translated[0]!.payload as { translatedCount: number }).translatedCount).toBe(1);
+  });
+
+  it('optimization runs to a fixpoint across multiple rounds', () => {
+    // sx sx -> x, then x x -> cancelled: reaching an empty circuit requires
+    // the optimizer to iterate rather than stop after one pass.
+    const multiRound = makeCircuit({
+      numQubits: 1,
+      instructions: [
+        makeInstruction({ name: 'sx', qubits: [0] }),
+        makeInstruction({ name: 'sx', qubits: [0] }),
+        makeInstruction({ name: 'sx', qubits: [0] }),
+        makeInstruction({ name: 'sx', qubits: [0] }),
+      ],
+    });
+    const result = compile(multiRound, { device: LINEAR5, layoutMethod: 'trivial', optimize: true });
+    // sx*4 = x*2 = identity, so a converged optimizer leaves nothing behind.
+    expect(result.compiledMetrics.gateCount).toBe(0);
   });
 });

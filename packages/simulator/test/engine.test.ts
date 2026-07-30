@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseQasm, SAMPLE_CIRCUITS, getSampleCircuit } from '@qsimcity/domain';
+import { parseQasm, SAMPLE_CIRCUITS, getSampleCircuit, makeCircuit, makeInstruction } from '@qsimcity/domain';
 import { isDynamicCircuit, simulate, SimulationCancelledError, MAX_SHOTS } from '../src/engine.js';
 import { ZERO_NOISE } from '../src/noise.js';
 
@@ -258,5 +258,90 @@ describe('limits, progress, and cancellation', () => {
       const total = Object.values(r.counts).reduce((a, b) => a + b, 0);
       expect(total, sample.id).toBe(50);
     }
+  });
+});
+
+describe('noisy circuits without classical bits', () => {
+  it('produces no phantom outcome keys when there is nothing to record', async () => {
+    // A noisy circuit with no creg has nothing to count; the shot loop must
+    // not fabricate an empty-bitstring outcome.
+    const circuit = makeCircuit({
+      numQubits: 1,
+      instructions: [makeInstruction({ name: 'h', qubits: [0] })],
+    });
+    const result = await simulate(circuit, {
+      shots: 64,
+      seed: 'no-clbits-noisy',
+      noise: { ...ZERO_NOISE, depolarizing1q: 0.2 },
+    });
+    expect(result.noiseWasApplied).toBe(true);
+    expect(Object.keys(result.counts)).toEqual([]);
+  });
+
+  it('still records outcomes for a noisy circuit that does measure', async () => {
+    const circuit = makeCircuit({
+      numQubits: 1,
+      cregs: [{ name: 'c', size: 1 }],
+      instructions: [
+        makeInstruction({ name: 'h', qubits: [0] }),
+        makeInstruction({ kind: 'measure', name: 'measure', qubits: [0], clbits: [0] }),
+      ],
+    });
+    const result = await simulate(circuit, {
+      shots: 64,
+      seed: 'clbits-noisy',
+      noise: { ...ZERO_NOISE, readoutError: 0.1 },
+    });
+    expect(Object.values(result.counts).reduce((a, b) => a + b, 0)).toBe(64);
+  });
+});
+
+describe('unsatisfied classical conditions', () => {
+  it('does not record a gate event for a skipped conditioned measure or reset', async () => {
+    // The skipped-instruction event is only meaningful for gates; recording a
+    // measure or reset as a skipped "gate" would mislabel the trace.
+    const circuit = makeCircuit({
+      numQubits: 1,
+      cregs: [
+        { name: 'm', size: 1 },
+        { name: 'c', size: 1 },
+      ],
+      instructions: [
+        // m stays 0, so both conditioned instructions are skipped.
+        makeInstruction({
+          kind: 'measure',
+          name: 'measure',
+          qubits: [0],
+          clbits: [1],
+          condition: { creg: 'm', value: 1 },
+        }),
+        makeInstruction({
+          kind: 'reset',
+          name: 'reset',
+          qubits: [0],
+          condition: { creg: 'm', value: 1 },
+        }),
+      ],
+    });
+    const result = await simulate(circuit, { shots: 8, seed: 'skipped-nongate' });
+    const conditions = result.representativeEvents.filter((e) => e.kind === 'condition');
+    expect(conditions).toHaveLength(2);
+    expect(conditions.every((c) => c.kind === 'condition' && !c.satisfied)).toBe(true);
+    // No gate events at all: the circuit contains no gates.
+    expect(result.representativeEvents.filter((e) => e.kind === 'gate')).toHaveLength(0);
+  });
+
+  it('records a skipped gate event when a conditioned gate does not fire', async () => {
+    const circuit = makeCircuit({
+      numQubits: 1,
+      cregs: [{ name: 'm', size: 1 }],
+      instructions: [
+        makeInstruction({ name: 'x', qubits: [0], condition: { creg: 'm', value: 1 } }),
+      ],
+    });
+    const result = await simulate(circuit, { shots: 4, seed: 'skipped-gate' });
+    const gates = result.representativeEvents.filter((e) => e.kind === 'gate');
+    expect(gates).toHaveLength(1);
+    expect(gates[0]).toMatchObject({ skipped: true });
   });
 });

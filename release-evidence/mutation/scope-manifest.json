@@ -1,0 +1,183 @@
+{
+  "areas": [
+    {
+      "id": "gate-evolution",
+      "capability": "Single-qubit and multi-qubit gate evolution",
+      "files": [
+        "packages/simulator/src/statevector.ts",
+        "packages/domain/src/gates.ts"
+      ],
+      "tests": [
+        "packages/simulator",
+        "packages/reference-compiler",
+        "packages/domain"
+      ]
+    },
+    {
+      "id": "indexing-endianness",
+      "capability": "Qubit indexing, endianness, and classical-bit mapping",
+      "files": [
+        "packages/domain/src/circuit.ts"
+      ],
+      "tests": [
+        "packages/domain",
+        "packages/simulator",
+        "packages/reference-compiler"
+      ]
+    },
+    {
+      "id": "measurement-collapse-reset",
+      "capability": "Measurement, state collapse, reset, classical conditions, normalization",
+      "files": [
+        "packages/simulator/src/engine.ts"
+      ],
+      "tests": [
+        "packages/simulator",
+        "packages/ui/test/scenarios.test.ts"
+      ]
+    },
+    {
+      "id": "noise-channels",
+      "capability": "Readout, depolarizing, amplitude damping, phase damping",
+      "files": [
+        "packages/simulator/src/noise.ts"
+      ],
+      "tests": [
+        "packages/simulator"
+      ]
+    },
+    {
+      "id": "layout-routing-swap",
+      "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
+      "files": [
+        "packages/reference-compiler/src/passes.ts"
+      ],
+      "tests": [
+        "packages/reference-compiler"
+      ]
+    },
+    {
+      "id": "compiler-equivalence",
+      "capability": "Basis translation and compiler equivalence",
+      "files": [
+        "packages/reference-compiler/src/euler.ts",
+        "packages/reference-compiler/src/compile.ts"
+      ],
+      "tests": [
+        "packages/reference-compiler"
+      ]
+    },
+    {
+      "id": "global-phase-comparison",
+      "capability": "Global-phase-aware comparison",
+      "files": [
+        "packages/domain/src/complex.ts"
+      ],
+      "tests": [
+        "packages/domain",
+        "packages/reference-compiler"
+      ]
+    },
+    {
+      "id": "topology",
+      "capability": "Device topology and shortest-path routing support",
+      "files": [
+        "packages/domain/src/topology.ts"
+      ],
+      "tests": [
+        "packages/domain",
+        "packages/reference-compiler"
+      ]
+    },
+    {
+      "id": "trace-validation",
+      "capability": "Trace validation and invariants",
+      "files": [
+        "packages/trace/src/validate.ts"
+      ],
+      "tests": [
+        "packages/trace"
+      ]
+    },
+    {
+      "id": "trace-canonicalization",
+      "capability": "Trace canonicalization and deterministic hashing",
+      "files": [
+        "packages/trace/src/hash.ts",
+        "packages/trace/src/hashing-contract.ts"
+      ],
+      "tests": [
+        "packages/trace"
+      ]
+    },
+    {
+      "id": "seeded-randomness",
+      "capability": "Deterministic seeded randomness",
+      "files": [
+        "packages/domain/src/rng.ts"
+      ],
+      "tests": [
+        "packages/domain",
+        "packages/simulator"
+      ]
+    }
+  ],
+  "exclusions": {
+    "packages/*/src/index.ts": "Re-export barrels contain no logic",
+    "packages/ui/src/**": "Presentation layer; covered by component, a11y, and E2E tests",
+    "packages/world/src/**": "Layout data and derivations; covered by world unit tests",
+    "packages/visual-engine/src/**": "Rendering; covered by camera/scene-graph and visual tests",
+    "packages/domain/src/samples.ts": "Static circuit fixtures, no branching logic",
+    "packages/domain/src/qasm/**": "Parser is covered by 74 dedicated tests incl. hostile input",
+    "packages/trace/src/schema.ts": "Declarative zod schema; mutating it tests zod, not QSimCity",
+    "packages/trace/src/types.ts": "Type and constant declarations",
+    "packages/trace/src/builder.ts": "Thin accumulator; exercised by every producer test",
+    "packages/trace/src/migrate.ts": "Covered by dedicated migration tests",
+    "packages/trace/src/serialize.ts": "Thin JSON wrappers over hashed primitives",
+    "packages/simulator/src/experiment.ts": "Orchestration over mutated primitives",
+    "packages/simulator/src/worker.ts": "Worker entry point; not executable under Node tests"
+  },
+  "operators": [
+    {
+      "id": "comparison",
+      "description": "Flip or weaken a comparison operator"
+    },
+    {
+      "id": "arithmetic",
+      "description": "Swap an arithmetic operator"
+    },
+    {
+      "id": "boolean-literal",
+      "description": "Invert a boolean literal"
+    },
+    {
+      "id": "logical",
+      "description": "Swap a logical connective"
+    },
+    {
+      "id": "negation",
+      "description": "Remove a boolean negation"
+    },
+    {
+      "id": "numeric-literal",
+      "description": "Perturb a numeric literal"
+    }
+  ],
+  "mutantsPerFile": 6,
+  "filesInScope": [
+    "packages/domain/src/circuit.ts",
+    "packages/domain/src/complex.ts",
+    "packages/domain/src/gates.ts",
+    "packages/domain/src/rng.ts",
+    "packages/domain/src/topology.ts",
+    "packages/reference-compiler/src/compile.ts",
+    "packages/reference-compiler/src/euler.ts",
+    "packages/reference-compiler/src/passes.ts",
+    "packages/simulator/src/engine.ts",
+    "packages/simulator/src/noise.ts",
+    "packages/simulator/src/statevector.ts",
+    "packages/trace/src/hash.ts",
+    "packages/trace/src/hashing-contract.ts",
+    "packages/trace/src/validate.ts"
+  ]
+}
