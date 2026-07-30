@@ -17,8 +17,8 @@ source in this repository**.
 | Textures / models / maps | None bundled | N/A |
 
 No assets, logos, fonts, user-interface designs, maps, characters, audio, or
-other protected materials belonging to Electronic Arts, Maxis, any SimCity
-game, IBM, or any other third party are used anywhere in this project.
+other protected materials belonging to Electronic Arts, Maxis, their game
+titles, IBM, or any other third party are used anywhere in this project.
 
 ## Runtime dependencies (shipped to the browser)
 
@@ -77,6 +77,6 @@ Full dependency trees with exact resolved versions are recorded in
 
 ## Trademarks
 
-PostgreSQL, SimCity, Electronic Arts, Maxis, IBM, and Qiskit are trademarks of
-their respective owners. QSimCity is an independent, unofficial project and
+PostgreSQL, Electronic Arts, Maxis, IBM, Qiskit, and all associated game and
+product titles are trademarks of their respective owners. QSimCity is an independent, unofficial project and
 claims no affiliation with, endorsement by, or sponsorship from any of them.

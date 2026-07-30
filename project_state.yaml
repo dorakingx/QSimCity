@@ -1,24 +1,56 @@
 project_name: QSimCity
-current_phase: 0-audit
+current_phase: 8-release-validation-complete
 baseline_sha: null
 active_branch: feat/qsimcity-production-v1
 completed_items:
   - repository-audit
   - benchmark-research
+  - product-spec
+  - monorepo-foundation
+  - domain-model
+  - qsimcity-trace
+  - browser-simulator
+  - reference-compiler
+  - qiskit-bridge
+  - cross-validation
+  - 3d-world
+  - product-ui
+  - guided-tour-16-chapters
+  - scenarios-12
+  - accessible-2d-mode
+  - pwa-offline
+  - vercel-configuration
+  - visual-review-and-repairs
+  - adversarial-scientific-review
+  - adversarial-visual-review
+  - documentation-suite
+  - mutation-testing
+  - fresh-clone-verification
+  - goal-check-passing
 failed_items: []
 blocked_items: []
 next_actions:
-  - write-reference-benchmark
-  - write-product-spec
-  - write-acceptance-matrix
-  - scaffold-monorepo
-test_results: {}
-coverage_results: {}
-mutation_results: {}
-visual_evidence: {}
-scientific_review_status: not-started
-accessibility_status: not-started
-performance_status: not-started
-deployment_status: not-configured
-completion_gate_status: NOT RUN
-last_updated: 2026-07-30
+  - optional: deploy to Vercel once an authorized account is available
+test_results:
+  typescript_unit_integration: 665 passed
+  python_bridge: 52 passed
+  end_to_end: 68 passed
+  browsers: [chromium, firefox, webkit, mobile]
+coverage_results:
+  lines: 96.29
+  branches: 88.38
+  statements: 95.76
+  functions: 94.80
+mutation_results:
+  score: 1.0
+  killed: 16
+  total: 16
+visual_evidence:
+  baselines: 11
+  location: tests/e2e/visual.spec.ts-snapshots/
+scientific_review_status: complete-zero-blocking-findings
+accessibility_status: wcag-2.2-aa-zero-axe-violations
+performance_status: within-budget-122.9KiB-initial-js-gzip
+deployment_status: NOT AUTHORIZED (vercel-ready, locally validated, no public URL)
+completion_gate_status: GOAL ACHIEVED
+last_updated: 2026-07-31

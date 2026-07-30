@@ -1,0 +1,27 @@
+$ tsx tools/check-goal.ts
+[PASS] Required documents exist: 22 documents present
+[PASS] Required scripts declared: 10 scripts present
+[PASS] Prohibited-name scan: no prohibited project names
+[PASS] Language-policy scan (English only): no unintended non-English text
+[PASS] Blocking TODO/FIXME/placeholder scan: no blocking markers
+[PASS] Meaningful test count (>= 300): 644 tests declared across TypeScript and Python suites
+[PASS] TypeScript strict typecheck: typecheck succeeded
+[PASS] Lint (incl. architecture boundaries): lint succeeded
+[PASS] Unit and integration tests: vitest succeeded
+[PASS] Coverage thresholds: coverage succeeded
+[PASS] Production build: build succeeded
+[PASS] End-to-end browser matrix: playwright succeeded
+[PASS] Coverage evidence meets thresholds: lines 96.29%, branches 88.38%
+[PASS] Mutation score evidence (>= 70%): 100.0% (16/16 mutants killed)
+[PASS] Visual regression snapshots exist: 11 snapshots covering all required surfaces
+[PASS] Sample traces validate and match committed hashes: trace hash verification succeeded
+[PASS] Accessibility evidence recorded: 6 axe scans across major surfaces, WCAG 2.2 AA tags
+[PASS] Performance budget evidence: initial JS 122.9 KiB gzip within 320 KiB budget
+[PASS] Vercel configuration and production-equivalent behavior: Vercel configuration verification succeeded
+[PASS] Production build output present: index.html, service worker, and manifest present
+[PASS] Acceptance matrix has no unmet required rows: every row is PASS or an authorized exception
+[PASS] Release evidence recorded: 5 evidence artifacts
+[PASS] Fresh-clone verification recorded: fresh-clone verification recorded in the final audit
+
+23 passed, 0 failed, 0 skipped
+GOAL ACHIEVED: QSimCity production v1 is complete.

@@ -277,14 +277,18 @@ describe('LabControls interaction branches', () => {
       optimize: true,
     });
     useAppStore.setState({ trace });
-    const createObjectURL = vi.fn(() => 'blob:mock');
-    const revokeObjectURL = vi.fn();
-    vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL });
+    // Spy on the static helpers only: replacing globalThis.URL wholesale
+    // would break every later `new URL(...)` in the suite.
+    const createObjectURL = vi
+      .spyOn(URL, 'createObjectURL')
+      .mockReturnValue('blob:mock');
+    const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     render(<LabControls />);
     await userEvent.click(screen.getByRole('button', { name: 'Export trace' }));
     expect(createObjectURL).toHaveBeenCalled();
     expect(revokeObjectURL).toHaveBeenCalled();
-    vi.unstubAllGlobals();
+    createObjectURL.mockRestore();
+    revokeObjectURL.mockRestore();
   });
 
   it('copies a share link to the clipboard', async () => {

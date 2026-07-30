@@ -18,6 +18,10 @@ const JAPANESE_PATTERN = /[぀-ゟ゠-ヿ一-鿿　-〿！-｠]/u;
 const EXCLUDED_PATHS: RegExp[] = [
   /^THIRD_PARTY_NOTICES\.md$/, // may quote upstream license text verbatim
   /^tools\/check-language\.ts$/, // contains the detection ranges themselves
+  // The scanner's own tests must contain the characters being detected;
+  // excluding only this directory keeps the fixtures from failing the scan
+  // while leaving all first-party source and documentation in scope.
+  /^tools\/test\//,
 ];
 
 export interface LanguageViolation {

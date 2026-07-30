@@ -109,21 +109,40 @@ describe('scanLanguage', () => {
 });
 
 describe('scanTodos', () => {
-  it('detects TODO markers', () => {
+  it('detects comment markers', () => {
     writeFileSync(join(dir, 'a.ts'), '// TODO: finish this');
     const v = scanTodos(dir);
     expect(v).toHaveLength(1);
-    expect(v[0]!.marker).toBe('TODO');
+    expect(v[0]!.marker).toContain('TODO');
   });
 
-  it('detects FIXME and PLACEHOLDER case-insensitively', () => {
-    writeFileSync(join(dir, 'a.ts'), '// fixme later');
-    writeFileSync(join(dir, 'b.ts'), 'const x = "placeholder";');
-    expect(scanTodos(dir)).toHaveLength(2);
+  it('detects FIXME, XXX, and HACK in comments', () => {
+    writeFileSync(join(dir, 'a.ts'), 'const x = 1;\n// FIXME later');
+    writeFileSync(join(dir, 'b.ts'), '/* XXX broken */');
+    writeFileSync(join(dir, 'c.py'), '# HACK: works by luck');
+    expect(scanTodos(dir)).toHaveLength(3);
   });
 
-  it('does not flag ordinary words containing marker letters', () => {
+  it('detects annotated markers without a comment opener', () => {
+    writeFileSync(join(dir, 'a.ts'), 'const label = "TODO(alice) wire this up";');
+    expect(scanTodos(dir)).toHaveLength(1);
+  });
+
+  it('detects uppercase PLACEHOLDER and not-implemented markers', () => {
+    writeFileSync(join(dir, 'a.ts'), 'const PLACEHOLDER = 1;');
+    writeFileSync(join(dir, 'b.ts'), 'throw new Error("not implemented yet");');
+    writeFileSync(join(dir, 'c.py'), 'def f():\n    raise NotImplementedError');
+    expect(scanTodos(dir)).toHaveLength(3);
+  });
+
+  it('does not flag the HTML placeholder attribute', () => {
+    writeFileSync(join(dir, 'a.tsx'), '<input placeholder="Search commands…" />');
+    expect(scanTodos(dir)).toHaveLength(0);
+  });
+
+  it('does not flag ordinary prose or words containing marker letters', () => {
     writeFileSync(join(dir, 'a.ts'), 'const stubbornMethodology = "hacksaw";');
+    writeFileSync(join(dir, 'b.md'), 'The city is not a placeholder-box environment.');
     expect(scanTodos(dir)).toHaveLength(0);
   });
 
