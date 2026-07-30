@@ -85,6 +85,23 @@ default), not a defect in the markup — the skip link is a correctly wired
 focus behavior on Chromium and Firefox, and the difference is documented
 rather than hidden behind a skip.
 
+## Known third-party console message (WebKit)
+
+WebKit logs `WebGL: INVALID_OPERATION: texImage3D: FLIP_Y or
+PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures` when three.js
+initializes. It was investigated rather than suppressed on sight:
+
+- **Origin**: three.js sets `UNPACK_FLIP_Y_WEBGL` /
+  `UNPACK_PREMULTIPLY_ALPHA_WEBGL` globally; WebKit rejects them for its
+  internal 3D texture upload path. No QSimCity code uploads a 3D texture.
+- **Impact**: none. A WebKit screenshot taken during this audit shows the
+  full city rendering correctly — all twelve districts, window lights,
+  ground grid, and labels — and `readPixels` confirms a live context.
+- **Scope**: WebKit only; Chromium and Firefox are silent.
+- **Resolution**: this exact message is filtered in
+  `tests/e2e/helpers.ts` with the justification inline. Every other console
+  error remains fatal in every browser.
+
 ## Verdict
 
 **All required Definition-of-Done conditions are met.** The single item not

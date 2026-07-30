@@ -4,13 +4,27 @@ import { expect, type Page } from '@playwright/test';
  * Console-error tracking: uncaught exceptions, unhandled rejections, and
  * unexpected console errors fail the test (spec §18.5).
  */
+/**
+ * Console messages that are not QSimCity defects. Each entry is an exact
+ * substring, kept as narrow as possible so real errors still fail.
+ */
+const IGNORED_CONSOLE_MESSAGES = [
+  'favicon',
+  'Download the React DevTools',
+  // three.js sets UNPACK_FLIP_Y/PREMULTIPLY_ALPHA globally and WebKit rejects
+  // them for its internal 3D texture upload. Emitted by three.js, not by
+  // QSimCity, and rendering is unaffected: a WebKit screenshot shows the full
+  // city (all 12 districts, lighting, labels) drawn correctly. Recorded in
+  // docs/audits/final-release-audit.md.
+  "texImage3D: FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures",
+];
+
 export function trackConsoleErrors(page: Page): () => void {
   const errors: string[] = [];
   page.on('console', (msg) => {
     if (msg.type() === 'error') {
       const text = msg.text();
-      // Benign environment noise that is not an application defect.
-      if (text.includes('favicon') || text.includes('Download the React DevTools')) return;
+      if (IGNORED_CONSOLE_MESSAGES.some((ignored) => text.includes(ignored))) return;
       errors.push(text);
     }
   });
