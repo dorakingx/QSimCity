@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createProductionServer, headersFor, resolvePath, vercelConfig } from '../serve-production.js';
@@ -14,6 +15,16 @@ let server: ReturnType<typeof createProductionServer>;
 let baseUrl: string;
 
 beforeAll(async () => {
+  // These tests assert the deployment contract against the real build
+  // output, which is gitignored — so a fresh clone has none until something
+  // builds it. Build on demand rather than depending on command ordering.
+  if (!existsSync(join(ROOT, 'apps', 'web', 'dist', 'index.html'))) {
+    execFileSync(join(ROOT, 'node_modules', '.bin', 'vite'), ['build'], {
+      cwd: join(ROOT, 'apps', 'web'),
+      stdio: 'pipe',
+      timeout: 300_000,
+    });
+  }
   server = createProductionServer();
   await new Promise<void>((resolve) => server.listen(0, resolve));
   const address = server.address();
