@@ -616,7 +616,7 @@ class Parser {
       this.next();
       args.push(this.parseArgument());
     }
-    const t = this.expectSymbol(';');
+    this.expectSymbol(';');
     for (const a of args) {
       if (a.reg.kind !== 'qreg') {
         throw new QasmError(`Gate ${name.value} expects quantum arguments`, name.line, name.col);

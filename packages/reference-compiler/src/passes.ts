@@ -2,8 +2,6 @@ import {
   gateDef,
   hasEdge,
   shortestPath,
-  TWO_QUBIT_GATES,
-  type Circuit,
   type Device,
   type Instruction,
 } from '@qsimcity/domain';

@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { DISTRICTS, INTERACTIVES, generateBuildings, activityAtTick, maxTickOf } from '@qsimcity/world';
+import { DISTRICTS, INTERACTIVES, generateBuildings, activityAtTick } from '@qsimcity/world';
 import type { Trace, TraceCircuitInstruction } from 'qsimcity-trace';
 import { useAppStore, type SelectionTarget } from '../store/appStore.js';
 import { CertaintyBadge, SOURCE_DESCRIPTIONS } from './CertaintyBadge.js';

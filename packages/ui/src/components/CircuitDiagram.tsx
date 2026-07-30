@@ -130,7 +130,9 @@ export function CircuitDiagram({
           width={width}
           height={height}
           viewBox={`0 0 ${width / scale} ${height / scale}`}
-          role="img"
+          // role=group (not img): gates inside are interactive buttons, and
+          // an img role would illegally nest interactive descendants.
+          role="group"
           aria-label={`Circuit diagram: ${title}. A table alternative follows.`}
         >
           {Array.from({ length: circuit.numQubits }, (_, q) => {

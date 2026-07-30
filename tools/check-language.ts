@@ -9,9 +9,11 @@ import { listTextFiles, lineOf } from './scan-files.js';
 
 const ROOT = new URL('..', import.meta.url).pathname;
 
-// Hiragana, katakana, CJK unified ideographs, CJK punctuation, full-width forms.
-const JAPANESE_PATTERN =
-  /[぀-ゟ゠-ヿ一-鿿　-〿！-｠]/u;
+// Hiragana, katakana, CJK unified ideographs, CJK punctuation, full-width
+// forms. The ideographic space inside the character class is intentional —
+// it is part of the detection range.
+// eslint-disable-next-line no-irregular-whitespace
+const JAPANESE_PATTERN = /[぀-ゟ゠-ヿ一-鿿　-〿！-｠]/u;
 
 const EXCLUDED_PATHS: RegExp[] = [
   /^THIRD_PARTY_NOTICES\.md$/, // may quote upstream license text verbatim

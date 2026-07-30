@@ -73,7 +73,8 @@ export function App(): ReactElement {
         case ' ':
           if (s.trace) {
             e.preventDefault();
-            s.playbackPlaying ? s.pause() : s.play();
+            if (s.playbackPlaying) s.pause();
+            else s.play();
           }
           break;
         case '.':

@@ -27,7 +27,9 @@ export class CameraRig {
   /** Orbit state. */
   private target = new THREE.Vector3(0, 0, 40);
   private distance = 260;
-  private azimuth = -Math.PI / 2;
+  // Camera starts south of the city looking north so the pipeline reads
+  // west-to-east, left-to-right — the same direction the data flows.
+  private azimuth = Math.PI / 2;
   private polar = 0.9;
   /** First-person / fly state. */
   private fpPosition = new THREE.Vector3(-190, EYE_HEIGHT, 40);
@@ -177,7 +179,7 @@ export class CameraRig {
     }
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
-    let move = new THREE.Vector3();
+    let move: THREE.Vector3;
     const speed = this.mode === 'first-person' ? WALK_SPEED : FLY_SPEED;
     const up = this.keys.has('KeyE') ? 1 : this.keys.has('KeyQ') ? -1 : 0;
     const fwd =

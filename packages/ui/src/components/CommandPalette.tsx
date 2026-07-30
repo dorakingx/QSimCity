@@ -17,6 +17,13 @@ interface Command {
 
 export function CommandPalette(): ReactElement | null {
   const open = useAppStore((s) => s.paletteOpen);
+  // Mount/unmount on open so local state (query, highlight) starts fresh
+  // every time without effect-driven resets.
+  if (!open) return null;
+  return <PaletteContent />;
+}
+
+function PaletteContent(): ReactElement {
   const { setPaletteOpen } = useAppStore.getState();
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
@@ -91,14 +98,10 @@ export function CommandPalette(): ReactElement | null {
   }, [commands, query]);
 
   useEffect(() => {
-    if (open) {
-      setQuery('');
-      setActiveIndex(0);
-      requestAnimationFrame(() => inputRef.current?.focus());
-    }
-  }, [open]);
-
-  if (!open) return null;
+    // Autofocus on mount; local state starts fresh because the component
+    // only mounts while open (the parent returns null otherwise).
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, []);
 
   const runCommand = (c: Command): void => {
     setPaletteOpen(false);

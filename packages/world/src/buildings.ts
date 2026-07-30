@@ -283,7 +283,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
       extent: [10, 8],
       height: 18,
     }),
-    filler: (d, i, r) => ({
+    filler: (_d, _i, _r) => ({
       parts: [
         part('platform', [0, 0, 0], [8, 0.8, 6], 0),
         part('container', [-1.5, 0.8, 0], [3, 1.7, 2.3], 1),

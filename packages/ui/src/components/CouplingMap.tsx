@@ -54,7 +54,7 @@ export function CouplingMap({
       <svg
         width={w}
         height={h}
-        role="img"
+        role="group"
         aria-label={`Device ${device.displayName}: ${device.numQubits} qubits, ${device.edges.length} coupling edges. Text alternative follows.`}
       >
         {device.edges.map(([a, b]) => (
