@@ -85,6 +85,30 @@ default), not a defect in the markup — the skip link is a correctly wired
 focus behavior on Chromium and Firefox, and the difference is documented
 rather than hidden behind a skip.
 
+## A reproducibility defect the fresh clone exposed
+
+Regenerating the committed sample traces in a clean environment produced a
+different content hash for one circuit (`qft-3`) while the other four
+matched. Investigated rather than re-baselined:
+
+**Root cause.** Qiskit's preset pass manager takes different internal paths
+across identical invocations — 42 or 43 passes, with `ApplyLayout` present or
+absent — while producing an **identical compiled circuit, identical initial
+layout, and identical metrics** (verified across repeated runs). The trace was
+recording the executed pass list, so a detail Qiskit does not guarantee was
+leaking into the content hash.
+
+**Fix.** The pass sequence is no longer part of trace content. The
+`circuit.optimized` event now records the optimization level, the SWAP count,
+and an explicit note that the pass sequence varies and is not recorded. The
+passes remain available on the in-memory `TranspileCapture` object for local
+inspection and tests. After the change, eight consecutive regenerations
+produced identical hashes, and the committed traces and manifest were
+regenerated.
+
+This is recorded in the source ledger under C22 as a deliberate,
+scientifically justified exclusion rather than a silent tolerance.
+
 ## Known third-party console message (WebKit)
 
 WebKit logs `WebGL: INVALID_OPERATION: texImage3D: FLIP_Y or
