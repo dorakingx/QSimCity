@@ -136,7 +136,10 @@ describe('compile: semantic equivalence (spec §18.3)', () => {
       }),
       { numRuns: 40 },
     );
-  });
+    // Building full unitaries for two devices per case is heavy under
+    // coverage instrumentation; allow the extra time rather than shrink
+    // the search space.
+  }, 30_000);
 
   it('property: parameterized rotations survive compilation', () => {
     const angle = fc.double({ min: -Math.PI, max: Math.PI, noNaN: true });

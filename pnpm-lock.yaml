@@ -161,6 +161,10 @@ importers:
       three:
         specifier: 0.185.1
         version: 0.185.1
+    devDependencies:
+      '@qsimcity/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/world:
     dependencies:

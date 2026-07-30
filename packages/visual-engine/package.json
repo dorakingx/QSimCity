@@ -7,8 +7,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "three": "0.185.1",
     "@qsimcity/world": "workspace:*",
-    "qsimcity-trace": "workspace:*"
+    "qsimcity-trace": "workspace:*",
+    "three": "0.185.1"
+  },
+  "devDependencies": {
+    "@qsimcity/domain": "workspace:*"
   }
 }

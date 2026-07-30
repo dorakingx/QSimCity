@@ -29,6 +29,11 @@ export function deserializeTrace(json: string): Trace {
 }
 
 export function traceFileName(trace: Trace): string {
-  const safe = trace.inputCircuit.name.replace(/[^a-zA-Z0-9-_]/g, '-').slice(0, 40) || 'trace';
+  const safe =
+    trace.inputCircuit.name
+      .replace(/[^a-zA-Z0-9-_]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 40) || 'trace';
   return `${safe}-${trace.traceId.slice(0, 8)}${TRACE_FILE_EXTENSION}`;
 }
