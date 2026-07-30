@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactElement } from 'react';
 import { useAppStore, DEFAULT_CONFIG } from '../store/appStore.js';
-import { SCENARIOS, getScenario } from './scenarios.js';
+import { SCENARIOS, getScenario, scenarioRunConfig } from './scenarios.js';
 import { runVqeScenario } from './vqe.js';
 
 /**
@@ -31,7 +31,7 @@ export function ScenarioPanel(): ReactElement | null {
         },
       );
     } else {
-      updateConfig({ ...DEFAULT_CONFIG, ...scenario.config });
+      updateConfig(scenarioRunConfig(scenario));
       void run();
     }
     // Scenario start is intentionally the only trigger.

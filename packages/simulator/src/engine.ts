@@ -256,22 +256,25 @@ function computeExactDistribution(circuit: Circuit): Record<string, number> {
   }
   const probs = probabilities(state);
   const out: Record<string, number> = {};
+  // Floating-point rounding can push a certain outcome to 1 + O(eps);
+  // clamp so downstream schema bounds ([0, 1]) hold exactly.
+  const clamp = (p: number): number => Math.min(1, p);
   if (lastMeasureForClbit.size === 0) {
     for (let i = 0; i < probs.length; i++) {
-      const p = probs[i]!;
+      const p = clamp(probs[i]!);
       if (p > 1e-12) out[indexToBitstring(i, circuit.numQubits)] = p;
     }
     return out;
   }
   for (let i = 0; i < probs.length; i++) {
-    const p = probs[i]!;
+    const p = clamp(probs[i]!);
     if (p <= 1e-12) continue;
     const clbits = new Uint8Array(circuit.numClbits);
     for (const [clbit, qubit] of lastMeasureForClbit) {
       clbits[clbit] = ((i >> qubit) & 1) as 0 | 1;
     }
     const key = clbitsToKey(clbits);
-    out[key] = (out[key] ?? 0) + p;
+    out[key] = clamp((out[key] ?? 0) + p);
   }
   return out;
 }

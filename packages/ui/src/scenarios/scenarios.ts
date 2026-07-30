@@ -1,5 +1,6 @@
+import { getSampleCircuit } from '@qsimcity/domain';
 import type { Trace } from 'qsimcity-trace';
-import { DEFAULT_NOISE, type RunConfig } from '../store/appStore.js';
+import { DEFAULT_CONFIG, DEFAULT_NOISE, type RunConfig } from '../store/appStore.js';
 
 /**
  * The 12 scenarios (spec §9). Each is declarative: a deterministic
@@ -322,4 +323,16 @@ export function getScenario(id: string): Scenario {
   const s = SCENARIOS.find((x) => x.id === id);
   if (!s) throw new Error(`Unknown scenario: ${id}`);
   return s;
+}
+
+/**
+ * Full run configuration for a scenario: defaults, scenario overrides, and
+ * the sample program text resolved from the scenario's sampleId.
+ */
+export function scenarioRunConfig(scenario: Scenario): RunConfig {
+  const config: RunConfig = { ...DEFAULT_CONFIG, ...scenario.config };
+  if (scenario.config.sampleId) {
+    config.qasm = getSampleCircuit(scenario.config.sampleId).qasm;
+  }
+  return config;
 }

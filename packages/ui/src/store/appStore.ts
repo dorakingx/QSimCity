@@ -317,8 +317,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         s.showToast(`Loaded sample: ${getSampleCircuit(action.sampleId).title}`);
         break;
       case 'adjust-noise': {
+        // Dial cycles low -> high -> off so each press visibly changes the
+        // weather; enabling any value turns the noise model on.
+        const high = action.parameter === 'readoutError' ? 0.15 : 0.08;
         const current = s.config.noise[action.parameter];
-        const next = current > 0 ? 0 : action.parameter === 'readoutError' ? 0.1 : 0.05;
+        const next = current === 0 ? high / 2 : current < high ? high : 0;
         set({
           config: {
             ...s.config,

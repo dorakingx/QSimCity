@@ -25,7 +25,7 @@ export function describeEvent(ev: TraceEvent): string {
     case 'gate.translated':
       return `Gates translated to the native basis {${(p['basisGates'] as string[] | undefined)?.join(', ') ?? '?'}}.`;
     case 'gate.cancelled':
-      return `${String(p['cancelledCount'] ?? '?')} redundant gates cancelled.`;
+      return `Cancelled ${String(p['cancelledCount'] ?? '?')} redundant gates.`;
     case 'circuit.optimized':
       return `Optimization complete: ${String(p['instructionCount'] ?? p['passCount'] ?? '?')} instructions remain.`;
     case 'instruction.scheduled':
