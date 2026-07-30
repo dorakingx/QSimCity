@@ -12,10 +12,10 @@ import { defineConfig } from 'vitest/config';
  * browsers (tests/e2e). They are excluded because Node cannot run them, not
  * to inflate the reported number:
  *
- * - `**​/engine.ts` (visual-engine) and `views/CityView.tsx` construct a
+ * - engine.ts (visual-engine) and `views/CityView.tsx` construct a
  *   WebGLRenderer; verified by tests/e2e/visual.spec.ts (11 snapshots) and
  *   tests/e2e/smoke.spec.ts.
- * - `**​/*.worker.ts` and `simulator/src/worker.ts` are Worker entry points
+ * - worker entry points and `simulator/src/worker.ts` are Worker entry points
  *   (`self.onmessage`); the logic they call is covered directly, and the
  *   worker round trip is verified in tests/e2e/smoke.spec.ts, which runs
  *   the app's real worker pipeline.

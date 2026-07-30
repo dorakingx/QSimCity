@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, within, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSampleCircuit, parseQasm } from '@qsimcity/domain';
 import type { Trace, TraceCircuit } from 'qsimcity-trace';

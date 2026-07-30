@@ -33,16 +33,12 @@ export async function runBellFromLab(page: Page): Promise<void> {
 /** Disables WebGL2 before app scripts run (fallback testing). */
 export async function disableWebgl(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    const original = HTMLCanvasElement.prototype.getContext;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (HTMLCanvasElement.prototype as any).getContext = function (
-      this: HTMLCanvasElement,
-      type: string,
-      ...args: unknown[]
-    ) {
+    type ContextFn = (this: HTMLCanvasElement, type: string, ...args: unknown[]) => unknown;
+    const proto = HTMLCanvasElement.prototype as unknown as { getContext: ContextFn };
+    const original = proto.getContext;
+    proto.getContext = function (this: HTMLCanvasElement, type: string, ...args: unknown[]) {
       if (type === 'webgl2' || type === 'webgl') return null;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return (original as any).call(this, type, ...args);
+      return original.call(this, type, ...args);
     };
   });
 }

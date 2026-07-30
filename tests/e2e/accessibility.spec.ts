@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { runBellFromLab } from './helpers.js';
 
@@ -7,7 +7,7 @@ import { runBellFromLab } from './helpers.js';
  * surface plus a keyboard-only walkthrough.
  */
 
-async function expectNoViolations(page: import('@playwright/test').Page): Promise<void> {
+async function expectNoViolations(page: Page): Promise<void> {
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
