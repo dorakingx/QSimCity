@@ -86,8 +86,8 @@ export function reducedCompiledUnitary(
         leakage += mag2;
         continue;
       }
-      out[2 * (logicalRow * dimL + col)] += re;
-      out[2 * (logicalRow * dimL + col) + 1] += im;
+      out[2 * (logicalRow * dimL + col)] = out[2 * (logicalRow * dimL + col)]! + re;
+      out[2 * (logicalRow * dimL + col) + 1] = out[2 * (logicalRow * dimL + col) + 1]! + im;
     }
   }
   return { unitary: out, leakage };
