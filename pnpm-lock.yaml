@@ -32,6 +32,28 @@ importers:
 
   packages/domain: {}
 
+  packages/reference-compiler:
+    dependencies:
+      '@qsimcity/domain':
+        specifier: workspace:*
+        version: link:../domain
+      qsimcity-trace:
+        specifier: workspace:*
+        version: link:../trace
+    devDependencies:
+      '@qsimcity/simulator':
+        specifier: workspace:*
+        version: link:../simulator
+
+  packages/simulator:
+    dependencies:
+      '@qsimcity/domain':
+        specifier: workspace:*
+        version: link:../domain
+      qsimcity-trace:
+        specifier: workspace:*
+        version: link:../trace
+
   packages/trace:
     dependencies:
       zod:

@@ -713,7 +713,9 @@ class Parser {
         col,
       );
     }
-    this.instructions.push(instr);
+    // Deterministic per-parse ids so identical sources produce identical
+    // traces (required for committed sample-trace hash comparison).
+    this.instructions.push({ ...instr, id: `i${this.instructions.length}` });
   }
 
   // Expression parsing: standard precedence-climbing.

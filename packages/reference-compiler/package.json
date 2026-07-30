@@ -1,0 +1,16 @@
+{
+  "name": "@qsimcity/reference-compiler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@qsimcity/domain": "workspace:*",
+    "qsimcity-trace": "workspace:*"
+  },
+  "devDependencies": {
+    "@qsimcity/simulator": "workspace:*"
+  }
+}
