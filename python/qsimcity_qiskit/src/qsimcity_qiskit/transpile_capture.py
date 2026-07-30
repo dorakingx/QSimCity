@@ -147,24 +147,26 @@ def capture_transpile(
         physical=initial,
     )
     swap_count = _metrics(transpiled)["swapCount"]
-    # The executed pass list is deliberately NOT part of trace content.
-    # Qiskit's preset pass manager takes different internal paths across
-    # identical invocations (observed: 42 vs 43 passes, and ApplyLayout
-    # present or absent) while producing an identical compiled circuit,
-    # identical layout, and identical metrics. Hashing an implementation
-    # detail Qiskit does not guarantee would make committed sample traces
-    # irreproducible for no scientific gain. The passes are still captured on
-    # the TranspileCapture object for local inspection and tests.
+    # The executed pass list IS captured — as observational telemetry, not as
+    # semantic content. Qiskit's preset pass manager takes different internal
+    # paths across identical invocations (observed: 42 vs 43 passes, and
+    # ApplyLayout present or absent) while producing an identical compiled
+    # circuit, layout, and metrics. It therefore rides in `telemetry` (covered
+    # by artifactHash) and under a telemetry payload key excluded from
+    # semanticHash, so committed samples stay reproducible without discarding
+    # real provenance.
     emit(
         "circuit.optimized",
         "optimization",
         {
             "optimizationLevel": optimization_level,
             "swapCount": swap_count,
+            "passes": [p.name for p in passes],
             "note": (
                 "Compiled by the real Qiskit preset pass manager. The exact "
-                "pass sequence varies between invocations and is not recorded; "
-                "the resulting circuit, layout, and metrics are deterministic."
+                "pass sequence is observational telemetry: it varies between "
+                "invocations while the resulting circuit, layout, and metrics "
+                "are deterministic."
             ),
         },
     )

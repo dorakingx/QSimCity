@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, type ReactElement } from 'react';
 import { useAppStore, type AppMode } from './store/appStore.js';
 import { createRunner } from './pipeline/workerClient.js';
-import { decodeShareUrl } from './store/shareUrl.js';
+import { decodeShareUrl, decodeShareMode } from './store/shareUrl.js';
 import { usePlaybackLoop } from './hooks/usePlaybackLoop.js';
 import { HomeView } from './views/HomeView.js';
 import { Accessible2DView } from './views/Accessible2DView.js';
@@ -48,11 +48,13 @@ export function App(): ReactElement {
     const s = useAppStore.getState();
     s.setRunner(createRunner());
     s.setWebglAvailable(detectWebgl());
-    const shared = decodeShareUrl(globalThis.location?.search ?? '');
-    if (shared) {
-      s.updateConfig(shared);
-      s.setMode('lab');
-    }
+    const search = globalThis.location?.search ?? '';
+    const shared = decodeShareUrl(search);
+    const sharedMode = decodeShareMode(search);
+    if (shared) s.updateConfig(shared);
+    // An explicit ?view= wins; otherwise a shared configuration opens the Lab.
+    if (sharedMode) s.setMode(sharedMode);
+    else if (shared) s.setMode('lab');
   }, []);
 
   useEffect(() => {

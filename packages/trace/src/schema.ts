@@ -125,6 +125,16 @@ export const traceSchema = z
       })
       .strict(),
     events: z.array(eventSchema).max(TRACE_LIMITS.maxEvents),
+    telemetry: z
+      .object({
+        executedPasses: z.array(z.string().max(120)).max(2000).optional(),
+        executedPassCount: z.number().int().min(0).optional(),
+        notes: z
+          .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
+          .optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 

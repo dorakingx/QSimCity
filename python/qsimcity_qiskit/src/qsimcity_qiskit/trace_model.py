@@ -167,6 +167,19 @@ class TraceMetrics:
 
 
 @dataclass
+class TraceTelemetry:
+    """Observational provenance that may vary between identical runs.
+
+    Kept because it has real audit value (which Qiskit passes actually ran),
+    excluded from the semantic hash because Qiskit does not guarantee it.
+    """
+
+    executedPasses: list[str] | None = None
+    executedPassCount: int | None = None
+    notes: dict[str, Any] | None = None
+
+
+@dataclass
 class Trace:
     schemaVersion: str
     traceId: str
@@ -185,6 +198,7 @@ class Trace:
     metrics: list[TraceMetrics] = field(default_factory=list)
     results: TraceResults = field(default_factory=TraceResults)
     events: list[TraceEvent] = field(default_factory=list)
+    telemetry: TraceTelemetry | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return _strip_none_optionals(asdict(self))
@@ -208,6 +222,10 @@ def _strip_none_optionals(value: Any) -> Any:
         "idealProbabilities",
         "idealCounts",
         "noisyCounts",
+        "telemetry",
+        "executedPasses",
+        "executedPassCount",
+        "notes",
     }
     if isinstance(value, dict):
         return {
@@ -303,3 +321,68 @@ def trace_content_hash(trace: Trace) -> str:
     data.pop("traceId", None)
     data.pop("createdAt", None)
     return fnv1a64(canonical_json(data))
+
+
+# Event payload keys treated as observational telemetry, not semantics.
+# Mirrors TELEMETRY_PAYLOAD_KEYS in packages/trace/src/hashing-contract.ts.
+TELEMETRY_PAYLOAD_KEYS = frozenset(
+    {
+        "passes",
+        "passCount",
+        "distinctPassCount",
+        "passDurationsSeconds",
+        "wallClockSeconds",
+    }
+)
+
+
+def semantic_view(trace: Trace) -> dict[str, Any]:
+    """Projection of a trace onto reproducible, scientifically meaningful data.
+
+    Must match `semanticView` in packages/trace/src/hashing-contract.ts.
+    """
+    data = trace.to_dict()
+    events = []
+    for event in data["events"]:
+        payload = {k: v for k, v in event["payload"].items() if k not in TELEMETRY_PAYLOAD_KEYS}
+        projected = {
+            "eventId": event["eventId"],
+            "logicalTick": event["logicalTick"],
+            "eventType": event["eventType"],
+            "stage": event["stage"],
+            "logicalQubits": event["logicalQubits"],
+            "physicalQubits": event["physicalQubits"],
+            "instructionId": event["instructionId"],
+            "source": event["source"],
+            "certainty": event["certainty"],
+            "payload": payload,
+        }
+        if "sourceDurationNs" in event:
+            projected["sourceDurationNs"] = event["sourceDurationNs"]
+        events.append(projected)
+    return {
+        "schemaVersion": data["schemaVersion"],
+        "seed": data["seed"],
+        "inputHash": data["inputHash"],
+        "deviceId": data["deviceId"],
+        "shots": data["shots"],
+        "noise": data["noise"],
+        "inputCircuit": data["inputCircuit"],
+        "compiledCircuit": data["compiledCircuit"],
+        "initialLayout": data["initialLayout"],
+        "finalLayout": data["finalLayout"],
+        "metrics": data["metrics"],
+        "results": data["results"],
+        "packageVersions": data["packageVersions"],
+        "events": events,
+    }
+
+
+def semantic_hash(trace: Trace) -> str:
+    """Hash of reproducible scientific content; stable across processes."""
+    return fnv1a64(canonical_json(semantic_view(trace)))
+
+
+def artifact_hash(serialized: str) -> str:
+    """Hash of the exact serialized bytes; detects any tampering."""
+    return fnv1a64(serialized)

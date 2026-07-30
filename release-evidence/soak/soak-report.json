@@ -1,0 +1,70 @@
+{
+  "commitSha": "bc435ebdaa95173dc9edadec0d743c27c117e232",
+  "worktreeDirty": true,
+  "generatedAt": "2026-07-30T17:55:07.287Z",
+  "tool": "qsimcity-soak",
+  "toolVersion": "1.0.0",
+  "command": "pnpm soak",
+  "exitStatus": 1,
+  "inputHash": "3ac4cc57a08b5853",
+  "thresholds": {
+    "minDurationSeconds": 600,
+    "maxUncaughtErrors": 0,
+    "maxConsoleErrors": 0,
+    "maxUnrecoveredContextLoss": 0,
+    "maxTrailingMinGrowthRatio": 1.5,
+    "maxFinalInteractionMs": 3000
+  },
+  "measurements": {
+    "durationSeconds": 52.8,
+    "cycles": 5,
+    "heapSampleCount": 5,
+    "baselineMinHeapBytes": 13039700,
+    "trailingMinHeapBytes": 18250434,
+    "trailingMinGrowthRatio": 1.3996,
+    "uncaughtErrors": 0,
+    "consoleErrors": 0,
+    "failedRequests": 0,
+    "contextLossEvents": 0,
+    "contextRestoreEvents": 0,
+    "unrecoveredContextLoss": 0,
+    "finalInteractionMs": 230,
+    "crashed": false
+  },
+  "passed": false,
+  "detail": {
+    "workloadError": null,
+    "heapSamples": [
+      {
+        "elapsedSeconds": 10.3,
+        "usedJsHeapBytes": 13039700,
+        "totalJsHeapBytes": 27315068,
+        "cycle": 1
+      },
+      {
+        "elapsedSeconds": 20.3,
+        "usedJsHeapBytes": 16362757,
+        "totalJsHeapBytes": 31895733,
+        "cycle": 2
+      },
+      {
+        "elapsedSeconds": 33,
+        "usedJsHeapBytes": 14817314,
+        "totalJsHeapBytes": 32059110,
+        "cycle": 3
+      },
+      {
+        "elapsedSeconds": 42.9,
+        "usedJsHeapBytes": 14769433,
+        "totalJsHeapBytes": 21926305,
+        "cycle": 4
+      },
+      {
+        "elapsedSeconds": 52.8,
+        "usedJsHeapBytes": 18250434,
+        "totalJsHeapBytes": 22499382,
+        "cycle": 5
+      }
+    ]
+  }
+}

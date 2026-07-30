@@ -36,8 +36,10 @@ from qsimcity_qiskit.trace_model import (
     TraceCounts,
     TraceMetrics,
     TraceResults,
+    TraceTelemetry,
+    artifact_hash,
     fnv1a64,
-    trace_content_hash,
+    semantic_hash,
 )
 from qsimcity_qiskit.transpile_capture import _metrics, capture_transpile
 
@@ -131,6 +133,17 @@ def build_trace(
         ],
         results=results,
         events=capture.events,
+        telemetry=TraceTelemetry(
+            executedPasses=[p.name for p in capture.passes],
+            executedPassCount=len(capture.passes),
+            notes={
+                "reproducibility": (
+                    "executedPasses is observational: Qiskit's pass manager may "
+                    "take different internal paths for identical inputs. It is "
+                    "excluded from semanticHash and included in artifactHash."
+                )
+            },
+        ),
     )
     return trace
 
@@ -149,7 +162,7 @@ CROSSVAL_CIRCUITS = ["bell", "ghz-4", "grover-2", "qft-3", "swap-storm", "toffol
 def generate_traces(circuits_dir: Path, out_dir: Path) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
-    manifest: dict[str, str] = {}
+    manifest: dict[str, dict[str, str]] = {}
     for plan in SAMPLE_PLAN:
         qasm_path = circuits_dir / f"{plan['id']}.qasm"
         qasm_text = qasm_path.read_text()
@@ -162,8 +175,14 @@ def generate_traces(circuits_dir: Path, out_dir: Path) -> list[Path]:
             with_noise=bool(plan["noise"]),
         )
         path = out_dir / f"{plan['id']}.qsimcity.json"
-        path.write_text(trace.to_json() + "\n")
-        manifest[str(plan["id"])] = trace_content_hash(trace)
+        serialized = trace.to_json() + "\n"
+        path.write_text(serialized)
+        # semanticHash is the reproducibility contract (stable across runs and
+        # machines); artifactHash pins the exact bytes of this artifact.
+        manifest[str(plan["id"])] = {
+            "semanticHash": semantic_hash(trace),
+            "artifactHash": artifact_hash(serialized),
+        }
         written.append(path)
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return written

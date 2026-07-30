@@ -167,6 +167,24 @@ export interface NoiseConfig {
   readonly phaseDamping: number;
 }
 
+/**
+ * Observational telemetry captured alongside a run. These values are real and
+ * useful for auditing, but they are NOT guaranteed to be reproducible: a
+ * producer may legitimately emit different telemetry for identical inputs.
+ * Excluded from `semanticHash`, included in `artifactHash`.
+ */
+export interface TraceTelemetry {
+  /**
+   * Compiler passes as actually executed, in order. Qiskit's preset pass
+   * manager takes different internal paths across identical invocations while
+   * producing an identical circuit, so this sequence varies between runs.
+   */
+  readonly executedPasses?: readonly string[];
+  readonly executedPassCount?: number;
+  /** Free-form producer notes; never load-bearing for any displayed claim. */
+  readonly notes?: Readonly<Record<string, string | number | boolean>>;
+}
+
 export interface Trace {
   readonly schemaVersion: string;
   readonly traceId: string;
@@ -191,6 +209,8 @@ export interface Trace {
   readonly metrics: readonly TraceMetricsSnapshot[];
   readonly results: TraceResults;
   readonly events: readonly TraceEvent[];
+  /** Observational, possibly nondeterministic provenance. Optional. */
+  readonly telemetry?: TraceTelemetry;
 }
 
 /** Full per-event record including trace-level context (spec §11). */

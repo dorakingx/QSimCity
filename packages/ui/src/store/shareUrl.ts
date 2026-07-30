@@ -1,5 +1,21 @@
 import { SAMPLE_CIRCUITS, DEVICES, getSampleCircuit } from '@qsimcity/domain';
-import { DEFAULT_CONFIG, DEFAULT_NOISE, type RunConfig } from './appStore.js';
+import { DEFAULT_CONFIG, DEFAULT_NOISE, type AppMode, type RunConfig } from './appStore.js';
+
+/** Modes that may be deep-linked with `?view=`. */
+const SHAREABLE_MODES: readonly AppMode[] = [
+  'explore',
+  'lab',
+  'compare',
+  'accessible-2d',
+  'tour',
+];
+
+/** Reads a deep-linked mode from a URL, if present and valid. */
+export function decodeShareMode(search: string): AppMode | null {
+  const view = new URLSearchParams(search).get('view');
+  if (!view) return null;
+  return SHAREABLE_MODES.includes(view as AppMode) ? (view as AppMode) : null;
+}
 
 /**
  * Shareable sample URLs (spec §7.3, §15). Only bundled sample ids and plain
@@ -7,10 +23,11 @@ import { DEFAULT_CONFIG, DEFAULT_NOISE, type RunConfig } from './appStore.js';
  * personal data enters query strings (spec §17).
  */
 
-export function encodeShareUrl(config: RunConfig, base?: string): string {
+export function encodeShareUrl(config: RunConfig, base?: string, mode?: AppMode): string {
   const url = new URL(base ?? globalThis.location?.href ?? 'https://qsimcity.example/');
   url.search = '';
   url.hash = '';
+  if (mode && SHAREABLE_MODES.includes(mode)) url.searchParams.set('view', mode);
   if (config.sampleId) url.searchParams.set('sample', config.sampleId);
   url.searchParams.set('shots', String(config.shots));
   url.searchParams.set('seed', config.seed);

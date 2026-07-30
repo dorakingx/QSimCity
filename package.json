@@ -2,7 +2,7 @@
   "name": "qsimcity",
   "version": "1.0.0",
   "private": true,
-  "description": "QSimCity \u2014 an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
+  "description": "QSimCity — an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -28,7 +28,9 @@
     "verify": "pnpm typecheck && pnpm lint && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
     "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
     "goal:check": "tsx tools/check-goal.ts",
-    "check:perf": "tsx tools/check-performance.ts"
+    "check:perf": "tsx tools/check-performance.ts",
+    "soak": "tsx tools/soak/run-soak.ts",
+    "lighthouse": "tsx tools/lighthouse/run-lighthouse.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
@@ -42,11 +44,14 @@
     "@types/three": "0.185.1",
     "@vitejs/plugin-react": "6.0.4",
     "@vitest/coverage-v8": "4.1.10",
+    "chrome-launcher": "1.2.1",
     "eslint": "10.8.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "fast-check": "4.9.0",
     "happy-dom": "20.11.1",
+    "lighthouse": "13.4.1",
     "prettier": "3.9.6",
+    "tslib": "2.8.1",
     "tsx": "4.23.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.65.0",

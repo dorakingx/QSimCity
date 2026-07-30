@@ -1,7 +1,7 @@
 project_name: QSimCity
-current_phase: 8-release-validation-complete
-baseline_sha: null
-active_branch: feat/qsimcity-production-v1
+current_phase: 9-release-hardening
+baseline_sha: bc435ebdaa95173dc9edadec0d743c27c117e232
+active_branch: fix/qsimcity-release-hardening
 completed_items:
   - repository-audit
   - benchmark-research
@@ -27,10 +27,27 @@ completed_items:
   - mutation-testing
   - fresh-clone-verification
   - goal-check-passing
-failed_items: []
+failed_items:
+  - soak-test-not-run
+  - lighthouse-thresholds-not-measured
+  - per-core-package-coverage-not-proven
+  - mutation-scope-too-narrow
+  - trace-raw-pass-telemetry-discarded
+  - visual-benchmark-self-asserted
+  - vercel-tests-depend-on-hidden-build-order
+  - goal-checker-accepted-untested-mandatory-risk
+  - license-wording-claims-open-source-without-license
 blocked_items: []
 next_actions:
-  - optional: deploy to Vercel once an authorized account is available
+  - repair completion checker so it cannot pass on stale or self-declared evidence
+  - implement and run a real 600s production soak test
+  - run real Lighthouse audits against all required thresholds
+  - prove per-core-package coverage
+  - expand scientific mutation scope
+  - restore raw Qiskit pass telemetry with semanticHash/artifactHash separation
+  - make Vercel tests hermetic
+  - produce a comparative visual benchmark
+  - correct license wording
 test_results:
   typescript_unit_integration: 665 passed
   python_bridge: 52 passed
@@ -52,5 +69,5 @@ scientific_review_status: complete-zero-blocking-findings
 accessibility_status: wcag-2.2-aa-zero-axe-violations
 performance_status: within-budget-122.9KiB-initial-js-gzip
 deployment_status: NOT AUTHORIZED (vercel-ready, locally validated, no public URL)
-completion_gate_status: GOAL ACHIEVED
+completion_gate_status: RELEASE_CANDIDATE_NOT_COMPLETE
 last_updated: 2026-07-31

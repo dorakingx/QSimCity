@@ -10,3 +10,8 @@ allowBuilds:
 # forced to the patched release so `pnpm audit` is clean for the whole tree.
 overrides:
   brace-expansion: 5.0.8
+
+# intl-messageformat (via lighthouse) requires tslib at runtime but does not
+# declare it, which strict pnpm linking correctly refuses to resolve.
+publicHoistPattern:
+  - tslib

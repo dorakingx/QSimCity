@@ -1,6 +1,6 @@
 export { App } from './App.js';
 export { useAppStore, DEFAULT_CONFIG, DEFAULT_SETTINGS, DEFAULT_NOISE } from './store/appStore.js';
-export { encodeShareUrl, decodeShareUrl } from './store/shareUrl.js';
+export { encodeShareUrl, decodeShareUrl, decodeShareMode } from './store/shareUrl.js';
 export { runPipeline, type PipelineConfig } from './pipeline/runPipeline.js';
 export { createRunner, createDirectRunner, createWorkerRunner } from './pipeline/workerClient.js';
 export { TOUR_CHAPTERS } from './tour/chapters.js';

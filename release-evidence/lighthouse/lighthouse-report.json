@@ -1,0 +1,163 @@
+{
+  "commitSha": "bc435ebdaa95173dc9edadec0d743c27c117e232",
+  "worktreeDirty": true,
+  "generatedAt": "2026-07-30T17:59:01.119Z",
+  "tool": "lighthouse",
+  "toolVersion": "13.4.1",
+  "command": "pnpm lighthouse",
+  "exitStatus": 0,
+  "inputHash": "0334c8a02a6d56ce",
+  "thresholds": {
+    "accessibility": 100,
+    "bestPractices": 95,
+    "seo": 90,
+    "performanceDesktop": 85,
+    "performanceMobile": 75,
+    "runsPerTarget": 3
+  },
+  "measurements": {
+    "home-desktop.performance": 100,
+    "home-desktop.accessibility": 100,
+    "home-desktop.bestPractices": 96,
+    "home-desktop.seo": 91,
+    "home-mobile.performance": 84,
+    "home-mobile.accessibility": 100,
+    "home-mobile.bestPractices": 96,
+    "home-mobile.seo": 91,
+    "accessible2d-desktop.performance": 100,
+    "accessible2d-desktop.accessibility": 100,
+    "accessible2d-desktop.bestPractices": 96,
+    "accessible2d-desktop.seo": 91,
+    "accessible2d-mobile.performance": 84,
+    "accessible2d-mobile.accessibility": 100,
+    "accessible2d-mobile.bestPractices": 96,
+    "accessible2d-mobile.seo": 91
+  },
+  "passed": true,
+  "detail": {
+    "home-desktop": {
+      "label": "Main entry (desktop)",
+      "formFactor": "desktop",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 96,
+        "seo": 91
+      },
+      "runs": [
+        {
+          "performance": 99,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        }
+      ],
+      "failures": []
+    },
+    "home-mobile": {
+      "label": "Main entry (mobile)",
+      "formFactor": "mobile",
+      "scores": {
+        "performance": 84,
+        "accessibility": 100,
+        "best-practices": 96,
+        "seo": 91
+      },
+      "runs": [
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        }
+      ],
+      "failures": []
+    },
+    "accessible2d-desktop": {
+      "label": "Accessible 2D Mode (desktop)",
+      "formFactor": "desktop",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 96,
+        "seo": 91
+      },
+      "runs": [
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        }
+      ],
+      "failures": []
+    },
+    "accessible2d-mobile": {
+      "label": "Accessible 2D Mode (mobile)",
+      "formFactor": "mobile",
+      "scores": {
+        "performance": 84,
+        "accessibility": 100,
+        "best-practices": 96,
+        "seo": 91
+      },
+      "runs": [
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        },
+        {
+          "performance": 84,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 91
+        }
+      ],
+      "failures": []
+    }
+  }
+}

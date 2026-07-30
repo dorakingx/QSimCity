@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "traceId": "t-12f79ff799326cae",
-  "createdAt": "2026-07-30T17:17:49.219Z",
+  "createdAt": "2026-07-30T18:01:04.225Z",
   "generator": {
     "generator": "qsimcity-qiskit-bridge",
     "generatorVersion": "1.0.0",
@@ -293,7 +293,40 @@
       "payload": {
         "optimizationLevel": 1,
         "swapCount": 0,
-        "note": "Compiled by the real Qiskit preset pass manager. The exact pass sequence varies between invocations and is not recorded; the resulting circuit, layout, and metrics are deterministic."
+        "passes": [
+          "ContainsInstruction",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "SetLayout",
+          "TrivialLayout",
+          "CheckMap",
+          "FullAncillaAllocation",
+          "EnlargeWithAncilla",
+          "ApplyLayout",
+          "CheckMap",
+          "FilterOpNodes",
+          "UnitarySynthesis",
+          "HighLevelSynthesis",
+          "BasisTranslator",
+          "CheckGateDirection",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "Optimize1qGatesDecomposition",
+          "InverseCancellation",
+          "ContractIdleWiresInControlFlow",
+          "GatesInBasis",
+          "Size",
+          "Depth",
+          "FixedPoint",
+          "FixedPoint",
+          "ContainsInstruction"
+        ],
+        "note": "Compiled by the real Qiskit preset pass manager. The exact pass sequence is observational telemetry: it varies between invocations while the resulting circuit, layout, and metrics are deterministic."
       },
       "provenance": {
         "generator": "qsimcity-qiskit-bridge",
@@ -334,5 +367,44 @@
         }
       }
     }
-  ]
+  ],
+  "telemetry": {
+    "executedPasses": [
+      "ContainsInstruction",
+      "UnitarySynthesis",
+      "HighLevelSynthesis",
+      "BasisTranslator",
+      "InverseCancellation",
+      "ContractIdleWiresInControlFlow",
+      "SetLayout",
+      "TrivialLayout",
+      "CheckMap",
+      "FullAncillaAllocation",
+      "EnlargeWithAncilla",
+      "ApplyLayout",
+      "CheckMap",
+      "FilterOpNodes",
+      "UnitarySynthesis",
+      "HighLevelSynthesis",
+      "BasisTranslator",
+      "CheckGateDirection",
+      "Size",
+      "Depth",
+      "FixedPoint",
+      "FixedPoint",
+      "Optimize1qGatesDecomposition",
+      "InverseCancellation",
+      "ContractIdleWiresInControlFlow",
+      "GatesInBasis",
+      "Size",
+      "Depth",
+      "FixedPoint",
+      "FixedPoint",
+      "ContainsInstruction"
+    ],
+    "executedPassCount": 31,
+    "notes": {
+      "reproducibility": "executedPasses is observational: Qiskit's pass manager may take different internal paths for identical inputs. It is excluded from semanticHash and included in artifactHash."
+    }
+  }
 }

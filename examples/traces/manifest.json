@@ -1,7 +1,22 @@
 {
-  "bell": "9fd8fb0e88e11a9e",
-  "ghz-4": "3e41ec8758ca768e",
-  "grover-2": "40d520a9967370ce",
-  "qft-3": "29dbf6b9f0d01c4e",
-  "swap-storm": "d2df467a0d89a52f"
+  "bell": {
+    "artifactHash": "78b27fe0070b028a",
+    "semanticHash": "d016e7185b30b9c2"
+  },
+  "ghz-4": {
+    "artifactHash": "106fb4aa397aa8a7",
+    "semanticHash": "f2f984199f7e67b4"
+  },
+  "grover-2": {
+    "artifactHash": "96c75fd7c66b1b79",
+    "semanticHash": "18cd7e35a48b13d4"
+  },
+  "qft-3": {
+    "artifactHash": "84786ff0da0e88d9",
+    "semanticHash": "eb379c6dfab29d7c"
+  },
+  "swap-storm": {
+    "artifactHash": "f535806268eaf180",
+    "semanticHash": "3b0139e2d8a9ff73"
+  }
 }
