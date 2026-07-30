@@ -1,0 +1,32 @@
+{
+  "name": "qsimcity",
+  "version": "1.0.0",
+  "private": true,
+  "description": "QSimCity — an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
+  "type": "module",
+  "packageManager": "pnpm@11.14.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=11.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter qsimcity-web dev",
+    "build": "pnpm --filter qsimcity-web build",
+    "preview": "pnpm --filter qsimcity-web preview",
+    "typecheck": "tsc -p tsconfig.typecheck.json",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:mutation": "tsx tools/mutation/run-mutation.ts",
+    "check:names": "tsx tools/check-prohibited-names.ts",
+    "check:language": "tsx tools/check-language.ts",
+    "check:todos": "tsx tools/check-todos.ts",
+    "verify": "pnpm typecheck && pnpm lint && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
+    "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm test:e2e",
+    "goal:check": "tsx tools/check-goal.ts"
+  }
+}

@@ -1,0 +1,24 @@
+project_name: QSimCity
+current_phase: 0-audit
+baseline_sha: null
+active_branch: feat/qsimcity-production-v1
+completed_items:
+  - repository-audit
+  - benchmark-research
+failed_items: []
+blocked_items: []
+next_actions:
+  - write-reference-benchmark
+  - write-product-spec
+  - write-acceptance-matrix
+  - scaffold-monorepo
+test_results: {}
+coverage_results: {}
+mutation_results: {}
+visual_evidence: {}
+scientific_review_status: not-started
+accessibility_status: not-started
+performance_status: not-started
+deployment_status: not-configured
+completion_gate_status: NOT RUN
+last_updated: 2026-07-30
