@@ -2,7 +2,7 @@
   "name": "qsimcity",
   "version": "1.0.0",
   "private": true,
-  "description": "QSimCity — an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
+  "description": "QSimCity \u2014 an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -26,8 +26,9 @@
     "check:language": "tsx tools/check-language.ts",
     "check:todos": "tsx tools/check-todos.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
-    "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm test:e2e",
-    "goal:check": "tsx tools/check-goal.ts"
+    "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
+    "goal:check": "tsx tools/check-goal.ts",
+    "check:perf": "tsx tools/check-performance.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

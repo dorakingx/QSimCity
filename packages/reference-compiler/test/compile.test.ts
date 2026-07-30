@@ -170,6 +170,27 @@ describe('compile: semantic equivalence (spec §18.3)', () => {
 });
 
 describe('compile: structural guarantees', () => {
+  it('inserts the minimum number of SWAPs for a single long-range gate', () => {
+    // On a line, connecting logical 0 and 4 needs exactly distance-1 = 3
+    // SWAPs. More would be wasted two-qubit error exposure even though the
+    // circuit would still be semantically correct.
+    const circuit = makeCircuit({
+      numQubits: 5,
+      instructions: [makeInstruction({ name: 'cx', qubits: [0, 4] })],
+    });
+    const result = compile(circuit, { device: LINEAR5, layoutMethod: 'trivial' });
+    expect(result.swapCount).toBe(3);
+    expectEquivalent(circuit, result);
+  });
+
+  it('inserts no SWAPs when the interaction is already adjacent', () => {
+    const circuit = makeCircuit({
+      numQubits: 2,
+      instructions: [makeInstruction({ name: 'cx', qubits: [0, 1] })],
+    });
+    expect(compile(circuit, { device: LINEAR5, layoutMethod: 'trivial' }).swapCount).toBe(0);
+  });
+
   it('is deterministic', () => {
     const circuit = gateOnly(parseQasm(getSampleCircuit('swap-storm').qasm));
     const a = compile(circuit, { device: LINEAR5 });

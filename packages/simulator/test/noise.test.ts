@@ -119,6 +119,42 @@ describe('applyAmplitudeDamping', () => {
     expect(p1Sum / n).toBeLessThan(1 - gamma + 0.03);
   });
 
+  it('scales the surviving |1> amplitude by sqrt(1-gamma), not (1-gamma)', () => {
+    // On a pure |1> state the scaling is invisible after renormalization,
+    // so this must be checked in superposition. For (|0>+|1>)/sqrt(2) the
+    // correct channel gives ensemble P(1) = (1-gamma)/2 exactly.
+    const gamma = 0.5;
+    const rng = createRng('ad-kraus');
+    let p1Sum = 0;
+    const n = 6000;
+    for (let i = 0; i < n; i++) {
+      const s = createState(1);
+      applyGate1(s, H, 0);
+      applyAmplitudeDamping(s, 0, gamma, rng);
+      p1Sum += probabilityOfOne(s, 0);
+    }
+    expect(p1Sum / n).toBeGreaterThan((1 - gamma) / 2 - 0.02);
+    expect(p1Sum / n).toBeLessThan((1 - gamma) / 2 + 0.02);
+  });
+
+  it('fires the depolarizing channel in proportion to p, not a fixed rate', () => {
+    const rng = createRng('dep-scaling');
+    const measure = (p: number): number => {
+      let fired = 0;
+      for (let i = 0; i < 4000; i++) {
+        const s = createState(1);
+        if (applyDepolarizing(s, 0, p, rng)) fired++;
+      }
+      return fired / 4000;
+    };
+    const low = measure(0.1);
+    const high = measure(0.4);
+    expect(low).toBeGreaterThan(0.07);
+    expect(low).toBeLessThan(0.13);
+    expect(high).toBeGreaterThan(0.36);
+    expect(high).toBeLessThan(0.44);
+  });
+
   it('gamma=1 always decays |1> to |0>', () => {
     const s = createState(1);
     applyGate1(s, X, 0);

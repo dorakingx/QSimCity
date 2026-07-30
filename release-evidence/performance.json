@@ -1,0 +1,40 @@
+{
+  "initialJsGzipBytes": 125836,
+  "totalJsGzipBytes": 304245,
+  "budgetGzipBytes": 327680,
+  "totalBudgetGzipBytes": 614400,
+  "lazyChunks": [
+    {
+      "name": "three-bAKDV79k.js",
+      "gzipBytes": 135194
+    },
+    {
+      "name": "pipeline.worker-KKI9ycbW.js",
+      "gzipBytes": 33071
+    },
+    {
+      "name": "CityView-Bx_s4fcm.js",
+      "gzipBytes": 7885
+    },
+    {
+      "name": "workbox-window.prod.es5-DsELeUxu.js",
+      "gzipBytes": 2259
+    }
+  ],
+  "eagerChunks": [
+    {
+      "name": "index-Qn1Ec0Cc.js",
+      "gzipBytes": 66507
+    },
+    {
+      "name": "react-VZnIVrcg.js",
+      "gzipBytes": 58969
+    },
+    {
+      "name": "rolldown-runtime-Bh1tDfsg.js",
+      "gzipBytes": 360
+    }
+  ],
+  "passed": true,
+  "generatedAt": "2026-07-30T15:26:40.182Z"
+}
