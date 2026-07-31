@@ -47,14 +47,20 @@ have not been granted (see docs/adr/adr-0001-no-license-selection.md);
 ## Commands
 
 ```bash
-pnpm dev              # dev server
-pnpm verify           # typecheck, lint, policy scans, tests
-pnpm test:e2e         # Playwright: chromium, firefox, webkit, mobile
-pnpm test:coverage    # coverage with enforced thresholds
-pnpm test:mutation    # mutation testing of scientific invariants
-pnpm check:perf       # performance budgets against the real build
-pnpm goal:check       # the full Definition-of-Done gate
+pnpm dev                 # dev server
+pnpm verify              # typecheck, lint, format, policy scans, tests
+pnpm test:e2e            # Playwright: chromium, firefox, webkit, mobile
+pnpm test:mutation       # generative mutation testing of scientific invariants
+pnpm evidence:all        # regenerate every release measurement
+pnpm verify:fresh-clone  # clone this repository and verify it from scratch
+pnpm goal:check          # the full Definition-of-Done gate
 ```
+
+Every release measurement writes an evidence envelope under
+`release-evidence/` that binds it to the source tree it measured, and
+`pnpm goal:check` derives its verdicts from those envelopes rather than from
+any document. Evidence must be regenerated from a clean worktree after any
+source change; `--allow-dirty` exists for local iteration only.
 
 Node 22.12+ required (`.nvmrc` pins 22.23.1). Use `pnpm`, not npm or yarn.
 

@@ -155,15 +155,25 @@ Settings → "Clear locally stored data". See [docs/privacy.md](docs/privacy.md)
 ## Testing and verification
 
 ```bash
-pnpm verify           # typecheck, lint, policy scans, unit + integration tests
-pnpm test:coverage    # coverage with enforced thresholds
-pnpm test:e2e         # Playwright: Chromium, Firefox, WebKit, mobile
-pnpm test:mutation    # targeted mutation testing of the scientific core
-pnpm verify:release   # everything above plus the production build and budgets
-pnpm goal:check       # the full Definition-of-Done gate
+pnpm verify              # typecheck, lint, format, policy scans, unit + integration tests
+pnpm test:e2e            # Playwright: Chromium, Firefox, WebKit, mobile
+pnpm test:mutation       # generative mutation testing of the scientific core
+pnpm verify:release      # everything above plus the production build and budgets
+pnpm verify:fresh-clone  # clone this repository and verify it from scratch
+pnpm evidence:all        # regenerate every release measurement
+pnpm goal:check          # the full Definition-of-Done gate
 ```
 
 Python bridge: `cd python/qsimcity_qiskit && uv run pytest`.
+
+Each measurement writes an evidence envelope under `release-evidence/`
+recording the command, tool version, exit status, thresholds, results, and the
+source tree it measured. `pnpm goal:check` derives every mandatory verdict from
+those envelopes and refuses any that is missing, stale, or records a failure —
+documentation is never accepted in place of a measurement. The individual
+generators are `pnpm coverage:check`, `pnpm test:mutation`, `pnpm lighthouse`,
+`pnpm soak` (ten minutes), `pnpm security:audit`, `pnpm repro:check`,
+`pnpm check:perf`, and `pnpm benchmark:visual`.
 
 ## Build and deployment
 

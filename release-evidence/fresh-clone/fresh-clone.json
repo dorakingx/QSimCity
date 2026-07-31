@@ -1,26 +1,26 @@
 {
-  "commitSha": "eb42aaa2aa0fc69a4bd0faa4a102ad407c3a5a20",
-  "sourceTreeHash": "ede82e4b9f4f13d2",
+  "commitSha": "a443bd5008b3586bc232215999fe3c2d3e80c730",
+  "sourceTreeHash": "13ae3c7b6d0fd8af",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T01:11:45.123Z",
+  "generatedAt": "2026-07-31T01:30:40.078Z",
   "tool": "qsimcity-fresh-clone",
   "toolVersion": "v22.23.1",
   "command": "git clone <repo> && pnpm install --frozen-lockfile && verify + build + e2e",
   "exitStatus": 0,
-  "inputHash": "5364e439f9ac9b5f",
+  "inputHash": "9e300b59cb5b6368",
   "thresholds": {
-    "stepsRequired": 11,
+    "stepsRequired": 15,
     "failedSteps": 0
   },
   "measurements": {
-    "stepsRun": 11,
-    "stepsPassed": 11,
+    "stepsRun": 15,
+    "stepsPassed": 15,
     "failedSteps": 0,
-    "totalSeconds": 55
+    "totalSeconds": 64
   },
   "passed": true,
   "detail": {
-    "commit": "eb42aaa2aa0fc69a4bd0faa4a102ad407c3a5a20",
+    "commit": "a443bd5008b3586bc232215999fe3c2d3e80c730",
     "steps": [
       {
         "id": "install",
@@ -33,7 +33,7 @@
         "id": "typecheck",
         "command": "pnpm typecheck",
         "exitStatus": 0,
-        "durationSeconds": 3.6,
+        "durationSeconds": 3.3,
         "tail": "$ tsc -p tsconfig.typecheck.json"
       },
       {
@@ -47,14 +47,14 @@
         "id": "format",
         "command": "pnpm format",
         "exitStatus": 0,
-        "durationSeconds": 2,
+        "durationSeconds": 2.1,
         "tail": "Checking formatting...\nAll matched files use Prettier code style!\n$ prettier --check ."
       },
       {
         "id": "policy-names",
         "command": "pnpm check:names",
         "exitStatus": 0,
-        "durationSeconds": 1.1,
+        "durationSeconds": 1.2,
         "tail": "Prohibited-name scan passed.\n$ tsx tools/check-prohibited-names.ts"
       },
       {
@@ -75,29 +75,57 @@
         "id": "unit-tests",
         "command": "pnpm test",
         "exitStatus": 0,
-        "durationSeconds": 3.6,
-        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  10:11:00\n   Duration  2.68s (transform 3.06s, setup 0ms, import 6.49s, tests 8.70s, environment 1.15s)\n\n$ vitest run"
+        "durationSeconds": 4,
+        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  10:29:46\n   Duration  3.00s (transform 4.26s, setup 0ms, import 8.50s, tests 10.57s, environment 1.41s)\n\n$ vitest run"
+      },
+      {
+        "id": "coverage",
+        "command": "pnpm test:coverage",
+        "exitStatus": 0,
+        "durationSeconds": 5.8,
+        "tail": "\n=============================== Coverage summary ===============================\nStatements   : 95.75% ( 3133/3272 )\nBranches     : 88.29% ( 1667/1888 )\nFunctions    : 94.84% ( 625/659 )\nLines        : 96.36% ( 2727/2830 )\n================================================================================\n$ vitest run --coverage"
+      },
+      {
+        "id": "coverage-gate",
+        "command": "pnpm coverage:check",
+        "exitStatus": 0,
+        "durationSeconds": 0.4,
+        "tail": "Per-package coverage:\n  packages/domain                  lines  98.49%  branches  95.51%  PASS\n  packages/trace                   lines  98.28%  branches     96%  PASS\n  packages/simulator               lines    100%  branches  98.05%  PASS\n  packages/reference-compiler      lines  97.69%  branches   90.4%  PASS\n  project total                    lines  96.36%  branches  88.29%  PASS\n$ tsx tools/coverage/check-coverage.ts"
+      },
+      {
+        "id": "security-audit",
+        "command": "pnpm security:audit",
+        "exitStatus": 0,
+        "durationSeconds": 3.2,
+        "tail": "Security audit\n  JavaScript: 0 advisories, 0 high or critical\n  Python: 47 packages audited, 0 advisories, 0 high or critical\n  Secret scan: 0 hit(s)\nSecurity audit PASSED\n$ tsx tools/security/run-security-audit.ts"
+      },
+      {
+        "id": "trace-reproducibility",
+        "command": "pnpm repro:check",
+        "exitStatus": 0,
+        "durationSeconds": 7,
+        "tail": "  process 9/12 ghz-4 4848e0b76662f420\n  process 10/12 grover-2 b4330f9bbc3b06e3\n  process 11/12 grover-2 b4330f9bbc3b06e3\n  process 12/12 grover-2 b4330f9bbc3b06e3\n  seed sensitivity: the hash tracks the seed\n  committed samples: 5/5 reproduce the Python manifest (5 carry transpiler telemetry)\nTrace reproducibility PASSED\n$ tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts"
       },
       {
         "id": "build",
         "command": "pnpm build",
         "exitStatus": 0,
-        "durationSeconds": 1.7,
+        "durationSeconds": 1.8,
         "tail": "PWA v1.3.0\nmode      generateSW\nprecache  16 entries (1104.74 KiB)\nfiles generated\n  dist/sw.js\n  dist/workbox-2fbc6a65.js\n$ pnpm --filter qsimcity-web build\n$ vite build"
       },
       {
         "id": "perf-budget",
         "command": "pnpm check:perf",
         "exitStatus": 0,
-        "durationSeconds": 0.5,
+        "durationSeconds": 0.4,
         "tail": "Lazily loaded chunks (gzip):\n  three-bAKDV79k.js                            132.0 KiB\n  pipeline.worker-CHc2qla6.js                  32.3 KiB\n  CityView-noF246dv.js                         7.8 KiB\n  workbox-window.prod.es5-DsELeUxu.js          2.2 KiB\n  TOTAL ALL JS 297.4 KiB (budget 600 KiB)\nPerformance budgets pass.\n$ tsx tools/check-performance.ts"
       },
       {
         "id": "e2e",
         "command": "pnpm test:e2e",
         "exitStatus": 0,
-        "durationSeconds": 34.5,
-        "tail": "  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (555ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (514ms)\n  ✓  78 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.2s)\n  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.9s)\n\n  11 skipped\n  68 passed (33.6s)\n$ playwright test"
+        "durationSeconds": 26.8,
+        "tail": "  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (441ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (477ms)\n  ✓  78 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.1s)\n  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.8s)\n\n  11 skipped\n  68 passed (26.0s)\n$ playwright test"
       }
     ]
   }

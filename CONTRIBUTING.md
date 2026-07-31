@@ -18,12 +18,20 @@ cd python/qsimcity_qiskit && uv sync && uv run pytest
 ## Before opening a pull request
 
 ```bash
-pnpm verify         # typecheck, lint, policy scans, unit + integration tests
+pnpm verify         # typecheck, lint, format, policy scans, unit + integration tests
 pnpm test:e2e       # Playwright across Chromium, Firefox, WebKit, mobile
 ```
 
 `pnpm verify:release` additionally runs coverage, the production build,
 performance budgets, and mutation testing.
+
+Release measurements are separate from the test suite: each one writes an
+evidence envelope under `release-evidence/` recording the command, its exit
+status, the thresholds it was judged against, and the source tree it measured.
+`pnpm goal:check` reads those envelopes and refuses any that is missing,
+stale, or failed, so a claim in a document is never enough. If you change
+anything the gate measures, regenerate with `pnpm evidence:all` from a clean
+worktree.
 
 ## Non-negotiable rules
 
