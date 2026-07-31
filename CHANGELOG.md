@@ -49,6 +49,14 @@ asserted rather than taken, or a defect that taking it exposed.
 - Trace reproducibility evidence (`pnpm repro:check`): twelve independent
   processes, seed sensitivity, and cross-language verification of every
   committed sample against the Python-generated manifest.
+- Automated fresh-clone verification (`pnpm verify:fresh-clone`): clones the
+  repository at HEAD, refuses any leakage of `node_modules`, build output, or
+  coverage from the working tree, and runs the full verification suite inside
+  the clone. The gate consumes its envelope instead of grepping an audit
+  document for the words "fresh clone".
+- Tests for the evidence reader's refusal paths — missing, empty, malformed,
+  stale, failed, and incomplete envelopes — because the reader is what every
+  mandatory verdict now depends on.
 - Comparative visual benchmark against the reference application over eighteen
   categories, with three real visual deficits fixed as a result: an
   atmospheric horizon, denser district interiors, and a walk-mode entry that

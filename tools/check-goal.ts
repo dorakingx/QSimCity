@@ -493,11 +493,24 @@ check('Project state does not declare an unresolved blocker', () => {
   return 'no failed or blocked items recorded';
 });
 
-check('Fresh-clone verification recorded', () => {
-  const content = readFileSync(join(ROOT, 'docs', 'audits', 'final-release-audit.md'), 'utf8');
-  if (!/fresh clone/i.test(content))
-    throw new Error('final audit does not record a fresh-clone run');
-  return 'fresh-clone verification recorded in the final audit';
+check('Fresh-clone verification evidence', () => {
+  // Previously this grepped the final audit for the words "fresh clone" —
+  // prose standing in for a measurement, which is the defect that reopened
+  // this whole gate. It now consumes the result of an actual clone-and-run.
+  const evidence = readEvidence<{ steps: { id: string }[] }>(
+    'release-evidence/fresh-clone/fresh-clone.json',
+    {
+      requiredMeasurements: ['stepsRun', 'stepsPassed', 'failedSteps'],
+      ...evidenceOptions,
+    },
+  );
+  const m = evidence.measurements;
+  if (Number(m['failedSteps']) > 0)
+    throw new Error(`${m['failedSteps']} step(s) failed in the clone`);
+  if (Number(m['stepsPassed']) < 8) {
+    throw new Error(`only ${m['stepsPassed']} verification steps ran in the clone`);
+  }
+  return `${m['stepsPassed']} steps passed in a clean clone (${m['totalSeconds']}s)`;
 });
 
 // -------------------------------------------------------------- report

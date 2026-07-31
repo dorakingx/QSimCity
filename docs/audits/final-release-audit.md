@@ -3,6 +3,16 @@
 Date: 2026-07-31. Performed independently of the implementation work, on a
 **fresh clone**, following only the README.
 
+> **Superseded in part by [release-hardening.md](release-hardening.md).** The
+> completion claim this audit supported was rejected, and several figures below
+> are from that earlier run: the mutation score has since been remeasured
+> generatively (16 hand-written mutants became 84 generated ones), the soak and
+> Lighthouse rows that were then substitutions have since been executed, and
+> the fresh-clone procedure itself is now automated by
+> `pnpm verify:fresh-clone`, which records a machine-checked evidence envelope
+> instead of the manual table below. The defects this audit found and fixed
+> stand; its numbers do not.
+
 Environment: macOS 15.6.1 (arm64), Node 22.23.1 (from `.nvmrc`), pnpm 11.14.0
 (from `packageManager`), Python 3.12 with uv 0.9.10.
 
@@ -16,9 +26,9 @@ Environment: macOS 15.6.1 (arm64), Node 22.23.1 (from `.nvmrc`), pnpm 11.14.0
 | 4 | `pnpm lint` | PASS (after fix, below) |
 | 5 | `pnpm typecheck` | PASS |
 | 6 | Policy scans (names, language, markers) | PASS (after fixes, below) |
-| 7 | `pnpm test` | 665 passed (after fix, below) |
-| 8 | `pnpm test:coverage` | 96.29% lines, 88.38% branches — thresholds met |
-| 9 | `pnpm test:mutation` | 100.0%, 16/16 killed |
+| 7 | `pnpm test` | Passed after the fix below (suite has since grown to 700) |
+| 8 | `pnpm test:coverage` | Thresholds met (superseded by the per-package gate) |
+| 9 | `pnpm test:mutation` | 16/16 killed (superseded: 84 generated mutants, 96.4%) |
 | 10 | `pnpm build` | PASS — `apps/web/dist` with index.html, sw.js, manifest |
 | 11 | Python env from scratch (`uv sync`) | PASS |
 | 12 | Regenerate sample traces | PASS — byte-identical across 8 consecutive runs |

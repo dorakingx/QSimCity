@@ -1,6 +1,6 @@
 {
-  "initialJsGzipBytes": 125851,
-  "totalJsGzipBytes": 304262,
+  "initialJsGzipBytes": 125987,
+  "totalJsGzipBytes": 304547,
   "budgetGzipBytes": 327680,
   "totalBudgetGzipBytes": 614400,
   "lazyChunks": [
@@ -9,12 +9,12 @@
       "gzipBytes": 135194
     },
     {
-      "name": "pipeline.worker-KKI9ycbW.js",
-      "gzipBytes": 33071
+      "name": "pipeline.worker-CHc2qla6.js",
+      "gzipBytes": 33111
     },
     {
-      "name": "CityView-Bdfc5dGA.js",
-      "gzipBytes": 7887
+      "name": "CityView-noF246dv.js",
+      "gzipBytes": 7996
     },
     {
       "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -23,8 +23,8 @@
   ],
   "eagerChunks": [
     {
-      "name": "index-BschNHxK.js",
-      "gzipBytes": 66522
+      "name": "index-B5AQ_31V.js",
+      "gzipBytes": 66658
     },
     {
       "name": "react-VZnIVrcg.js",
@@ -36,5 +36,5 @@
     }
   ],
   "passed": true,
-  "generatedAt": "2026-07-30T15:43:29.798Z"
+  "generatedAt": "2026-07-31T00:41:24.152Z"
 }

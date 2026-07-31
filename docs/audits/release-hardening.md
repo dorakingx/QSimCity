@@ -45,6 +45,15 @@ paths: missing file, empty file, invalid JSON, missing envelope field, stale
 source hash, non-zero exit, `passed: false`, and missing measurement each fail
 the gate.
 
+**The last prose check.** One requirement was still satisfied by grepping the
+final audit for the words "fresh clone" — the same defect in miniature.
+`pnpm verify:fresh-clone` now clones the repository at HEAD into a temporary
+directory, asserts that no `node_modules`, build output, or coverage leaked in
+from the working tree, and runs install, typecheck, lint, format, the three
+policy scans, the unit suite, the production build, the performance budget, and
+the full end-to-end browser matrix inside that clone, recording each step's
+exit status and duration in an envelope. The gate consumes that envelope.
+
 ## 2. Ten-minute soak (previously never run)
 
 `tools/soak/run-soak.ts` drives the production build in a real browser for a

@@ -38,6 +38,8 @@ completed_items:
   - security-audit-evidence
   - trace-reproducibility-evidence
   - license-wording-corrected
+  - fresh-clone-verification-automated
+  - evidence-reader-refusal-paths-tested
 failed_items: []
 blocked_items: []
 next_actions:
@@ -74,7 +76,7 @@ resolved_findings:
       open-source claims removed while no LICENSE exists; policy check added to
       goal:check and asserted in the end-to-end suite
 test_results:
-  typescript_unit_integration: 700 passed
+  typescript_unit_integration: 720 passed
   python_bridge: 71 passed
   end_to_end: 68 passed
   browsers: [chromium, firefox, webkit, mobile]

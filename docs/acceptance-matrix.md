@@ -88,7 +88,7 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | --- | --- | --- |
 | TypeScript strict passes | PASS | `pnpm typecheck` clean under `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` |
 | Python type checking passes | PASS | `pyright` 0 errors, 0 warnings |
-| ≥300 meaningful automated tests pass | PASS | 700 TypeScript unit/integration + 71 Python + 68 E2E |
+| ≥300 meaningful automated tests pass | PASS | 720 TypeScript unit/integration + 71 Python + 68 E2E |
 | Coverage thresholds pass | PASS | Per-package gate (core ≥95% lines / ≥90% branches, project ≥90/85), every package above threshold — `release-evidence/coverage/per-package-coverage.json` |
 | Mutation threshold passes | PASS | 96.4% (81/84) across 11 scientific areas and 14 files; all 3 survivors reviewed as equivalent, 0 pending — `release-evidence/mutation/mutation-report.json` |
 | Production build passes | PASS | `pnpm build`; artifacts in `apps/web/dist` |
@@ -99,7 +99,7 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | No high/critical dependency vulnerability | PASS | `pnpm audit` 0 high/critical; `pip-audit` 0 across 47 packages (pytest upgraded to 9.0.3 for PYSEC-2026-1845); secret scan 0 hits — `release-evidence/security/security-report.json` |
 | No blocking TODO/FIXME/placeholder | PASS | `pnpm check:todos` |
 | Sample traces regenerable | PASS | 12 independent processes agree on `semanticHash`; 5/5 committed samples reproduce the Python manifest from TypeScript — `release-evidence/trace-reproducibility/reproducibility.json` |
-| Fresh-clone reproduction passes | PASS | `docs/audits/release-hardening.md`, `docs/audits/final-release-audit.md` |
+| Fresh-clone reproduction passes | PASS | `pnpm verify:fresh-clone` clones at HEAD and runs install, typecheck, lint, format, policy scans, unit tests, build, budgets, and the browser matrix inside the clone — `release-evidence/fresh-clone/fresh-clone.json` |
 | `pnpm goal:check` passes | PASS | Every mandatory verdict derived from a content-bound evidence envelope — `release-evidence/goal-check.txt` |
 | Ten-minute production soak passes | PASS | Full 600 s across 8 rotating workloads, every criterion met — `release-evidence/soak/soak-report.json` |
 | Lighthouse thresholds met | PASS | Median of 3 runs on each of 4 targets, every threshold met — `release-evidence/lighthouse/lighthouse-report.json` |
