@@ -270,10 +270,7 @@ def canonical_json(value: Any) -> str:
         items = sorted(value.items())
         return (
             "{"
-            + ",".join(
-                f"{json.dumps(k, ensure_ascii=False)}:{canonical_json(v)}"
-                for k, v in items
-            )
+            + ",".join(f"{json.dumps(k, ensure_ascii=False)}:{canonical_json(v)}" for k, v in items)
             + "}"
         )
     raise ValueError(f"Cannot canonicalize value of type {type(value)!r}")
@@ -336,12 +333,13 @@ TELEMETRY_PAYLOAD_KEYS = frozenset(
 )
 
 
-def semantic_view(trace: Trace) -> dict[str, Any]:
-    """Projection of a trace onto reproducible, scientifically meaningful data.
+def semantic_view_of_document(data: dict[str, Any]) -> dict[str, Any]:
+    """Projection of a parsed trace document onto reproducible content.
 
+    Operates on the document rather than the dataclass so a committed
+    `*.qsimcity.json` file can be verified exactly as it sits on disk.
     Must match `semanticView` in packages/trace/src/hashing-contract.ts.
     """
-    data = trace.to_dict()
     events = []
     for event in data["events"]:
         payload = {k: v for k, v in event["payload"].items() if k not in TELEMETRY_PAYLOAD_KEYS}
@@ -378,9 +376,19 @@ def semantic_view(trace: Trace) -> dict[str, Any]:
     }
 
 
+def semantic_view(trace: Trace) -> dict[str, Any]:
+    """Projection of a trace onto reproducible, scientifically meaningful data."""
+    return semantic_view_of_document(trace.to_dict())
+
+
+def semantic_hash_of_document(data: dict[str, Any]) -> str:
+    """Semantic hash of a parsed trace document."""
+    return fnv1a64(canonical_json(semantic_view_of_document(data)))
+
+
 def semantic_hash(trace: Trace) -> str:
     """Hash of reproducible scientific content; stable across processes."""
-    return fnv1a64(canonical_json(semantic_view(trace)))
+    return semantic_hash_of_document(trace.to_dict())
 
 
 def artifact_hash(serialized: str) -> str:

@@ -16,3 +16,4 @@ __pycache__/
 .mypy_cache/
 release-evidence/tmp/
 tools/mutation/.work/
+.hypothesis/

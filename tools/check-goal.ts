@@ -4,7 +4,13 @@ import { join } from 'node:path';
 import { scanProhibitedNames } from './check-prohibited-names.js';
 import { scanLanguage } from './check-language.js';
 import { scanTodos } from './check-todos.js';
-import { currentCommit, readEvidence, worktreeDirty, EvidenceError } from './evidence.js';
+import {
+  currentCommit,
+  readEvidence,
+  sourceTreeHash,
+  worktreeDirty,
+  EvidenceError,
+} from './evidence.js';
 
 /**
  * QSimCity completion checker (spec §23).
@@ -62,12 +68,15 @@ const bin = (name: string): string => join(ROOT, 'node_modules', '.bin', name);
 
 const evidenceOptions = { allowDirty: ALLOW_DIRTY };
 
-console.log(`QSimCity completion gate — HEAD ${currentCommit().slice(0, 12)}`);
+console.log(
+  `QSimCity completion gate — HEAD ${currentCommit().slice(0, 12)}, ` +
+    `source tree ${sourceTreeHash()}`,
+);
 if (worktreeDirty()) {
   console.log(
     ALLOW_DIRTY
-      ? 'Worktree is dirty; --allow-dirty was passed, so evidence from it is accepted.'
-      : 'Worktree is dirty — evidence must be regenerated from a clean commit.',
+      ? 'Source has uncommitted changes; --allow-dirty was passed, so evidence from it is accepted.'
+      : 'Source has uncommitted changes — evidence must be regenerated from a clean tree.',
   );
 }
 console.log('');
@@ -145,14 +154,17 @@ check('Prohibited-name scan', () => {
 
 check('Language-policy scan (English only)', () => {
   const violations = scanLanguage(ROOT);
-  if (violations.length > 0) throw new Error(`${violations.length} file(s), first: ${violations[0]!.file}`);
+  if (violations.length > 0)
+    throw new Error(`${violations.length} file(s), first: ${violations[0]!.file}`);
   return 'no unintended non-English text';
 });
 
 check('Blocking TODO/FIXME/placeholder scan', () => {
   const violations = scanTodos(ROOT);
   if (violations.length > 0) {
-    throw new Error(`${violations.length} file(s), first: ${violations[0]!.file}:${violations[0]!.line}`);
+    throw new Error(
+      `${violations.length} file(s), first: ${violations[0]!.file}:${violations[0]!.line}`,
+    );
   }
   return 'no blocking markers';
 });
@@ -217,7 +229,9 @@ check('Meaningful test count (>= 300)', () => {
   return `${count} tests declared across TypeScript and Python suites`;
 });
 
-check('TypeScript strict typecheck', () => run(bin('tsc'), ['-p', 'tsconfig.typecheck.json'], 'typecheck'));
+check('TypeScript strict typecheck', () =>
+  run(bin('tsc'), ['-p', 'tsconfig.typecheck.json'], 'typecheck'),
+);
 check('Lint (incl. architecture boundaries)', () => run(bin('eslint'), ['.'], 'lint'));
 check('Unit and integration tests', () => run(bin('vitest'), ['run'], 'vitest'));
 check('Production build', () => run(bin('vite'), ['build'], 'build', join(ROOT, 'apps', 'web')));
@@ -227,7 +241,12 @@ check('End-to-end browser matrix', () => run(bin('playwright'), ['test'], 'playw
 
 check('Per-package coverage evidence', () => {
   const evidence = readEvidence<{
-    packages: { package: string; lines: number; branches: number; passed: boolean }[];
+    packages: {
+      package: string;
+      lines: number;
+      branches: number;
+      passed: boolean;
+    }[];
   }>('release-evidence/coverage/per-package-coverage.json', {
     requiredMeasurements: [
       'project.lines',
@@ -351,8 +370,10 @@ check('Security audit evidence', () => {
     ...evidenceOptions,
   });
   const m = evidence.measurements;
-  if (Number(m['jsHighOrCritical']) > 0) throw new Error('JavaScript high/critical advisories remain');
-  if (Number(m['pythonHighOrCritical']) > 0) throw new Error('Python high/critical advisories remain');
+  if (Number(m['jsHighOrCritical']) > 0)
+    throw new Error('JavaScript high/critical advisories remain');
+  if (Number(m['pythonHighOrCritical']) > 0)
+    throw new Error('Python high/critical advisories remain');
   if (Number(m['secretsFound']) > 0) throw new Error('possible committed secrets found');
   return 'no high/critical advisories, no committed secrets';
 });
@@ -373,10 +394,12 @@ check('Trace reproducibility evidence', () => {
 });
 
 check('Visual benchmark evidence', () => {
-  const evidence = readEvidence<{ categories: { name: string; qsimcity: number }[] }>(
-    'release-evidence/visual-benchmark/benchmark.json',
-    { requiredMeasurements: ['categoriesCompared', 'minimumScore'], ...evidenceOptions },
-  );
+  const evidence = readEvidence<{
+    categories: { name: string; qsimcity: number }[];
+  }>('release-evidence/visual-benchmark/benchmark.json', {
+    requiredMeasurements: ['categoriesCompared', 'minimumScore'],
+    ...evidenceOptions,
+  });
   const m = evidence.measurements;
   if (Number(m['minimumScore']) < 4) {
     throw new Error(`lowest visual category scores ${m['minimumScore']}/5; 4 is required`);
@@ -472,7 +495,8 @@ check('Project state does not declare an unresolved blocker', () => {
 
 check('Fresh-clone verification recorded', () => {
   const content = readFileSync(join(ROOT, 'docs', 'audits', 'final-release-audit.md'), 'utf8');
-  if (!/fresh clone/i.test(content)) throw new Error('final audit does not record a fresh-clone run');
+  if (!/fresh clone/i.test(content))
+    throw new Error('final audit does not record a fresh-clone run');
   return 'fresh-clone verification recorded in the final audit';
 });
 

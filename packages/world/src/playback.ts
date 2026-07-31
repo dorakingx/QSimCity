@@ -64,7 +64,10 @@ export function activityAtTick(trace: Trace, tick: number): WorldActivity {
         measuredBits.set(clbit, outcome);
       }
     }
-    if (ev.instructionId && (ev.eventType === 'gate.executed' || ev.eventType === 'measurement.sampled')) {
+    if (
+      ev.instructionId &&
+      (ev.eventType === 'gate.executed' || ev.eventType === 'measurement.sampled')
+    ) {
       executed.add(ev.instructionId);
     }
   }

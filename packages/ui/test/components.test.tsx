@@ -72,11 +72,51 @@ const simpleCircuit: TraceCircuit = {
   instructions: [
     { id: 'a', kind: 'gate', name: 'h', qubits: [0], params: [], clbits: [], condition: null },
     { id: 'b', kind: 'gate', name: 'cx', qubits: [0, 1], params: [], clbits: [], condition: null },
-    { id: 'c', kind: 'gate', name: 'rz', qubits: [1], params: [Math.PI / 2], clbits: [], condition: null },
-    { id: 'd', kind: 'gate', name: 'swap', qubits: [0, 1], params: [], clbits: [], condition: null },
-    { id: 'e', kind: 'barrier', name: 'barrier', qubits: [0, 1], params: [], clbits: [], condition: null },
-    { id: 'f', kind: 'measure', name: 'measure', qubits: [0], params: [], clbits: [0], condition: null },
-    { id: 'g', kind: 'gate', name: 'x', qubits: [1], params: [], clbits: [], condition: { creg: 'c', value: 1 } },
+    {
+      id: 'c',
+      kind: 'gate',
+      name: 'rz',
+      qubits: [1],
+      params: [Math.PI / 2],
+      clbits: [],
+      condition: null,
+    },
+    {
+      id: 'd',
+      kind: 'gate',
+      name: 'swap',
+      qubits: [0, 1],
+      params: [],
+      clbits: [],
+      condition: null,
+    },
+    {
+      id: 'e',
+      kind: 'barrier',
+      name: 'barrier',
+      qubits: [0, 1],
+      params: [],
+      clbits: [],
+      condition: null,
+    },
+    {
+      id: 'f',
+      kind: 'measure',
+      name: 'measure',
+      qubits: [0],
+      params: [],
+      clbits: [0],
+      condition: null,
+    },
+    {
+      id: 'g',
+      kind: 'gate',
+      name: 'x',
+      qubits: [1],
+      params: [],
+      clbits: [],
+      condition: { creg: 'c', value: 1 },
+    },
   ],
 };
 
@@ -126,9 +166,33 @@ describe('CircuitDiagram', () => {
       ...simpleCircuit,
       numQubits: 3,
       instructions: [
-        { id: 'x', kind: 'gate', name: 'ccx', qubits: [0, 1, 2], params: [], clbits: [], condition: null },
-        { id: 'y', kind: 'gate', name: 'cz', qubits: [0, 1], params: [], clbits: [], condition: null },
-        { id: 'z', kind: 'reset', name: 'reset', qubits: [2], params: [], clbits: [], condition: null },
+        {
+          id: 'x',
+          kind: 'gate',
+          name: 'ccx',
+          qubits: [0, 1, 2],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
+        {
+          id: 'y',
+          kind: 'gate',
+          name: 'cz',
+          qubits: [0, 1],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
+        {
+          id: 'z',
+          kind: 'reset',
+          name: 'reset',
+          qubits: [2],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
       ],
     };
     render(<CircuitDiagram circuit={ccx} title="CCX" compact />);
@@ -170,20 +234,33 @@ describe('Histogram', () => {
     const counts: Record<string, number> = {};
     for (let i = 0; i < 40; i++) counts[i.toString(2).padStart(6, '0')] = 40 - i;
     render(
-      <Histogram title="Many" series={[{ label: 'Ideal', counts, certainty: 'SAMPLED' }]} maxBars={5} />,
+      <Histogram
+        title="Many"
+        series={[{ label: 'Ideal', counts, certainty: 'SAMPLED' }]}
+        maxBars={5}
+      />,
     );
     expect(screen.getByText(/Showing the 5 most frequent of 40 outcomes/)).toBeTruthy();
   });
 
   it('handles an empty series without dividing by zero', () => {
-    render(<Histogram title="Empty" series={[{ label: 'Ideal', counts: {}, certainty: 'SAMPLED' }]} />);
+    render(
+      <Histogram title="Empty" series={[{ label: 'Ideal', counts: {}, certainty: 'SAMPLED' }]} />,
+    );
     expect(screen.getByRole('group', { name: 'Empty' })).toBeTruthy();
   });
 });
 
 describe('CouplingMap', () => {
   it('renders qubit nodes with layout overlay and text alternative', () => {
-    render(<CouplingMap deviceId="linear-5" layout={[2, 3]} activeQubits={[2]} activeCouplings={[[2, 3]]} />);
+    render(
+      <CouplingMap
+        deviceId="linear-5"
+        layout={[2, 3]}
+        activeQubits={[2]}
+        activeCouplings={[[2, 3]]}
+      />,
+    );
     expect(screen.getByRole('group', { name: /Coupling map/ })).toBeTruthy();
     fireEvent.click(screen.getByText('Topology details (text alternative)'));
     expect(screen.getByText(/logical 0 on physical 2/)).toBeTruthy();
@@ -317,7 +394,10 @@ describe('Inspector', () => {
   });
 
   it('describes a selected district', () => {
-    useAppStore.setState({ inspectorOpen: true, selection: { kind: 'district', districtId: 'qpu-grid' } });
+    useAppStore.setState({
+      inspectorOpen: true,
+      selection: { kind: 'district', districtId: 'qpu-grid' },
+    });
     render(<Inspector />);
     expect(screen.getByRole('heading', { name: 'QPU Grid' })).toBeTruthy();
     expect(screen.getByText(/cryogenic heart/)).toBeTruthy();
@@ -349,7 +429,10 @@ describe('Inspector', () => {
   });
 
   it('closes and clears the selection', async () => {
-    useAppStore.setState({ inspectorOpen: true, selection: { kind: 'district', districtId: 'observatory' } });
+    useAppStore.setState({
+      inspectorOpen: true,
+      selection: { kind: 'district', districtId: 'observatory' },
+    });
     render(<Inspector />);
     await userEvent.click(screen.getByRole('button', { name: 'Close inspector' }));
     expect(useAppStore.getState().inspectorOpen).toBe(false);
@@ -443,7 +526,9 @@ describe('views', () => {
     cleanup();
     useAppStore.setState({ trace: bellTrace, playbackTick: 3 });
     render(<Accessible2DView />);
-    expect(screen.getAllByRole('group', { name: 'Input circuit (as written)' }).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole('group', { name: 'Input circuit (as written)' }).length,
+    ).toBeGreaterThan(0);
     expect(screen.getAllByRole('group', { name: /Compiled circuit/ }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('group', { name: /Coupling map/ }).length).toBeGreaterThan(0);
   });
@@ -498,7 +583,9 @@ describe('LabControls', () => {
 
   it('disables export until a trace exists', () => {
     render(<LabControls />);
-    expect(screen.getByRole('button', { name: 'Export trace' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Export trace' }).hasAttribute('disabled')).toBe(
+      true,
+    );
   });
 });
 

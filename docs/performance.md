@@ -66,27 +66,57 @@ Accessible 2D Mode rather than showing a dead canvas. Covered by
 
 ## Lighthouse
 
-Lighthouse was **not executed** in this environment (no Chrome-headless
-Lighthouse runner was available on the build host). The underlying
-requirements it would measure are covered directly and with stronger evidence:
+Lighthouse runs as a release gate: `pnpm lighthouse` scores four targets — the
+home screen and Accessible 2D Mode, each on a desktop and a mobile profile —
+three times per target, and judges the median so one noisy run cannot decide
+the verdict. All twelve raw reports are kept in `release-evidence/lighthouse/`.
 
-| Lighthouse category | How it is covered here |
-| --- | --- |
-| Accessibility | axe-core WCAG 2.2 AA on five surfaces, zero violations, plus a keyboard-only walkthrough (`docs/accessibility.md`) |
-| Best Practices | CSP without `unsafe-eval`/`unsafe-inline` scripts, full security-header set, HTTPS/HSTS, no console errors asserted across four browsers |
-| SEO | Descriptive `<title>`, meta description, semantic landmarks and headings, `lang="en"` |
-| Performance | Explicit enforced byte budgets above, lazy 3D loading, worker offloading |
-| PWA | Manifest, service worker, and **verified offline startup with a full offline run** (`tests/e2e/pwa.spec.ts`) |
+| Category | Threshold | Measured |
+| --- | --- | --- |
+| Performance (desktop) | 85 | 100 |
+| Performance (mobile) | 75 | 84 |
+| Accessibility | 100 | 100 |
+| Best Practices | 95 | 96 |
+| SEO | 90 | 91 |
 
-This is recorded honestly as a substitution, not as a passing Lighthouse run.
-See `docs/acceptance-matrix.md`.
+These scores are from this host (macOS, Chromium via Playwright); they are
+reproducible by rerunning the command, not universal constants.
+
+An earlier release recorded Lighthouse as "not executed" and substituted other
+evidence for it, and the completion gate passed anyway. The gate no longer
+accepts a substitution for a required measurement — see
+`docs/audits/release-hardening.md`.
+
+The direct evidence that stood in for Lighthouse is still maintained, because
+it is stronger than a category score: axe-core WCAG 2.2 AA on five surfaces
+with zero violations plus a keyboard-only walkthrough, a CSP with no
+`unsafe-eval` or inline scripts, the full security-header set, zero console
+errors asserted across four browsers, and a verified offline startup with a
+full offline run.
 
 ## Soak behavior
 
-A ten-minute soak was not run as an automated gate. The design choices that a
-soak would test are structural rather than incidental: the render loop
-allocates no new geometry per frame, pulse meshes are explicitly disposed on
-expiry, engine `dispose()` releases geometries and materials (asserted by
-test), and playback state is a single integer rather than accumulating
-history. Long-session memory growth remains the main untested risk and is
-recorded as such in the acceptance matrix.
+`pnpm soak` runs the production build in a real browser for a full 600 seconds,
+cycling eight workloads: a Lab run, playback control (pause, seek, step, speed),
+all four camera modes, a noise change with a rerun, Accessible 2D Mode, Compare
+Mode, a rotating scenario including Variational Gridlock, and the guided tour.
+Heap is sampled throughout and every console and page error is recorded.
+
+| Criterion | Threshold | Measured |
+| --- | --- | --- |
+| Duration | ≥ 600 s | 600.3 s |
+| Workload cycles | ≥ 5 | 290 |
+| Trailing heap growth ratio (after 60 s warm-up) | < 1.5 | 1.443 |
+| Uncaught errors | 0 | 0 |
+| Console errors | 0 | 0 |
+| Unrecovered WebGL context losses | 0 | 0 |
+| Final interaction latency | < 3000 ms | within budget |
+
+Artifacts: `release-evidence/soak/soak-report.json`, `heap-samples.csv`,
+`console-events.json`, and `soak-summary.md`.
+
+The structural properties this exercises were deliberate: the render loop
+allocates no new geometry per frame, pulse meshes are disposed on expiry,
+engine `dispose()` releases geometries and materials (asserted by test), and
+playback state is a single integer rather than accumulating history. Long
+sessions are now measured rather than argued.

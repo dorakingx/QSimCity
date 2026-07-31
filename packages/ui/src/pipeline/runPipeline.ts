@@ -8,12 +8,7 @@ import {
   type NoiseModel,
 } from '@qsimcity/simulator';
 import { COMPILER_VERSION } from '@qsimcity/reference-compiler';
-import {
-  TraceBuilder,
-  deriveTraceId,
-  type Trace,
-  type NoiseConfig,
-} from 'qsimcity-trace';
+import { TraceBuilder, deriveTraceId, type Trace, type NoiseConfig } from 'qsimcity-trace';
 
 /**
  * The full Quantum Lab pipeline: parse -> reference-compile -> simulate

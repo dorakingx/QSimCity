@@ -126,7 +126,18 @@ describe('topology structure is pinned', () => {
   it('grid-3x3 has exactly the textbook lattice edges', () => {
     const grid = getDevice('grid-3x3');
     expect(grid.edges.map(([a, b]) => `${a}-${b}`)).toEqual([
-      '0-1', '0-3', '1-2', '1-4', '2-5', '3-4', '3-6', '4-5', '4-7', '5-8', '6-7', '7-8',
+      '0-1',
+      '0-3',
+      '1-2',
+      '1-4',
+      '2-5',
+      '3-4',
+      '3-6',
+      '4-5',
+      '4-7',
+      '5-8',
+      '6-7',
+      '7-8',
     ]);
   });
 
@@ -134,7 +145,10 @@ describe('topology structure is pinned', () => {
     const grid = getDevice('grid-3x3');
     // 2-3 and 5-6 would be wrap-around edges a naive loop bound introduces.
     for (const forbidden of ['2-3', '5-6']) {
-      expect(grid.edges.some(([a, b]) => `${a}-${b}` === forbidden), forbidden).toBe(false);
+      expect(
+        grid.edges.some(([a, b]) => `${a}-${b}` === forbidden),
+        forbidden,
+      ).toBe(false);
     }
   });
 });
@@ -153,7 +167,10 @@ describe('neighbor ordering is deterministic', () => {
     for (const d of DEVICES) {
       for (let q = 0; q < d.numQubits; q++) {
         const ns = neighbors(d, q);
-        expect([...ns].sort((a, b) => a - b), `${d.id} q${q}`).toEqual(ns);
+        expect(
+          [...ns].sort((a, b) => a - b),
+          `${d.id} q${q}`,
+        ).toEqual(ns);
       }
     }
   });

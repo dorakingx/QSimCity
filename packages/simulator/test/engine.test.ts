@@ -1,12 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { parseQasm, SAMPLE_CIRCUITS, getSampleCircuit, makeCircuit, makeInstruction } from '@qsimcity/domain';
+import {
+  parseQasm,
+  SAMPLE_CIRCUITS,
+  getSampleCircuit,
+  makeCircuit,
+  makeInstruction,
+} from '@qsimcity/domain';
 import { isDynamicCircuit, simulate, SimulationCancelledError, MAX_SHOTS } from '../src/engine.js';
 import { ZERO_NOISE } from '../src/noise.js';
 
 const BELL = getSampleCircuit('bell').qasm;
 const TELEPORT = getSampleCircuit('teleportation').qasm;
 
-async function run(qasm: string, opts: { shots?: number; seed?: string; noise?: Partial<typeof ZERO_NOISE> } = {}) {
+async function run(
+  qasm: string,
+  opts: { shots?: number; seed?: string; noise?: Partial<typeof ZERO_NOISE> } = {},
+) {
   return simulate(parseQasm(qasm), {
     shots: opts.shots ?? 1000,
     seed: opts.seed ?? 'test-seed',
@@ -21,7 +30,9 @@ describe('isDynamicCircuit', () => {
 
   it('classifies conditions, resets, and mid-circuit measurement as dynamic', () => {
     expect(isDynamicCircuit(parseQasm(TELEPORT))).toBe(true);
-    expect(isDynamicCircuit(parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nreset q[0];'))).toBe(true);
+    expect(
+      isDynamicCircuit(parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nreset q[0];')),
+    ).toBe(true);
     expect(
       isDynamicCircuit(
         parseQasm(

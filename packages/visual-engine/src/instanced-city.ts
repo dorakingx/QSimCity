@@ -71,9 +71,7 @@ export function buildCity(): CityMeshes {
       buildingId: building.id,
       districtId: building.districtId,
     };
-    const baseRot = new THREE.Quaternion().setFromEuler(
-      new THREE.Euler(0, building.rotationY, 0),
-    );
+    const baseRot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, building.rotationY, 0));
     for (const part of building.parts) {
       const [ox, oy, oz] = part.offset;
       const [sx, sy, sz] = part.size;
@@ -96,27 +94,35 @@ export function buildCity(): CityMeshes {
         case 'ship': {
           tmpPos.y = oy + sy / 2;
           tmpScale.set(sx, sy, sz);
-          boxRecords.push(record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())));
+          boxRecords.push(
+            record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())),
+          );
           break;
         }
         case 'chimney':
         case 'mast': {
           tmpPos.y = oy + sy / 2;
           tmpScale.set(sx, sy, sx);
-          cylRecords.push(record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())));
+          cylRecords.push(
+            record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())),
+          );
           break;
         }
         case 'cylinder': {
           tmpPos.y = oy + sy / 2;
           tmpScale.set(sx, sy, sx);
-          cylRecords.push(record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())));
+          cylRecords.push(
+            record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())),
+          );
           break;
         }
         case 'dome':
         case 'dish': {
           tmpPos.y = oy + (part.kind === 'dome' ? 0 : sy / 2);
           tmpScale.set(sx, sy, sz);
-          sphereRecords.push(record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())));
+          sphereRecords.push(
+            record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())),
+          );
           break;
         }
         case 'crane': {
@@ -138,7 +144,9 @@ export function buildCity(): CityMeshes {
         case 'bridge': {
           tmpPos.y = oy + sy / 2;
           tmpScale.set(sx, sy, sz);
-          boxRecords.push(record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())));
+          boxRecords.push(
+            record(new THREE.Matrix4().compose(tmpPos.clone(), tmpQuat.clone(), tmpScale.clone())),
+          );
           break;
         }
       }
@@ -178,9 +186,18 @@ export function buildCity(): CityMeshes {
   group.add(boxes.mesh, cylinders.mesh, spheres.mesh);
 
   const pickTargets = new Map<THREE.Object3D, PickTarget[]>();
-  pickTargets.set(boxes.mesh, boxRecords.map((r) => r.target));
-  pickTargets.set(cylinders.mesh, cylRecords.map((r) => r.target));
-  pickTargets.set(spheres.mesh, sphereRecords.map((r) => r.target));
+  pickTargets.set(
+    boxes.mesh,
+    boxRecords.map((r) => r.target),
+  );
+  pickTargets.set(
+    cylinders.mesh,
+    cylRecords.map((r) => r.target),
+  );
+  pickTargets.set(
+    spheres.mesh,
+    sphereRecords.map((r) => r.target),
+  );
 
   // District ground plates.
   const districtPlates = new Map<string, THREE.Mesh>();

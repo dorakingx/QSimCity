@@ -55,7 +55,10 @@ describe('canonicalJson', () => {
   it('property: key insertion order never changes the hash', () => {
     fc.assert(
       fc.property(
-        fc.dictionary(fc.string({ maxLength: 8 }), fc.oneof(fc.integer(), fc.string({ maxLength: 8 }))),
+        fc.dictionary(
+          fc.string({ maxLength: 8 }),
+          fc.oneof(fc.integer(), fc.string({ maxLength: 8 })),
+        ),
         (obj) => {
           const reversed = Object.fromEntries(Object.entries(obj).reverse());
           return hashValue(obj) === hashValue(reversed);

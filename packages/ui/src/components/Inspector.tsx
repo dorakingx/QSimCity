@@ -22,7 +22,13 @@ function findInstruction(
   return null;
 }
 
-function InspectorBody({ selection, trace }: { selection: SelectionTarget; trace: Trace | null }): ReactElement {
+function InspectorBody({
+  selection,
+  trace,
+}: {
+  selection: SelectionTarget;
+  trace: Trace | null;
+}): ReactElement {
   const tick = useAppStore((s) => s.playbackTick);
   const { setTick, setMode, applyInteractiveAction } = useAppStore.getState();
   const activity = trace ? activityAtTick(trace, tick) : null;
@@ -42,11 +48,7 @@ function InspectorBody({ selection, trace }: { selection: SelectionTarget; trace
             <dt>Pipeline stages</dt>
             <dd>{district.stages.join(', ')}</dd>
             <dt>Activity at tick {tick}</dt>
-            <dd>
-              {events.length === 0
-                ? 'Quiet'
-                : events.map((e) => e.eventType).join(', ')}
-            </dd>
+            <dd>{events.length === 0 ? 'Quiet' : events.map((e) => e.eventType).join(', ')}</dd>
             <dt>Simplification</dt>
             <dd>{relatedSimplification.text}</dd>
           </dl>
@@ -101,7 +103,9 @@ function InspectorBody({ selection, trace }: { selection: SelectionTarget; trace
           <p className="inspector-role">QPU Grid pylon</p>
           <dl>
             <dt>Holds logical qubit</dt>
-            <dd>{logical !== null && logical >= 0 ? `L${logical} (initial layout)` : 'Unassigned'}</dd>
+            <dd>
+              {logical !== null && logical >= 0 ? `L${logical} (initial layout)` : 'Unassigned'}
+            </dd>
             <dt>Active at tick {tick}</dt>
             <dd>{active ? 'Yes — an instruction touches this qubit now' : 'No'}</dd>
             <dt>Representative measured bits so far</dt>
@@ -144,7 +148,8 @@ function InspectorBody({ selection, trace }: { selection: SelectionTarget; trace
               <>
                 <dt>Source</dt>
                 <dd>
-                  {SOURCE_DESCRIPTIONS[firstEvent.source]} <CertaintyBadge certainty={firstEvent.certainty} />
+                  {SOURCE_DESCRIPTIONS[firstEvent.source]}{' '}
+                  <CertaintyBadge certainty={firstEvent.certainty} />
                 </dd>
               </>
             )}

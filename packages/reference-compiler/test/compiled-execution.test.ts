@@ -40,9 +40,10 @@ describe('compiled circuits reproduce input measurement statistics', () => {
           const actual = await simulate(compiled.compiled, { shots: 4000, seed: `${seed}-cmp` });
           // Both distributions are over the same classical registers, so a
           // correct compile leaves them statistically indistinguishable.
-          expect(tvd(reference.counts, actual.counts), `${sample.id}/${deviceId}/${layoutMethod}`).toBeLessThan(
-            0.06,
-          );
+          expect(
+            tvd(reference.counts, actual.counts),
+            `${sample.id}/${deviceId}/${layoutMethod}`,
+          ).toBeLessThan(0.06);
         }, 30_000);
       }
     }

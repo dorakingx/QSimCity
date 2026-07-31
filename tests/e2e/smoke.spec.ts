@@ -9,7 +9,9 @@ test('home page presents the product and three entry points', async ({ page, bro
   await expect(page.getByRole('button', { name: 'Guided Tour' }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Explore', exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Quantum Lab' }).first()).toBeVisible();
-  await expect(page.getByText('unofficial, independent, open-source')).toBeVisible();
+  await expect(page.getByText('unofficial, independent educational and research')).toBeVisible();
+  // No license file exists yet, so the UI must not imply open-source reuse rights.
+  await expect(page.getByText(/open[- ]source/i)).toHaveCount(0);
   assertClean();
 });
 
@@ -17,7 +19,10 @@ test('every mode is reachable from the header without errors', async ({ page, br
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   for (const mode of ['Quantum Lab', 'Compare', 'Accessible 2D', 'Explore', 'Guided Tour']) {
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: mode }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: mode })
+      .click();
     await expect(
       page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: mode }),
     ).toHaveAttribute('aria-current', 'page');
@@ -25,12 +30,20 @@ test('every mode is reachable from the header without errors', async ({ page, br
   assertClean();
 });
 
-test('running the Bell sample produces synchronized results in 2D', async ({ page, browserName }) => {
+test('running the Bell sample produces synchronized results in 2D', async ({
+  page,
+  browserName,
+}) => {
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await runBellFromLab(page);
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
-  await expect(page.getByRole('group', { name: 'Input circuit (as written)' }).first()).toBeVisible();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
+  await expect(
+    page.getByRole('group', { name: 'Input circuit (as written)' }).first(),
+  ).toBeVisible();
   await expect(page.getByRole('group', { name: /Compiled circuit/ }).first()).toBeVisible();
   await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible();
   await expect(page.getByRole('group', { name: /Coupling map/ })).toBeVisible();
@@ -46,7 +59,10 @@ test('running the Bell sample produces synchronized results in 2D', async ({ pag
 
 test('parser errors report line and column and preserve input', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   const editor = page.getByLabel(/OpenQASM 2.0 program/);
   await editor.fill('OPENQASM 2.0;\nqreg q[1];\nfrobnicate q[0];');
   await page.getByRole('button', { name: 'Run', exact: true }).click();
@@ -80,7 +96,10 @@ test('help overlay shows keyboard map and closes with Escape', async ({ page }) 
   await expect(dialog).not.toBeVisible();
 });
 
-test('guided tour walks chapters with camera sync and exits cleanly', async ({ page, browserName }) => {
+test('guided tour walks chapters with camera sync and exits cleanly', async ({
+  page,
+  browserName,
+}) => {
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.getByRole('button', { name: 'Guided Tour' }).first().click();

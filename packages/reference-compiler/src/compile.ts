@@ -105,7 +105,12 @@ export function compile(circuit: Circuit, options: CompileOptions): CompileResul
   const layoutMethod: 'trivial' | 'interaction' | number[] = Array.isArray(options.layoutMethod)
     ? [...options.layoutMethod]
     : ((options.layoutMethod as 'trivial' | 'interaction' | undefined) ?? 'interaction');
-  const { layout, method } = layoutPass(normalized.instructions, circuit.numQubits, device, layoutMethod);
+  const { layout, method } = layoutPass(
+    normalized.instructions,
+    circuit.numQubits,
+    device,
+    layoutMethod,
+  );
   tb?.emit({
     eventType: 'layout.assigned',
     stage: 'layout',
@@ -178,7 +183,13 @@ export function compile(circuit: Circuit, options: CompileOptions): CompileResul
     });
   }
 
-  const compiled = rebuild(device.numQubits, circuit.cregs, `${circuit.name}@${device.id}`, finalInstructions, 'c');
+  const compiled = rebuild(
+    device.numQubits,
+    circuit.cregs,
+    `${circuit.name}@${device.id}`,
+    finalInstructions,
+    'c',
+  );
   const compiledMetrics = circuitMetrics(compiled);
 
   // 6. ASAP scheduling with model durations.

@@ -57,7 +57,13 @@ async function handle(msg: Extract<PipelineWorkerRequest, { type: 'run' }>): Pro
     if (e instanceof SimulationCancelledError) {
       post({ type: 'cancelled', requestId: msg.requestId });
     } else if (e instanceof QasmError) {
-      post({ type: 'error', requestId: msg.requestId, message: e.message, line: e.line, col: e.col });
+      post({
+        type: 'error',
+        requestId: msg.requestId,
+        message: e.message,
+        line: e.line,
+        col: e.col,
+      });
     } else {
       post({ type: 'error', requestId: msg.requestId, message: (e as Error).message });
     }

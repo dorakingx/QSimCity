@@ -15,7 +15,24 @@ function randomParams(count: number, seedIndex: number): number[] {
 
 describe('gate registry', () => {
   it('contains every gate the product promises to support', () => {
-    for (const name of ['id', 'x', 'y', 'z', 'h', 's', 'sdg', 't', 'tdg', 'rx', 'ry', 'rz', 'cx', 'cz', 'swap', 'ccx']) {
+    for (const name of [
+      'id',
+      'x',
+      'y',
+      'z',
+      'h',
+      's',
+      'sdg',
+      't',
+      'tdg',
+      'rx',
+      'ry',
+      'rz',
+      'cx',
+      'cz',
+      'swap',
+      'ccx',
+    ]) {
       expect(isKnownGate(name), name).toBe(true);
     }
   });

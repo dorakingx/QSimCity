@@ -280,7 +280,8 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setSpeed: (speed) => set({ playbackSpeed: Math.max(0.1, Math.min(5, speed)) }),
 
-  select: (target) => set({ selection: target, inspectorOpen: target !== null ? true : get().inspectorOpen }),
+  select: (target) =>
+    set({ selection: target, inspectorOpen: target !== null ? true : get().inspectorOpen }),
 
   setTourChapter: (index) => set({ tourChapter: index }),
   setActiveScenario: (id) => set({ activeScenarioId: id }),

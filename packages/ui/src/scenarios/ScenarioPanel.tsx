@@ -51,11 +51,7 @@ export function ScenarioPanel(): ReactElement | null {
 
   return (
     <div className="scenario-dock">
-      <button
-        type="button"
-        aria-expanded={listOpen}
-        onClick={() => setListOpen(!listOpen)}
-      >
+      <button type="button" aria-expanded={listOpen} onClick={() => setListOpen(!listOpen)}>
         Scenarios {scenario ? `— ${scenario.title}` : ''}
       </button>
       {listOpen && (

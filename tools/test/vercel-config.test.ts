@@ -3,7 +3,12 @@ import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createProductionServer, headersFor, resolvePath, vercelConfig } from '../serve-production.js';
+import {
+  createProductionServer,
+  headersFor,
+  resolvePath,
+  vercelConfig,
+} from '../serve-production.js';
 
 /**
  * Vercel configuration tests (spec §18.1, §24.7): the deployment contract
@@ -31,11 +36,15 @@ beforeAll(async () => {
     distDir = repoDist;
   } else {
     tempRoot = mkdtempSync(join(tmpdir(), 'qsimcity-vercel-'));
-    execFileSync(join(ROOT, 'node_modules', '.bin', 'vite'), ['build', '--outDir', join(tempRoot, 'dist'), '--emptyOutDir'], {
-      cwd: join(ROOT, 'apps', 'web'),
-      stdio: 'pipe',
-      timeout: 600_000,
-    });
+    execFileSync(
+      join(ROOT, 'node_modules', '.bin', 'vite'),
+      ['build', '--outDir', join(tempRoot, 'dist'), '--emptyOutDir'],
+      {
+        cwd: join(ROOT, 'apps', 'web'),
+        stdio: 'pipe',
+        timeout: 600_000,
+      },
+    );
     distDir = join(tempRoot, 'dist');
   }
   server = createProductionServer(distDir);
@@ -52,7 +61,10 @@ afterAll(async () => {
 
 describe('vercel.json contract', () => {
   it('pins the build, install, and output configuration', () => {
-    const raw = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')) as Record<string, unknown>;
+    const raw = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8')) as Record<
+      string,
+      unknown
+    >;
     expect(raw['buildCommand']).toBe('pnpm build');
     expect(raw['installCommand']).toBe('pnpm install --frozen-lockfile');
     expect(raw['outputDirectory']).toBe('apps/web/dist');
@@ -125,9 +137,7 @@ describe('vercel.json contract', () => {
       cwd: ROOT,
       encoding: 'utf8',
     });
-    const touchedDist = status
-      .split('\n')
-      .filter((l) => l.includes('apps/web/dist'));
+    const touchedDist = status.split('\n').filter((l) => l.includes('apps/web/dist'));
     expect(touchedDist).toEqual([]);
     void cpSync;
   });

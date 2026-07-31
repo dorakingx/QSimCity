@@ -36,7 +36,11 @@ export default function CityView(): ReactElement {
         if (target.kind === 'district' && target.districtId) {
           s.select({ kind: 'district', districtId: target.districtId });
         } else if (target.kind === 'building' && target.buildingId && target.districtId) {
-          s.select({ kind: 'building', buildingId: target.buildingId, districtId: target.districtId });
+          s.select({
+            kind: 'building',
+            buildingId: target.buildingId,
+            districtId: target.districtId,
+          });
         } else if (target.kind === 'qubit' && target.qubit !== undefined) {
           s.select({ kind: 'qubit', qubit: target.qubit });
         } else if (target.kind === 'interactive' && target.interactiveId) {
@@ -45,7 +49,9 @@ export default function CityView(): ReactElement {
       },
       onContextLost: () => {
         useAppStore.getState().setWebglAvailable(false);
-        useAppStore.getState().showToast('3D rendering was interrupted; switched to Accessible 2D Mode.');
+        useAppStore
+          .getState()
+          .showToast('3D rendering was interrupted; switched to Accessible 2D Mode.');
       },
     });
     engineRef.current = engine;
@@ -89,7 +95,9 @@ export default function CityView(): ReactElement {
     const promptTimer = setInterval(() => {
       const id = engine.nearbyInteractiveId;
       const interactive = id ? INTERACTIVES.find((i) => i.id === id) : null;
-      setNearbyPrompt(interactive ? `${interactive.name}: press E to ${interactive.prompt.toLowerCase()}` : null);
+      setNearbyPrompt(
+        interactive ? `${interactive.name}: press E to ${interactive.prompt.toLowerCase()}` : null,
+      );
     }, 250);
 
     return () => {

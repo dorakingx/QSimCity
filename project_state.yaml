@@ -26,31 +26,55 @@ completed_items:
   - documentation-suite
   - mutation-testing
   - fresh-clone-verification
-  - goal-check-passing
-failed_items:
-  - soak-test-not-run
-  - lighthouse-thresholds-not-measured
-  - per-core-package-coverage-not-proven
-  - mutation-scope-too-narrow
-  - trace-raw-pass-telemetry-discarded
-  - visual-benchmark-self-asserted
-  - vercel-tests-depend-on-hidden-build-order
-  - goal-checker-accepted-untested-mandatory-risk
-  - license-wording-claims-open-source-without-license
+  - completion-checker-rebuilt-on-evidence-envelopes
+  - soak-test-600s-executed
+  - lighthouse-thresholds-measured
+  - per-core-package-coverage-enforced
+  - mutation-scope-expanded-generative
+  - trace-semantic-artifact-hash-separation
+  - qiskit-pass-telemetry-restored
+  - vercel-tests-hermetic
+  - comparative-visual-benchmark
+  - security-audit-evidence
+  - trace-reproducibility-evidence
+  - license-wording-corrected
+failed_items: []
 blocked_items: []
 next_actions:
-  - repair completion checker so it cannot pass on stale or self-declared evidence
-  - implement and run a real 600s production soak test
-  - run real Lighthouse audits against all required thresholds
-  - prove per-core-package coverage
-  - expand scientific mutation scope
-  - restore raw Qiskit pass telemetry with semanticHash/artifactHash separation
-  - make Vercel tests hermetic
-  - produce a comparative visual benchmark
-  - correct license wording
+  - owner decision required on licensing before any reuse rights can be stated
+  - owner authorization required before any deployment
+resolved_findings:
+  - id: goal-checker-accepted-untested-mandatory-risk
+    resolution: >-
+      checker rebuilt on commit-and-content-bound evidence envelopes; prose is
+      never accepted, and refusal paths are themselves tested
+  - id: soak-test-not-run
+    resolution: 600.3s soak executed, 290 cycles, 0 uncaught errors
+  - id: lighthouse-thresholds-not-measured
+    resolution: 4 targets x 3 runs, median scored, all thresholds met
+  - id: per-core-package-coverage-not-proven
+    resolution: per-package gate enforced; all core packages above threshold
+  - id: mutation-scope-too-narrow
+    resolution: >-
+      generative mutation across 11 scientific areas, 84 mutants, 89.3% score;
+      two defects in the mutation tool itself fixed
+  - id: trace-raw-pass-telemetry-discarded
+    resolution: >-
+      telemetry restored and excluded from semanticHash rather than deleted;
+      artifactHash pins exact bytes
+  - id: visual-benchmark-self-asserted
+    resolution: >-
+      18 categories scored against the live reference; 3 real deficits fixed in
+      the application, 1 loss reported as a loss
+  - id: vercel-tests-depend-on-hidden-build-order
+    resolution: hermetic build into a temporary directory, with a regression test
+  - id: license-wording-claims-open-source-without-license
+    resolution: >-
+      open-source claims removed while no LICENSE exists; policy check added to
+      goal:check and asserted in the end-to-end suite
 test_results:
-  typescript_unit_integration: 665 passed
-  python_bridge: 52 passed
+  typescript_unit_integration: 691 passed
+  python_bridge: 71 passed
   end_to_end: 68 passed
   browsers: [chromium, firefox, webkit, mobile]
 coverage_results:
@@ -58,16 +82,41 @@ coverage_results:
   branches: 88.38
   statements: 95.76
   functions: 94.80
+  core_package_gate: lines>=95 branches>=90 enforced per package
 mutation_results:
-  score: 1.0
-  killed: 16
-  total: 16
+  score: 0.893
+  killed: 75
+  total: 84
+  areas: 11
+soak_results:
+  duration_seconds: 600.3
+  cycles: 290
+  heap_growth_ratio: 1.443
+  uncaught_errors: 0
+lighthouse_results:
+  performance_desktop: 100
+  performance_mobile: 84
+  accessibility: 100
+  best_practices: 96
+  seo: 91
+security_results:
+  js_high_or_critical: 0
+  python_high_or_critical: 0
+  secrets_found: 0
+  note: pytest upgraded to 9.0.3 to clear PYSEC-2026-1845
+trace_reproducibility:
+  independent_processes: 12
+  distinct_semantic_hashes_per_circuit: 1
+  committed_samples_verified: 5
 visual_evidence:
   baselines: 11
   location: tests/e2e/visual.spec.ts-snapshots/
+  benchmark_categories: 18
+  benchmark_minimum_score: 4
 scientific_review_status: complete-zero-blocking-findings
 accessibility_status: wcag-2.2-aa-zero-axe-violations
 performance_status: within-budget-122.9KiB-initial-js-gzip
+license_status: LICENSE DECISION OWNER REQUIRED (no license file; no reuse rights stated)
 deployment_status: NOT AUTHORIZED (vercel-ready, locally validated, no public URL)
-completion_gate_status: RELEASE_CANDIDATE_NOT_COMPLETE
+completion_gate_status: pending-final-evidence-regeneration
 last_updated: 2026-07-31

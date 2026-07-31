@@ -1,8 +1,8 @@
 {
   "name": "qsimcity",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
-  "description": "QSimCity — an explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.",
+  "description": "QSimCity \u2014 an explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -25,13 +25,17 @@
     "check:names": "tsx tools/check-prohibited-names.ts",
     "check:language": "tsx tools/check-language.ts",
     "check:todos": "tsx tools/check-todos.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
     "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
     "goal:check": "tsx tools/check-goal.ts",
     "check:perf": "tsx tools/check-performance.ts",
     "soak": "tsx tools/soak/run-soak.ts",
     "lighthouse": "tsx tools/lighthouse/run-lighthouse.ts",
-    "coverage:check": "tsx tools/coverage/check-coverage.ts"
+    "coverage:check": "tsx tools/coverage/check-coverage.ts",
+    "benchmark:visual": "tsx tools/visual-benchmark/record-benchmark.ts",
+    "security:audit": "tsx tools/security/run-security-audit.ts",
+    "repro:check": "tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts",
+    "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm soak"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

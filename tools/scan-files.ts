@@ -19,8 +19,24 @@ const SKIP_DIRS = new Set([
 ]);
 
 const TEXT_EXTENSIONS = new Set([
-  '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.json', '.md', '.yaml', '.yml',
-  '.html', '.css', '.py', '.toml', '.txt', '.svg', '.qasm', '.webmanifest',
+  '.ts',
+  '.tsx',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.md',
+  '.yaml',
+  '.yml',
+  '.html',
+  '.css',
+  '.py',
+  '.toml',
+  '.txt',
+  '.svg',
+  '.qasm',
+  '.webmanifest',
 ]);
 
 export interface ScannedFile {

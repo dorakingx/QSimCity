@@ -22,7 +22,11 @@ test('registers a service worker that precaches the shell', async ({ page }) => 
   expect(registered).toBe(true);
 });
 
-test('offline startup after first load: full run works without network', async ({ page, context, browserName }) => {
+test('offline startup after first load: full run works without network', async ({
+  page,
+  context,
+  browserName,
+}) => {
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
   await page.evaluate(async () => navigator.serviceWorker.ready);
@@ -31,9 +35,14 @@ test('offline startup after first load: full run works without network', async (
   await page.reload();
   await expect(page.getByRole('heading', { name: /QSimCity/ })).toBeVisible({ timeout: 15_000 });
   // Bundled samples work offline: run the Bell sample end to end.
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   await page.getByRole('button', { name: 'Run', exact: true }).click();
-  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+    timeout: 20_000,
+  });
   await context.setOffline(false);
   assertClean();
 });
@@ -47,8 +56,13 @@ test('security: no external requests are made by the app shell', async ({ page }
     }
   });
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   await page.getByRole('button', { name: 'Run', exact: true }).click();
-  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+    timeout: 20_000,
+  });
   expect(externalRequests, 'no telemetry, no CDNs, no third-party calls').toEqual([]);
 });

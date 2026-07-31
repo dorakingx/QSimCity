@@ -56,9 +56,7 @@ describe('runExperiment event coverage', () => {
       seed: 'exp-cov-2',
       programSource: 'reset-demo',
     });
-    const resetEvent = trace.events.find(
-      (e) => (e.payload as { gate?: string }).gate === 'reset',
-    );
+    const resetEvent = trace.events.find((e) => (e.payload as { gate?: string }).gate === 'reset');
     expect(resetEvent).toBeDefined();
   });
 
@@ -141,7 +139,12 @@ describe('runExperiment event coverage', () => {
       instructions: [
         makeInstruction({ name: 'x', qubits: [0] }),
         makeInstruction({ kind: 'measure', name: 'measure', qubits: [0], clbits: [0] }),
-        makeInstruction({ kind: 'reset', name: 'reset', qubits: [0], condition: { creg: 'm', value: 1 } }),
+        makeInstruction({
+          kind: 'reset',
+          name: 'reset',
+          qubits: [0],
+          condition: { creg: 'm', value: 1 },
+        }),
         makeInstruction({
           kind: 'measure',
           name: 'measure',

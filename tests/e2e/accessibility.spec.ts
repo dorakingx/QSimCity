@@ -11,9 +11,9 @@ async function expectNoViolations(page: Page): Promise<void> {
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
-  expect(
-    results.violations.map((v) => `${v.id}: ${v.nodes.length} node(s) — ${v.help}`),
-  ).toEqual([]);
+  expect(results.violations.map((v) => `${v.id}: ${v.nodes.length} node(s) — ${v.help}`)).toEqual(
+    [],
+  );
 }
 
 test('home passes axe WCAG 2.2 AA', async ({ page }) => {
@@ -23,17 +23,25 @@ test('home passes axe WCAG 2.2 AA', async ({ page }) => {
 
 test('accessible 2D mode passes axe before and after a run', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   await expectNoViolations(page);
   await page.getByRole('button', { name: 'Run', exact: true }).click();
-  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+    timeout: 20_000,
+  });
   await page.getByRole('button', { name: 'Pause replay' }).click();
   await expectNoViolations(page);
 });
 
 test('compare mode and help overlay pass axe', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Compare' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Compare' })
+    .click();
   await expectNoViolations(page);
   await page.getByRole('button', { name: 'Help' }).click();
   await expect(page.getByRole('dialog', { name: /Help/ })).toBeVisible();
@@ -63,7 +71,9 @@ test('keyboard-only entry: skip link, navigation, palette, and run', async ({
   const run = page.getByRole('button', { name: 'Run', exact: true });
   await run.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+    timeout: 20_000,
+  });
   // Timeline is keyboard-operable: focus the scrubber and arrow through it.
   const scrubber = page.locator('.timeline-scrubber input');
   await scrubber.focus();
@@ -75,7 +85,10 @@ test('keyboard-only entry: skip link, navigation, palette, and run', async ({
 test('charts expose complete table alternatives', async ({ page }) => {
   await page.goto('/');
   await runBellFromLab(page);
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   const tables = page.locator('details.table-alternative');
   await expect(tables.first()).toBeAttached();
   const count = await tables.count();
@@ -88,7 +101,10 @@ test('charts expose complete table alternatives', async ({ page }) => {
 
 test('page structure: landmarks, headings, and 200% zoom usability', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
   expect(await page.locator('main').count()).toBe(1);
   expect(await page.getByRole('heading', { level: 2 }).count()).toBeGreaterThanOrEqual(2);
   // Emulate 200% zoom via halved viewport; core controls stay operable.

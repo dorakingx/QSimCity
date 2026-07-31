@@ -18,7 +18,11 @@ from qsimcity_qiskit.aer_runs import (
 from qsimcity_qiskit.convert import circuit_to_trace_circuit, load_qasm
 from qsimcity_qiskit.devices import BASIS_GATES, DEVICES, get_device
 from qsimcity_qiskit.generate import build_trace, generate_crossval, generate_traces, main
-from qsimcity_qiskit.trace_model import trace_content_hash
+from qsimcity_qiskit.trace_model import (
+    artifact_hash,
+    semantic_hash_of_document,
+    trace_content_hash,
+)
 from qsimcity_qiskit.transpile_capture import capture_transpile
 
 CIRCUITS_DIR = Path(__file__).resolve().parents[3] / "examples" / "circuits"
@@ -156,9 +160,7 @@ class TestAerRuns:
         )
     )
     @settings(max_examples=20, deadline=None)
-    def test_property_statevector_stays_normalized(
-        self, ops: list[tuple[str, int]]
-    ) -> None:
+    def test_property_statevector_stays_normalized(self, ops: list[tuple[str, int]]) -> None:
         qc = QuantumCircuit(3)
         for name, q in ops:
             getattr(qc, name)(q)
@@ -190,11 +192,27 @@ class TestGenerate:
         assert len(written) == 5
         manifest = json.loads((tmp_path / "manifest.json").read_text())
         assert set(manifest) == {"bell", "ghz-4", "qft-3", "swap-storm", "grover-2"}
-        # Regenerated manifests must match the committed ones.
-        committed = json.loads(
-            (CIRCUITS_DIR.parent / "traces" / "manifest.json").read_text()
-        )
-        assert manifest == committed
+        committed = json.loads((CIRCUITS_DIR.parent / "traces" / "manifest.json").read_text())
+        assert set(manifest) == set(committed)
+        # The two hashes carry different promises, so they are checked
+        # differently. semanticHash is the reproducibility contract: regenerating
+        # a trace from the same circuit and seed must reproduce it exactly.
+        for name, entry in manifest.items():
+            assert entry["semanticHash"] == committed[name]["semanticHash"], name
+
+    def test_committed_artifact_hashes_match_the_committed_bytes(self) -> None:
+        # artifactHash pins the exact bytes of one artifact. Every generated
+        # trace carries a fresh traceId and createdAt, so a regenerated file has
+        # a different artifactHash by design; what the committed manifest
+        # promises is that the committed *files* have not been altered.
+        traces_dir = CIRCUITS_DIR.parent / "traces"
+        committed = json.loads((traces_dir / "manifest.json").read_text())
+        assert committed
+        for name, entry in committed.items():
+            serialized = (traces_dir / f"{name}.qsimcity.json").read_text()
+            assert artifact_hash(serialized) == entry["artifactHash"], name
+            document = json.loads(serialized)
+            assert semantic_hash_of_document(document) == entry["semanticHash"], name
 
     def test_generate_crossval_structure(self, tmp_path: Path) -> None:
         out = generate_crossval(CIRCUITS_DIR, tmp_path / "xval.json")

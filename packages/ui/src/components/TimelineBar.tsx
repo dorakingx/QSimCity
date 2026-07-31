@@ -25,7 +25,12 @@ export function TimelineBar(): ReactElement | null {
       >
         {playing ? 'Pause' : 'Play'}
       </button>
-      <button type="button" onClick={stepBackward} aria-label="Step backward one tick" disabled={tick <= 0}>
+      <button
+        type="button"
+        onClick={stepBackward}
+        aria-label="Step backward one tick"
+        disabled={tick <= 0}
+      >
         ◀ Step
       </button>
       <button

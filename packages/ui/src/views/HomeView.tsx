@@ -20,8 +20,8 @@ export function HomeView(): ReactElement {
         </h1>
         <p className="home-tagline">
           Watch a quantum program travel through a living city — parsed, laid out, routed,
-          translated, optimized, scheduled, executed, and measured. Every light is driven by a
-          real computation trace, and every number tells you how certain it is.
+          translated, optimized, scheduled, executed, and measured. Every light is driven by a real
+          computation trace, and every number tells you how certain it is.
         </p>
         <div className="home-actions">
           <button type="button" className="primary" onClick={() => setMode('tour')}>
@@ -53,10 +53,9 @@ export function HomeView(): ReactElement {
       </div>
       <footer className="home-footer">
         <p>
-          QSimCity is an unofficial, independent, open-source educational and research
-          visualization project. It is not produced, endorsed, sponsored, or approved by
-          Electronic Arts, Maxis, or IBM. No account, no upload: everything runs in your
-          browser.
+          QSimCity is an unofficial, independent educational and research visualization project. It
+          is not produced, endorsed, sponsored, or approved by Electronic Arts, Maxis, or IBM. No
+          account, no upload: everything runs in your browser.
         </p>
       </footer>
     </main>

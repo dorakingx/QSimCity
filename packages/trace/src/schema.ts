@@ -7,7 +7,11 @@ import {
   TRACE_LIMITS,
 } from './types.js';
 
-const qubitIndex = z.number().int().min(0).max(TRACE_LIMITS.maxQubits - 1);
+const qubitIndex = z
+  .number()
+  .int()
+  .min(0)
+  .max(TRACE_LIMITS.maxQubits - 1);
 
 const provenanceSchema = z
   .object({
@@ -43,7 +47,11 @@ const circuitSchema = z
     numQubits: z.number().int().min(1).max(TRACE_LIMITS.maxQubits),
     numClbits: z.number().int().min(0).max(4096),
     cregs: z
-      .array(z.object({ name: z.string().min(1).max(100), size: z.number().int().min(1).max(4096) }).strict())
+      .array(
+        z
+          .object({ name: z.string().min(1).max(100), size: z.number().int().min(1).max(4096) })
+          .strict(),
+      )
       .max(64),
     instructions: z.array(instructionSchema).max(TRACE_LIMITS.maxEvents),
   })
@@ -129,9 +137,7 @@ export const traceSchema = z
       .object({
         executedPasses: z.array(z.string().max(120)).max(2000).optional(),
         executedPassCount: z.number().int().min(0).optional(),
-        notes: z
-          .record(z.string(), z.union([z.string(), z.number(), z.boolean()]))
-          .optional(),
+        notes: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
       })
       .strict()
       .optional(),

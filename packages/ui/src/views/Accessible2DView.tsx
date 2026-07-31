@@ -75,8 +75,8 @@ export function Accessible2DView(): ReactElement {
           </>
         ) : (
           <p className="hint">
-            Run a program or import a trace to explore its journey through parsing, layout,
-            routing, translation, optimization, scheduling, execution, and measurement.
+            Run a program or import a trace to explore its journey through parsing, layout, routing,
+            translation, optimization, scheduling, execution, and measurement.
           </p>
         )}
       </section>

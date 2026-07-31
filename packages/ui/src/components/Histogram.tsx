@@ -50,7 +50,10 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
         {title}
         {series.map((s) => (
           <span key={s.label} className="legend-item">
-            <span className={`legend-swatch ${s.label === series[0]!.label ? 'series-a' : 'series-b'}`} aria-hidden="true" />
+            <span
+              className={`legend-swatch ${s.label === series[0]!.label ? 'series-a' : 'series-b'}`}
+              aria-hidden="true"
+            />
             {s.label} <CertaintyBadge certainty={s.certainty} />
           </span>
         ))}
@@ -63,7 +66,13 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
           aria-label={`Histogram: ${title}. A data table alternative follows.`}
         >
           <defs>
-            <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <pattern
+              id="hatch"
+              width="6"
+              height="6"
+              patternTransform="rotate(45)"
+              patternUnits="userSpaceOnUse"
+            >
               <line x1="0" y1="0" x2="0" y2="6" className="hatch-line" />
             </pattern>
           </defs>

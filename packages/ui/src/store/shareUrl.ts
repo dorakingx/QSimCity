@@ -2,13 +2,7 @@ import { SAMPLE_CIRCUITS, DEVICES, getSampleCircuit } from '@qsimcity/domain';
 import { DEFAULT_CONFIG, DEFAULT_NOISE, type AppMode, type RunConfig } from './appStore.js';
 
 /** Modes that may be deep-linked with `?view=`. */
-const SHAREABLE_MODES: readonly AppMode[] = [
-  'explore',
-  'lab',
-  'compare',
-  'accessible-2d',
-  'tour',
-];
+const SHAREABLE_MODES: readonly AppMode[] = ['explore', 'lab', 'compare', 'accessible-2d', 'tour'];
 
 /** Reads a deep-linked mode from a URL, if present and valid. */
 export function decodeShareMode(search: string): AppMode | null {

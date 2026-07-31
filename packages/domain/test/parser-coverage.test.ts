@@ -68,7 +68,9 @@ describe('parser edges', () => {
 
   it('rejects measure from a classical source', () => {
     expect(() =>
-      parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\ncreg c[2];\nmeasure c[0] -> c[1];'),
+      parseQasm(
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\ncreg c[2];\nmeasure c[0] -> c[1];',
+      ),
     ).toThrow(/source must be a quantum register/);
   });
 
@@ -114,7 +116,9 @@ describe('parser edges', () => {
 
   it('rejects wrong argument counts on macro gates', () => {
     expect(() =>
-      parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\ngate g a,b { cx a,b; }\nqreg q[2];\ng q[0];'),
+      parseQasm(
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\ngate g a,b { cx a,b; }\nqreg q[2];\ng q[0];',
+      ),
     ).toThrow(/expects 2 qubit/);
     expect(() =>
       parseQasm(
@@ -132,9 +136,9 @@ describe('parser edges', () => {
   });
 
   it('rejects malformed expressions and unknown functions', () => {
-    expect(() => parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(;) q[0];')).toThrow(
-      /Unexpected token/,
-    );
+    expect(() =>
+      parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(;) q[0];'),
+    ).toThrow(/Unexpected token/);
     expect(() =>
       parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(bogus) q[0];'),
     ).toThrow(/Unknown parameter or function/);
@@ -169,7 +173,9 @@ describe('parser edges', () => {
 
   it('rejects clbit indices beyond the register', () => {
     expect(() =>
-      parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\ncreg c[1];\nmeasure q[0] -> c[3];'),
+      parseQasm(
+        'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\ncreg c[1];\nmeasure q[0] -> c[3];',
+      ),
     ).toThrow(/out of range/);
   });
 

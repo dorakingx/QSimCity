@@ -45,9 +45,7 @@ class TranspileCapture:
 
 def _metrics(qc: QuantumCircuit) -> dict[str, int]:
     ops = qc.count_ops()
-    two_qubit = sum(
-        1 for ci in qc.data if ci.operation.name != "barrier" and len(ci.qubits) == 2
-    )
+    two_qubit = sum(1 for ci in qc.data if ci.operation.name != "barrier" and len(ci.qubits) == 2)
     return {
         "gateCount": sum(
             int(v) for k, v in ops.items() if k not in ("measure", "barrier", "reset")

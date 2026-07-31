@@ -12,9 +12,7 @@ export function MetricsPanel({ trace }: { trace: Trace }): ReactElement {
         Circuit metrics <CertaintyBadge certainty="COMPUTED" />
       </h3>
       <table>
-        <caption className="visually-hidden">
-          Metrics before and after compilation
-        </caption>
+        <caption className="visually-hidden">Metrics before and after compilation</caption>
         <thead>
           <tr>
             <th scope="col">Metric</th>
@@ -48,10 +46,9 @@ export function MetricsPanel({ trace }: { trace: Trace }): ReactElement {
       {trace.initialLayout && (
         <p className="hint">
           Initial layout: {trace.initialLayout.map((p, l) => `L${l}→P${p}`).join(', ')}
-          {trace.finalLayout &&
-            trace.finalLayout.join() !== trace.initialLayout.join() && (
-              <> — after routing: {trace.finalLayout.map((p, l) => `L${l}→P${p}`).join(', ')}</>
-            )}
+          {trace.finalLayout && trace.finalLayout.join() !== trace.initialLayout.join() && (
+            <> — after routing: {trace.finalLayout.map((p, l) => `L${l}→P${p}`).join(', ')}</>
+          )}
         </p>
       )}
     </section>

@@ -97,9 +97,8 @@ describe('createDirectRunner', () => {
   it('runs a store RunConfig and reports progress', async () => {
     const runner = createDirectRunner();
     const fractions: number[] = [];
-    const trace = await runner.run(
-      { ...DEFAULT_CONFIG, shots: 64, seed: 'runner-1' },
-      (f) => fractions.push(f),
+    const trace = await runner.run({ ...DEFAULT_CONFIG, shots: 64, seed: 'runner-1' }, (f) =>
+      fractions.push(f),
     );
     expect(() => validateTrace(trace)).not.toThrow();
     expect(fractions.at(-1)).toBe(1);

@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { getSampleCircuit } from '@qsimcity/domain';
 import { serializeTrace } from 'qsimcity-trace';
-import {
-  useAppStore,
-  DEFAULT_CONFIG,
-  DEFAULT_SETTINGS,
-} from '../src/store/appStore.js';
+import { useAppStore, DEFAULT_CONFIG, DEFAULT_SETTINGS } from '../src/store/appStore.js';
 import { createDirectRunner } from '../src/pipeline/workerClient.js';
 import { encodeShareUrl, decodeShareUrl } from '../src/store/shareUrl.js';
 
@@ -142,7 +138,9 @@ describe('interactive actions (in-world consoles)', () => {
   });
 
   it('adjust-noise toggles the parameter and enables noise', () => {
-    useAppStore.getState().applyInteractiveAction({ kind: 'adjust-noise', parameter: 'readoutError' });
+    useAppStore
+      .getState()
+      .applyInteractiveAction({ kind: 'adjust-noise', parameter: 'readoutError' });
     const after = useAppStore.getState();
     expect(after.config.noiseEnabled).toBe(true);
     expect(after.config.noise.readoutError).toBeGreaterThan(0);
@@ -175,7 +173,9 @@ describe('interactive actions (in-world consoles)', () => {
   });
 
   it('run-scenario activates the scenario', () => {
-    useAppStore.getState().applyInteractiveAction({ kind: 'run-scenario', scenarioId: 'bell-state' });
+    useAppStore
+      .getState()
+      .applyInteractiveAction({ kind: 'run-scenario', scenarioId: 'bell-state' });
     expect(useAppStore.getState().activeScenarioId).toBe('bell-state');
   });
 });

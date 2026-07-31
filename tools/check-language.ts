@@ -50,7 +50,9 @@ const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split
 if (isMain) {
   const violations = scanLanguage(ROOT);
   if (violations.length > 0) {
-    console.error(`Language-policy scan FAILED with ${violations.length} file(s) containing Japanese text:`);
+    console.error(
+      `Language-policy scan FAILED with ${violations.length} file(s) containing Japanese text:`,
+    );
     for (const v of violations.slice(0, 50)) {
       console.error(`  ${v.file}:${v.line} near "${v.sample}"`);
     }

@@ -1,0 +1,30 @@
+{
+  "commitSha": "9fa4de5883067e0856a6740bf799fb9059d33e7d",
+  "worktreeDirty": true,
+  "generatedAt": "2026-07-31T00:17:08.730Z",
+  "tool": "qsimcity-security-audit",
+  "toolVersion": "pnpm 11.14.0; uv 0.9.10 (44f5a14f4 2025-11-17)",
+  "command": "pnpm audit --json --audit-level low && uv run --with pip-audit pip-audit --format json && repository secret scan",
+  "exitStatus": 0,
+  "inputHash": "cd610bc5460e5f0f",
+  "thresholds": {
+    "jsHighOrCritical": 0,
+    "pythonHighOrCritical": 0,
+    "secretsFound": 0
+  },
+  "measurements": {
+    "jsAdvisories": 0,
+    "jsHighOrCritical": 0,
+    "pythonPackagesAudited": 47,
+    "pythonAdvisories": 0,
+    "pythonHighOrCritical": 0,
+    "secretsFound": 0,
+    "secretRules": 10
+  },
+  "passed": true,
+  "detail": {
+    "javascriptAdvisories": [],
+    "pythonAdvisories": [],
+    "secretHits": []
+  }
+}

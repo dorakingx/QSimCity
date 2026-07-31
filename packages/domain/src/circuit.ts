@@ -125,19 +125,25 @@ export function makeCircuit(partial: {
 export function validateInstruction(circuit: Circuit, instr: Instruction): void {
   for (const q of instr.qubits) {
     if (!Number.isInteger(q) || q < 0 || q >= circuit.numQubits) {
-      throw new Error(`Instruction ${instr.name} references qubit ${q} outside 0..${circuit.numQubits - 1}`);
+      throw new Error(
+        `Instruction ${instr.name} references qubit ${q} outside 0..${circuit.numQubits - 1}`,
+      );
     }
   }
   for (const c of instr.clbits) {
     if (!Number.isInteger(c) || c < 0 || c >= circuit.numClbits) {
-      throw new Error(`Instruction ${instr.name} references classical bit ${c} outside 0..${circuit.numClbits - 1}`);
+      throw new Error(
+        `Instruction ${instr.name} references classical bit ${c} outside 0..${circuit.numClbits - 1}`,
+      );
     }
   }
   if (instr.condition) {
     const reg = circuit.cregs.find((r) => r.name === instr.condition!.creg);
     if (!reg) throw new Error(`Condition references unknown register ${instr.condition.creg}`);
     if (instr.condition.value < 0 || instr.condition.value >= 2 ** reg.size) {
-      throw new Error(`Condition value ${instr.condition.value} outside register ${reg.name} range`);
+      throw new Error(
+        `Condition value ${instr.condition.value} outside register ${reg.name} range`,
+      );
     }
   }
   if (instr.kind === 'measure' && instr.clbits.length !== instr.qubits.length) {
@@ -187,13 +193,20 @@ export function circuitMetrics(circuit: Circuit): CircuitMetrics {
     }
     depth = Math.max(depth, level);
   }
-  return { gateCount, twoQubitGateCount: twoQubit, swapCount: swaps, measureCount: measures, depth };
+  return {
+    gateCount,
+    twoQubitGateCount: twoQubit,
+    swapCount: swaps,
+    measureCount: measures,
+    depth,
+  };
 }
 
 /** Flattened classical-bit index for a (register, bit) pair. */
 export function clbitIndex(circuit: Circuit, cregName: string, bit: number): number {
   const reg = circuit.cregs.find((r) => r.name === cregName);
   if (!reg) throw new Error(`Unknown classical register: ${cregName}`);
-  if (bit < 0 || bit >= reg.size) throw new Error(`Bit ${bit} outside register ${cregName}[${reg.size}]`);
+  if (bit < 0 || bit >= reg.size)
+    throw new Error(`Bit ${bit} outside register ${cregName}[${reg.size}]`);
   return reg.offset + bit;
 }

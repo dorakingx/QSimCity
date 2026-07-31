@@ -22,44 +22,129 @@ function fixed(m: ComplexMatrix): (params: readonly number[]) => ComplexMatrix {
   return () => m;
 }
 
-const MAT_I = mat([[1, 0], [0, 0], [0, 0], [1, 0]]);
-const MAT_X = mat([[0, 0], [1, 0], [1, 0], [0, 0]]);
-const MAT_Y = mat([[0, 0], [0, -1], [0, 1], [0, 0]]);
-const MAT_Z = mat([[1, 0], [0, 0], [0, 0], [-1, 0]]);
-const MAT_H = mat([[SQ2, 0], [SQ2, 0], [SQ2, 0], [-SQ2, 0]]);
-const MAT_S = mat([[1, 0], [0, 0], [0, 0], [0, 1]]);
-const MAT_SDG = mat([[1, 0], [0, 0], [0, 0], [0, -1]]);
+const MAT_I = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+]);
+const MAT_X = mat([
+  [0, 0],
+  [1, 0],
+  [1, 0],
+  [0, 0],
+]);
+const MAT_Y = mat([
+  [0, 0],
+  [0, -1],
+  [0, 1],
+  [0, 0],
+]);
+const MAT_Z = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [-1, 0],
+]);
+const MAT_H = mat([
+  [SQ2, 0],
+  [SQ2, 0],
+  [SQ2, 0],
+  [-SQ2, 0],
+]);
+const MAT_S = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 1],
+]);
+const MAT_SDG = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, -1],
+]);
 const T_PH = [Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)] as const;
-const MAT_T = mat([[1, 0], [0, 0], [0, 0], [T_PH[0], T_PH[1]]]);
-const MAT_TDG = mat([[1, 0], [0, 0], [0, 0], [T_PH[0], -T_PH[1]]]);
+const MAT_T = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [T_PH[0], T_PH[1]],
+]);
+const MAT_TDG = mat([
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [T_PH[0], -T_PH[1]],
+]);
 const MAT_SX = mat([
-  [0.5, 0.5], [0.5, -0.5],
-  [0.5, -0.5], [0.5, 0.5],
+  [0.5, 0.5],
+  [0.5, -0.5],
+  [0.5, -0.5],
+  [0.5, 0.5],
 ]);
 const MAT_SXDG = mat([
-  [0.5, -0.5], [0.5, 0.5],
-  [0.5, 0.5], [0.5, -0.5],
+  [0.5, -0.5],
+  [0.5, 0.5],
+  [0.5, 0.5],
+  [0.5, -0.5],
 ]);
 
 // Two-qubit matrices, qubit order [q0=first arg (bit0), q1=second arg (bit1)].
 const MAT_CX = mat([
   // control = q0, target = q1
-  [1, 0], [0, 0], [0, 0], [0, 0],
-  [0, 0], [0, 0], [0, 0], [1, 0],
-  [0, 0], [0, 0], [1, 0], [0, 0],
-  [0, 0], [1, 0], [0, 0], [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
 ]);
 const MAT_CZ = mat([
-  [1, 0], [0, 0], [0, 0], [0, 0],
-  [0, 0], [1, 0], [0, 0], [0, 0],
-  [0, 0], [0, 0], [1, 0], [0, 0],
-  [0, 0], [0, 0], [0, 0], [-1, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [-1, 0],
 ]);
 const MAT_SWAP = mat([
-  [1, 0], [0, 0], [0, 0], [0, 0],
-  [0, 0], [0, 0], [1, 0], [0, 0],
-  [0, 0], [1, 0], [0, 0], [0, 0],
-  [0, 0], [0, 0], [0, 0], [1, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [0, 0],
+  [1, 0],
 ]);
 
 function ccxMatrix(): ComplexMatrix {
@@ -77,25 +162,45 @@ function rx(params: readonly number[]): ComplexMatrix {
   const t = params[0]! / 2;
   const c = Math.cos(t);
   const s = Math.sin(t);
-  return mat([[c, 0], [0, -s], [0, -s], [c, 0]]);
+  return mat([
+    [c, 0],
+    [0, -s],
+    [0, -s],
+    [c, 0],
+  ]);
 }
 
 function ry(params: readonly number[]): ComplexMatrix {
   const t = params[0]! / 2;
   const c = Math.cos(t);
   const s = Math.sin(t);
-  return mat([[c, 0], [-s, 0], [s, 0], [c, 0]]);
+  return mat([
+    [c, 0],
+    [-s, 0],
+    [s, 0],
+    [c, 0],
+  ]);
 }
 
 function rz(params: readonly number[]): ComplexMatrix {
   const t = params[0]! / 2;
-  return mat([[Math.cos(t), -Math.sin(t)], [0, 0], [0, 0], [Math.cos(t), Math.sin(t)]]);
+  return mat([
+    [Math.cos(t), -Math.sin(t)],
+    [0, 0],
+    [0, 0],
+    [Math.cos(t), Math.sin(t)],
+  ]);
 }
 
 /** Phase gate: diag(1, e^{iλ}). */
 function phase(params: readonly number[]): ComplexMatrix {
   const l = params[0]!;
-  return mat([[1, 0], [0, 0], [0, 0], [Math.cos(l), Math.sin(l)]]);
+  return mat([
+    [1, 0],
+    [0, 0],
+    [0, 0],
+    [Math.cos(l), Math.sin(l)],
+  ]);
 }
 
 /** Qiskit U(θ, φ, λ). */
@@ -115,10 +220,22 @@ function u3(params: readonly number[]): ComplexMatrix {
 function cphase(params: readonly number[]): ComplexMatrix {
   const l = params[0]!;
   return mat([
-    [1, 0], [0, 0], [0, 0], [0, 0],
-    [0, 0], [1, 0], [0, 0], [0, 0],
-    [0, 0], [0, 0], [1, 0], [0, 0],
-    [0, 0], [0, 0], [0, 0], [Math.cos(l), Math.sin(l)],
+    [1, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [1, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [1, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [Math.cos(l), Math.sin(l)],
   ]);
 }
 
@@ -133,7 +250,13 @@ export const GATE_DEFS: Readonly<Record<string, GateDef>> = {
   t: { name: 't', numQubits: 1, numParams: 0, label: 'T', matrix: fixed(MAT_T) },
   tdg: { name: 'tdg', numQubits: 1, numParams: 0, label: 'T-dagger', matrix: fixed(MAT_TDG) },
   sx: { name: 'sx', numQubits: 1, numParams: 0, label: 'Sqrt-X', matrix: fixed(MAT_SX) },
-  sxdg: { name: 'sxdg', numQubits: 1, numParams: 0, label: 'Sqrt-X-dagger', matrix: fixed(MAT_SXDG) },
+  sxdg: {
+    name: 'sxdg',
+    numQubits: 1,
+    numParams: 0,
+    label: 'Sqrt-X-dagger',
+    matrix: fixed(MAT_SXDG),
+  },
   rx: { name: 'rx', numQubits: 1, numParams: 1, label: 'X rotation', matrix: rx },
   ry: { name: 'ry', numQubits: 1, numParams: 1, label: 'Y rotation', matrix: ry },
   rz: { name: 'rz', numQubits: 1, numParams: 1, label: 'Z rotation', matrix: rz },

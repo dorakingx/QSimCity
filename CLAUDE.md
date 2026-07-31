@@ -5,9 +5,12 @@ Orientation for anyone (human or model) picking this repository up cold.
 ## What this is
 
 QSimCity is a static, client-side 3D visualization of a quantum program's
-journey through compilation and execution. It is an **unofficial, independent,
-open-source educational and research project** — not affiliated with Electronic
-Arts, Maxis, IBM, or any quantum-hardware vendor.
+journey through compilation and execution. It is an **unofficial, independent
+educational and research project** — not affiliated with Electronic Arts,
+Maxis, IBM, or any quantum-hardware vendor. No license has been selected, so
+no document, UI string, or package description may imply reuse rights that
+have not been granted (see docs/adr/adr-0001-no-license-selection.md);
+`pnpm goal:check` enforces this.
 
 ## Where things live
 

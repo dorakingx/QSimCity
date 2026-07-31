@@ -1,0 +1,13 @@
+# Byte-pinned artifacts: their exact serialization is verified by hash.
+examples/traces/
+examples/cross-validation/
+release-evidence/
+# Generated or vendored.
+pnpm-lock.yaml
+apps/web/dist/
+coverage/
+playwright-report/
+test-results/
+tests/e2e/*-snapshots/
+# Prose is hand-wrapped for readability; Prettier reflows tables and lists.
+*.md

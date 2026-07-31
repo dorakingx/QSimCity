@@ -26,7 +26,10 @@ export interface Scenario {
   readonly isComplete: (trace: Trace) => boolean;
 }
 
-function fractionOf(counts: Readonly<Record<string, number>> | undefined, predicate: (key: string) => boolean): number {
+function fractionOf(
+  counts: Readonly<Record<string, number>> | undefined,
+  predicate: (key: string) => boolean,
+): number {
   if (!counts) return 0;
   let total = 0;
   let matching = 0;
@@ -48,7 +51,13 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'See maximal two-qubit entanglement produce perfectly correlated measurements.',
     seed: 'scenario-bell',
     kind: 'pipeline',
-    config: { sampleId: 'bell', shots: 1024, seed: 'scenario-bell', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'bell',
+      shots: 1024,
+      seed: 'scenario-bell',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'H creates superposition on q0',
       'CX entangles q0 with q1',
@@ -68,7 +77,13 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'Extend entanglement to four qubits: all-or-nothing correlations.',
     seed: 'scenario-ghz',
     kind: 'pipeline',
-    config: { sampleId: 'ghz-4', shots: 1024, seed: 'scenario-ghz', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'ghz-4',
+      shots: 1024,
+      seed: 'scenario-ghz',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'H on q0, then a CX chain spreads the superposition',
       'four qubits share one entangled state',
@@ -87,14 +102,21 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'Move a quantum state using entanglement plus two classical bits.',
     seed: 'scenario-teleport',
     kind: 'pipeline',
-    config: { sampleId: 'teleportation', shots: 2048, seed: 'scenario-teleport', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'teleportation',
+      shots: 2048,
+      seed: 'scenario-teleport',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'a payload state is prepared on q0',
       'q1 and q2 are entangled',
       'a Bell measurement digitizes the payload relation into two classical bits',
       'feed-forward corrections on q2 rebuild the payload exactly',
     ],
-    healthyState: 'The output bit is 1 about 20% of the time — the payload distribution, teleported.',
+    healthyState:
+      'The output bit is 1 about 20% of the time — the payload distribution, teleported.',
     failureState: 'Skipping the classical corrections leaves the output scrambled.',
     comparisonMetric: 'Output-bit distribution vs the prepared payload distribution',
     completionText: 'Output-bit statistics match the payload (0.20 ± 0.04).',
@@ -109,7 +131,13 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'Amplitude amplification finds a marked item with certainty in one iteration (n=2).',
     seed: 'scenario-grover',
     kind: 'pipeline',
-    config: { sampleId: 'grover-2', shots: 1024, seed: 'scenario-grover', deviceId: 'full-5', ...noNoise },
+    config: {
+      sampleId: 'grover-2',
+      shots: 1024,
+      seed: 'scenario-grover',
+      deviceId: 'full-5',
+      ...noNoise,
+    },
     causalChain: [
       'uniform superposition over 4 states',
       'the oracle flips the phase of |11>',
@@ -125,10 +153,17 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 'qft',
     title: 'Quantum Fourier Transform',
-    purpose: 'Watch controlled phases and a swap build the frequency-domain picture of a basis state.',
+    purpose:
+      'Watch controlled phases and a swap build the frequency-domain picture of a basis state.',
     seed: 'scenario-qft',
     kind: 'pipeline',
-    config: { sampleId: 'qft-3', shots: 2048, seed: 'scenario-qft', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'qft-3',
+      shots: 2048,
+      seed: 'scenario-qft',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'the input |001> enters the QFT',
       'Hadamards and controlled phases interfere',
@@ -169,8 +204,7 @@ export const SCENARIOS: readonly Scenario[] = [
     failureState: 'On the all-to-all device the storm disappears — compare!',
     comparisonMetric: 'SWAP count and depth, linear-5 vs full-5',
     completionText: 'At least 3 SWAPs were inserted during routing.',
-    isComplete: (trace) =>
-      (trace.metrics.find((m) => m.stage === 'compiled')?.swapCount ?? 0) >= 3,
+    isComplete: (trace) => (trace.metrics.find((m) => m.stage === 'compiled')?.swapCount ?? 0) >= 3,
   },
   {
     id: 'bad-initial-layout',
@@ -238,7 +272,14 @@ export const SCENARIOS: readonly Scenario[] = [
       seed: 'scenario-readout',
       deviceId: 'full-5',
       noiseEnabled: true,
-      noise: { ...DEFAULT_NOISE, readoutError: 0.12, depolarizing1q: 0, depolarizing2q: 0, amplitudeDamping: 0, phaseDamping: 0 },
+      noise: {
+        ...DEFAULT_NOISE,
+        readoutError: 0.12,
+        depolarizing1q: 0,
+        depolarizing2q: 0,
+        amplitudeDamping: 0,
+        phaseDamping: 0,
+      },
     },
     causalChain: [
       'the algorithm reaches |11> with certainty',
@@ -246,7 +287,8 @@ export const SCENARIOS: readonly Scenario[] = [
       'reported counts scatter across all outcomes',
       'the algorithm looks worse than it is',
     ],
-    healthyState: 'Ideal counts: 100% |11>. Noisy counts: roughly 77% |11>, the rest single/double flips.',
+    healthyState:
+      'Ideal counts: 100% |11>. Noisy counts: roughly 77% |11>, the rest single/double flips.',
     failureState: 'Trusting raw counts without readout modeling misjudges the machine.',
     comparisonMetric: 'Reported success rate vs true success rate',
     completionText: 'Noisy success drops below 90% while ideal stays at 100%.',
@@ -260,7 +302,13 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'With too few samples, even a perfect computer gives shaky statistics.',
     seed: 'scenario-drought',
     kind: 'pipeline',
-    config: { sampleId: 'bell', shots: 16, seed: 'scenario-drought', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'bell',
+      shots: 16,
+      seed: 'scenario-drought',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'the exact distribution is a clean 50/50',
       'only 16 containers arrive at the harbor',
@@ -279,7 +327,13 @@ export const SCENARIOS: readonly Scenario[] = [
     purpose: 'A mid-circuit measurement steers a later gate through the classical loop.',
     seed: 'scenario-feedforward',
     kind: 'pipeline',
-    config: { sampleId: 'dynamic-feedforward', shots: 1024, seed: 'scenario-feedforward', deviceId: 'linear-5', ...noNoise },
+    config: {
+      sampleId: 'dynamic-feedforward',
+      shots: 1024,
+      seed: 'scenario-feedforward',
+      deviceId: 'linear-5',
+      ...noNoise,
+    },
     causalChain: [
       'q0 is measured mid-circuit',
       'the result races along the control conduits',
@@ -311,7 +365,9 @@ export const SCENARIOS: readonly Scenario[] = [
     comparisonMetric: 'Estimated energy vs the exact ground energy per iteration',
     completionText: 'Final energy lands within 0.15 of the exact ground energy.',
     isComplete: (trace) => {
-      const completions = trace.events.filter((e) => e.eventType === 'optimizer.iteration_completed');
+      const completions = trace.events.filter(
+        (e) => e.eventType === 'optimizer.iteration_completed',
+      );
       if (completions.length === 0) return false;
       const last = completions[completions.length - 1]!.payload as { energy?: number };
       return typeof last.energy === 'number' && Math.abs(last.energy - -Math.sqrt(1.25)) < 0.15;

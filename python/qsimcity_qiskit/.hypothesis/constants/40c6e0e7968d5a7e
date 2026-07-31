@@ -1,4 +1,0 @@
-# file: /Users/hatanakatomoya/Developer/App/QSimCity/python/qsimcity_qiskit/src/qsimcity_qiskit/generate.py
-# hypothesis_version: 6.140.3
-
-[0.001, 0.005, 0.01, 0.02, 1024, 4096, '+00:00', '--circuits-dir', '--out', '1.0.0', 'SAMPLED', 'Z', '__main__', 'amplitudeDamping', 'backend', 'bell', 'circuits', 'command', 'compiled', 'crossval', 'depolarizing1q', 'depolarizing2q', 'device', 'full-5', 'generator', 'ghz-4', 'grover-2', 'id', 'idealCounts', 'input', 'linear-5', 'manifest.json', 'milliseconds', 'noise', 'note', 'numQubits', 'packageVersions', 'phaseDamping', 'python', 'qasmHash', 'qft-3', 'qiskit', 'qiskit-aer', 'qiskit_aer', 'qsimcity-generate', 'qsimcity-qiskit', 'readoutError', 'seed', 'shots', 'statevector', 'swap-storm', 'toffoli', 'traces']

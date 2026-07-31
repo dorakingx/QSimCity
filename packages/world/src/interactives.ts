@@ -9,7 +9,11 @@ import type { DistrictId } from './districts.js';
 export type InteractiveAction =
   | { kind: 'open-lab' }
   | { kind: 'load-sample'; sampleId: string }
-  | { kind: 'adjust-noise'; parameter: 'readoutError' | 'depolarizing1q' | 'depolarizing2q' | 'amplitudeDamping' | 'phaseDamping' }
+  | {
+      kind: 'adjust-noise';
+      parameter:
+        'readoutError' | 'depolarizing1q' | 'depolarizing2q' | 'amplitudeDamping' | 'phaseDamping';
+    }
   | { kind: 'adjust-shots' }
   | { kind: 'choose-layout' }
   | { kind: 'choose-device' }

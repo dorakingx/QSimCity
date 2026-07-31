@@ -67,7 +67,11 @@ export default tseslint.config(
         'error',
         {
           paths: [
-            { name: 'three', message: 'world is the pure layout module; three.js belongs in visual-engine (ADR-0002).' },
+            {
+              name: 'three',
+              message:
+                'world is the pure layout module; three.js belongs in visual-engine (ADR-0002).',
+            },
             { name: 'react', message: 'world is data-only (ADR-0002).' },
           ],
         },

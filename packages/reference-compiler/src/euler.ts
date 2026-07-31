@@ -18,10 +18,14 @@ export interface EulerAngles {
 const ATOL = 1e-10;
 
 export function zyzAngles(u: ComplexMatrix): EulerAngles {
-  const ar = u[0]!, ai = u[1]!; // U[0][0]
-  const br = u[2]!, bi = u[3]!; // U[0][1]
-  const cr = u[4]!, ci = u[5]!; // U[1][0]
-  const dr = u[6]!, di = u[7]!; // U[1][1]
+  const ar = u[0]!,
+    ai = u[1]!; // U[0][0]
+  const br = u[2]!,
+    bi = u[3]!; // U[0][1]
+  const cr = u[4]!,
+    ci = u[5]!; // U[1][0]
+  const dr = u[6]!,
+    di = u[7]!; // U[1][1]
   const absA = Math.hypot(ar, ai);
   const absC = Math.hypot(cr, ci);
   const theta = 2 * Math.atan2(absC, absA);
@@ -71,11 +75,7 @@ export function unitaryToBasisOps(u: ComplexMatrix): BasisGateOp[] {
     return isZero(total) ? [] : [{ name: 'rz', param: total }];
   }
   // SX = e^{i pi/4} Rz(-pi/2) Ry(pi/2) Rz(pi/2): single-sx shortcut.
-  if (
-    Math.abs(theta - halfPi) < ATOL &&
-    isZero(phi + halfPi) &&
-    isZero(lambda - halfPi)
-  ) {
+  if (Math.abs(theta - halfPi) < ATOL && isZero(phi + halfPi) && isZero(lambda - halfPi)) {
     return [{ name: 'sx' }];
   }
   // X = e^{i alpha} Rz(phi) Ry(pi) Rz(lambda) exactly when theta == pi and

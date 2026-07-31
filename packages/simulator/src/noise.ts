@@ -1,5 +1,11 @@
 import { gateDef, type Rng } from '@qsimcity/domain';
-import { applyGate1, collapse, normalize, probabilityOfOne, type StateVector } from './statevector.js';
+import {
+  applyGate1,
+  collapse,
+  normalize,
+  probabilityOfOne,
+  type StateVector,
+} from './statevector.js';
 
 /**
  * Noise channels implemented with the quantum-trajectory (Monte Carlo wave

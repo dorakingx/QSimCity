@@ -98,9 +98,7 @@ describe('generateBuildings', () => {
   it('creates at least 12 distinct landmark compositions', () => {
     const landmarks = buildings.filter((b) => b.isLandmark);
     expect(landmarks.length).toBe(12);
-    const signatures = new Set(
-      landmarks.map((b) => b.parts.map((p) => p.kind).join(',')),
-    );
+    const signatures = new Set(landmarks.map((b) => b.parts.map((p) => p.kind).join(',')));
     expect(signatures.size).toBeGreaterThanOrEqual(10);
   });
 
@@ -124,7 +122,10 @@ describe('generateBuildings', () => {
 
   it('uses accent or emissive tones somewhere in every landmark', () => {
     for (const b of buildings.filter((x) => x.isLandmark)) {
-      expect(b.parts.some((p) => p.tone > 0), b.id).toBe(true);
+      expect(
+        b.parts.some((p) => p.tone > 0),
+        b.id,
+      ).toBe(true);
     }
   });
 });
@@ -172,8 +173,12 @@ describe('interactives', () => {
   it('interactives sit within or near their district bounds', () => {
     for (const i of INTERACTIVES) {
       const d = getDistrict(i.districtId);
-      expect(Math.abs(i.position[0] - d.bounds.x), i.id).toBeLessThanOrEqual(d.bounds.width / 2 + 20);
-      expect(Math.abs(i.position[1] - d.bounds.z), i.id).toBeLessThanOrEqual(d.bounds.depth / 2 + 20);
+      expect(Math.abs(i.position[0] - d.bounds.x), i.id).toBeLessThanOrEqual(
+        d.bounds.width / 2 + 20,
+      );
+      expect(Math.abs(i.position[1] - d.bounds.z), i.id).toBeLessThanOrEqual(
+        d.bounds.depth / 2 + 20,
+      );
     }
   });
 

@@ -206,7 +206,11 @@ class Parser {
   private expectSymbol(sym: string): Token {
     const t = this.next();
     if (t.type !== 'symbol' || t.value !== sym) {
-      throw new QasmError(`Expected "${sym}" but found "${t.value || 'end of input'}"`, t.line, t.col);
+      throw new QasmError(
+        `Expected "${sym}" but found "${t.value || 'end of input'}"`,
+        t.line,
+        t.col,
+      );
     }
     return t;
   }
@@ -214,7 +218,11 @@ class Parser {
   private expectIdentifier(): Token {
     const t = this.next();
     if (t.type !== 'identifier') {
-      throw new QasmError(`Expected an identifier but found "${t.value || 'end of input'}"`, t.line, t.col);
+      throw new QasmError(
+        `Expected an identifier but found "${t.value || 'end of input'}"`,
+        t.line,
+        t.col,
+      );
     }
     return t;
   }
@@ -222,7 +230,11 @@ class Parser {
   private expectInteger(): number {
     const t = this.next();
     if (t.type !== 'number' || !/^\d+$/.test(t.value)) {
-      throw new QasmError(`Expected an integer but found "${t.value || 'end of input'}"`, t.line, t.col);
+      throw new QasmError(
+        `Expected an integer but found "${t.value || 'end of input'}"`,
+        t.line,
+        t.col,
+      );
     }
     return parseInt(t.value, 10);
   }
@@ -418,7 +430,11 @@ class Parser {
     const qubitArgs: string[] = [];
     const first = this.expectIdentifier();
     if (!gateQubits.includes(first.value)) {
-      throw new QasmError(`Unknown qubit argument "${first.value}" in gate body`, first.line, first.col);
+      throw new QasmError(
+        `Unknown qubit argument "${first.value}" in gate body`,
+        first.line,
+        first.col,
+      );
     }
     qubitArgs.push(first.value);
     while (this.peek().type === 'symbol' && this.peek().value === ',') {
@@ -446,11 +462,7 @@ class Parser {
     if (name === 'U' || name === 'CX') return { kind: 'native' };
     if (isKnownGate(name)) {
       if (!this.includeSeen && !['u', 'p'].includes(name)) {
-        throw new QasmError(
-          `Gate "${name}" requires include "qelib1.inc"`,
-          line,
-          col,
-        );
+        throw new QasmError(`Gate "${name}" requires include "qelib1.inc"`, line, col);
       }
       return { kind: 'native' };
     }
@@ -469,7 +481,11 @@ class Parser {
     const regName = this.expectIdentifier();
     const reg = this.cregs.get(regName.value);
     if (!reg) {
-      throw new QasmError(`Unknown classical register "${regName.value}" in if`, regName.line, regName.col);
+      throw new QasmError(
+        `Unknown classical register "${regName.value}" in if`,
+        regName.line,
+        regName.col,
+      );
     }
     this.expectSymbol('==');
     const value = this.expectInteger();
@@ -534,7 +550,11 @@ class Parser {
     } else if (src.index !== null && dst.index !== null) {
       pairs.push([src.reg.offset + src.index, dst.reg.offset + dst.index]);
     } else {
-      throw new QasmError('measure requires both sides indexed or both whole registers', t.line, t.col);
+      throw new QasmError(
+        'measure requires both sides indexed or both whole registers',
+        t.line,
+        t.col,
+      );
     }
     for (const [q, c] of pairs) {
       this.pushInstruction(
@@ -576,7 +596,8 @@ class Parser {
     const t = this.expectSymbol(';');
     const qubits: number[] = [];
     for (const a of args) {
-      if (a.reg.kind !== 'qreg') throw new QasmError('barrier expects quantum registers', t.line, t.col);
+      if (a.reg.kind !== 'qreg')
+        throw new QasmError('barrier expects quantum registers', t.line, t.col);
       if (a.index === null) {
         for (let k = 0; k < a.reg.size; k++) qubits.push(a.reg.offset + k);
       } else {
@@ -630,7 +651,9 @@ class Parser {
       throw new QasmError('Broadcast registers must have equal sizes', name.line, name.col);
     }
     for (let k = 0; k < reps; k++) {
-      const qubits = args.map((a) => (a.index === null ? a.reg.offset + k : a.reg.offset + a.index));
+      const qubits = args.map((a) =>
+        a.index === null ? a.reg.offset + k : a.reg.offset + a.index,
+      );
       this.applyGate(name.value, params, qubits, condition, name.line, name.col, 0);
     }
   }
@@ -646,7 +669,11 @@ class Parser {
     depth: number,
   ): void {
     if (depth > this.limits.maxGateDepth) {
-      throw new QasmError(`Gate expansion exceeds depth limit of ${this.limits.maxGateDepth}`, line, col);
+      throw new QasmError(
+        `Gate expansion exceeds depth limit of ${this.limits.maxGateDepth}`,
+        line,
+        col,
+      );
     }
     const canonical = name === 'U' ? 'u' : name === 'CX' ? 'cx' : name;
     if (isKnownGate(canonical)) {
@@ -725,7 +752,10 @@ class Parser {
 
   private parseAdditive(allowedParams: readonly string[]): Expr {
     let left = this.parseMultiplicative(allowedParams);
-    while (this.peek().type === 'symbol' && (this.peek().value === '+' || this.peek().value === '-')) {
+    while (
+      this.peek().type === 'symbol' &&
+      (this.peek().value === '+' || this.peek().value === '-')
+    ) {
       const o = this.next().value as '+' | '-';
       left = { kind: 'binop', op: o, left, right: this.parseMultiplicative(allowedParams) };
     }
@@ -734,7 +764,10 @@ class Parser {
 
   private parseMultiplicative(allowedParams: readonly string[]): Expr {
     let left = this.parseUnary(allowedParams);
-    while (this.peek().type === 'symbol' && (this.peek().value === '*' || this.peek().value === '/')) {
+    while (
+      this.peek().type === 'symbol' &&
+      (this.peek().value === '*' || this.peek().value === '/')
+    ) {
       const o = this.next().value as '*' | '/';
       left = { kind: 'binop', op: o, left, right: this.parseUnary(allowedParams) };
     }
@@ -777,10 +810,19 @@ class Parser {
       this.expectSymbol(')');
       return inner;
     }
-    throw new QasmError(`Unexpected token "${t.value || 'end of input'}" in expression`, t.line, t.col);
+    throw new QasmError(
+      `Unexpected token "${t.value || 'end of input'}" in expression`,
+      t.line,
+      t.col,
+    );
   }
 
-  private evalExpr(expr: Expr, env: ReadonlyMap<string, number>, line: number, col: number): number {
+  private evalExpr(
+    expr: Expr,
+    env: ReadonlyMap<string, number>,
+    line: number,
+    col: number,
+  ): number {
     switch (expr.kind) {
       case 'num':
         return expr.value;

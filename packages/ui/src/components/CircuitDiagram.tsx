@@ -232,7 +232,13 @@ export function CircuitDiagram({
                     <circle cx={cx} cy={qys[0]} r={4.5} className="gate-control" />
                     <circle cx={cx} cy={qys[1]} r={10} className="gate-target" />
                     <line x1={cx - 7} y1={qys[1]} x2={cx + 7} y2={qys[1]} className="gate-cross" />
-                    <line x1={cx} y1={qys[1]! - 7} x2={cx} y2={qys[1]! + 7} className="gate-cross" />
+                    <line
+                      x1={cx}
+                      y1={qys[1]! - 7}
+                      x2={cx}
+                      y2={qys[1]! + 7}
+                      className="gate-cross"
+                    />
                   </>
                 ) : instr.name === 'cz' && instr.qubits.length === 2 ? (
                   <>
@@ -243,8 +249,20 @@ export function CircuitDiagram({
                   <>
                     {qys.map((y, i) => (
                       <g key={i}>
-                        <line x1={cx - 6} y1={y - 6} x2={cx + 6} y2={y + 6} className="gate-cross" />
-                        <line x1={cx - 6} y1={y + 6} x2={cx + 6} y2={y - 6} className="gate-cross" />
+                        <line
+                          x1={cx - 6}
+                          y1={y - 6}
+                          x2={cx + 6}
+                          y2={y + 6}
+                          className="gate-cross"
+                        />
+                        <line
+                          x1={cx - 6}
+                          y1={y + 6}
+                          x2={cx + 6}
+                          y2={y - 6}
+                          className="gate-cross"
+                        />
                       </g>
                     ))}
                   </>
@@ -256,13 +274,7 @@ export function CircuitDiagram({
                     <line x1={cx - 7} y1={qys[2]} x2={cx + 7} y2={qys[2]} className="gate-cross" />
                   </>
                 ) : instr.kind === 'barrier' ? (
-                  <line
-                    x1={cx}
-                    y1={minY - 12}
-                    x2={cx}
-                    y2={maxY + 12}
-                    className="gate-barrier"
-                  />
+                  <line x1={cx} y1={minY - 12} x2={cx} y2={maxY + 12} className="gate-barrier" />
                 ) : (
                   qys.map((y, i) => (
                     <g key={i}>

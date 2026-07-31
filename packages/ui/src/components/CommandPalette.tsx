@@ -143,7 +143,9 @@ function PaletteContent(): ReactElement {
           role="combobox"
           aria-expanded="true"
           aria-controls="palette-listbox"
-          aria-activedescendant={filtered[activeIndex] ? `palette-${filtered[activeIndex]!.id}` : undefined}
+          aria-activedescendant={
+            filtered[activeIndex] ? `palette-${filtered[activeIndex]!.id}` : undefined
+          }
           onChange={(e) => {
             setQuery(e.target.value);
             setActiveIndex(0);

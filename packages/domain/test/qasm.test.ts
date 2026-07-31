@@ -61,11 +61,7 @@ measure q -> c;
   });
 
   it('reports position for out-of-range register indices', () => {
-    expectQasmError(
-      'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\nh q[5];',
-      /out of range/,
-      4,
-    );
+    expectQasmError('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\nh q[5];', /out of range/, 4);
   });
 
   it('rejects gates that need qelib1 when include is missing', () => {
@@ -86,11 +82,7 @@ measure q -> c;
   });
 
   it('rejects opaque declarations with position info', () => {
-    expectQasmError(
-      'OPENQASM 2.0;\nqreg q[1];\nopaque mystery a;',
-      /not supported/,
-      3,
-    );
+    expectQasmError('OPENQASM 2.0;\nqreg q[1];\nopaque mystery a;', /not supported/, 3);
   });
 
   it('rejects repeated qubit arguments', () => {
@@ -117,13 +109,18 @@ describe('parameter expressions', () => {
   });
 
   it('supports math functions', () => {
-    const c = parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(cos(0)) q[0];\nrx(sqrt(4)) q[0];');
+    const c = parseQasm(
+      'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(cos(0)) q[0];\nrx(sqrt(4)) q[0];',
+    );
     expect(c.instructions[0]!.params[0]).toBe(1);
     expect(c.instructions[1]!.params[0]).toBe(2);
   });
 
   it('rejects division by zero', () => {
-    expectQasmError('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(1/0) q[0];', /Division by zero/);
+    expectQasmError(
+      'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[1];\nrz(1/0) q[0];',
+      /Division by zero/,
+    );
   });
 
   it('supports scientific notation literals', () => {
@@ -166,7 +163,9 @@ describe('register broadcasting', () => {
   });
 
   it('broadcasts measure over whole registers', () => {
-    const c = parseQasm('OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg c[2];\nmeasure q -> c;');
+    const c = parseQasm(
+      'OPENQASM 2.0;\ninclude "qelib1.inc";\nqreg q[2];\ncreg c[2];\nmeasure q -> c;',
+    );
     expect(c.instructions).toHaveLength(2);
     expect(c.instructions[1]!.clbits).toEqual([1]);
   });
@@ -318,7 +317,13 @@ describe('input limits and hostile input', () => {
   });
 
   it('does not crash on malformed nonsense', () => {
-    for (const bad of ['', ';;;;', 'OPENQASM 2.0; ()[]{}', 'OPENQASM 2.0;\nqreg;', 'OPENQASM 2.0;\nqreg q[];']) {
+    for (const bad of [
+      '',
+      ';;;;',
+      'OPENQASM 2.0; ()[]{}',
+      'OPENQASM 2.0;\nqreg;',
+      'OPENQASM 2.0;\nqreg q[];',
+    ]) {
       expect(() => parseQasm(bad)).toThrow(QasmError);
     }
   });

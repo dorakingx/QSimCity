@@ -1,6 +1,6 @@
 # QSimCity Product Specification
 
-QSimCity is an unofficial, independent, open-source educational and research
+QSimCity is an unofficial, independent educational and research
 visualization project. It renders the full journey of a quantum program —
 parsing, compilation, routing, execution, noise, measurement, and classical
 feedback — as an explorable 3D city driven by real computation traces.

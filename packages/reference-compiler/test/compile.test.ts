@@ -51,7 +51,10 @@ function expectCouplingCompliance(result: ReturnType<typeof compile>, deviceId: 
       ).toBe(true);
     }
     if (instr.kind === 'gate') {
-      expect([...device.basisGates, 'swap'].includes(instr.name), `non-basis gate ${instr.name}`).toBe(true);
+      expect(
+        [...device.basisGates, 'swap'].includes(instr.name),
+        `non-basis gate ${instr.name}`,
+      ).toBe(true);
     }
   }
   // After translation, swap must not survive (it is not in the basis).
@@ -208,7 +211,9 @@ describe('compile: structural guarantees', () => {
     expectEquivalent(circuit, result);
     expect(() => compile(circuit, { device: LINEAR5, layoutMethod: [0] })).toThrow(/assign all/);
     expect(() => compile(circuit, { device: LINEAR5, layoutMethod: [0, 0] })).toThrow(/repeats/);
-    expect(() => compile(circuit, { device: LINEAR5, layoutMethod: [0, 9] })).toThrow(/outside device/);
+    expect(() => compile(circuit, { device: LINEAR5, layoutMethod: [0, 9] })).toThrow(
+      /outside device/,
+    );
   });
 
   it('rejects circuits larger than the device', () => {
@@ -391,7 +396,13 @@ describe('scheduling and translation event details', () => {
     });
     compile(circuit, { ...options, traceBuilder: builder });
     return builder.build({
-      inputCircuit: { name: 'x', numQubits: circuit.numQubits, numClbits: 0, cregs: [], instructions: [] },
+      inputCircuit: {
+        name: 'x',
+        numQubits: circuit.numQubits,
+        numClbits: 0,
+        cregs: [],
+        instructions: [],
+      },
     }).events;
   }
 
@@ -437,7 +448,11 @@ describe('scheduling and translation event details', () => {
         makeInstruction({ name: 'sx', qubits: [0] }),
       ],
     });
-    const result = compile(multiRound, { device: LINEAR5, layoutMethod: 'trivial', optimize: true });
+    const result = compile(multiRound, {
+      device: LINEAR5,
+      layoutMethod: 'trivial',
+      optimize: true,
+    });
     // sx*4 = x*2 = identity, so a converged optimizer leaves nothing behind.
     expect(result.compiledMetrics.gateCount).toBe(0);
   });

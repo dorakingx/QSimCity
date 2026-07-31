@@ -1,0 +1,59 @@
+{
+  "commitSha": "9fa4de5883067e0856a6740bf799fb9059d33e7d",
+  "worktreeDirty": true,
+  "generatedAt": "2026-07-31T00:19:19.922Z",
+  "tool": "qsimcity-trace-reproducibility",
+  "toolVersion": "v22.23.1",
+  "command": "12 independent `tsx tools/trace-reproducibility/hash-one-run.ts` processes + committed-sample verification",
+  "exitStatus": 0,
+  "inputHash": "7a03b8fdad6d00b0",
+  "thresholds": {
+    "minIndependentProcesses": 12,
+    "requiredDistinctSemanticHashes": 1,
+    "minSamplesVerified": 5
+  },
+  "measurements": {
+    "independentProcesses": 12,
+    "distinctSemanticHashes": 1,
+    "circuitsCovered": 3,
+    "seedSensitive": true,
+    "samplesVerified": 5,
+    "samplesTotal": 5,
+    "telemetryBearingSamplesChecked": 5
+  },
+  "passed": true,
+  "detail": {
+    "perCircuitHashes": {
+      "bell": ["bd2f99c68ca39252"],
+      "ghz-4": ["4848e0b76662f420"],
+      "grover-2": ["b4330f9bbc3b06e3"]
+    },
+    "sampleChecks": [
+      {
+        "name": "bell",
+        "semanticMatches": true,
+        "artifactMatches": true
+      },
+      {
+        "name": "ghz-4",
+        "semanticMatches": true,
+        "artifactMatches": true
+      },
+      {
+        "name": "grover-2",
+        "semanticMatches": true,
+        "artifactMatches": true
+      },
+      {
+        "name": "qft-3",
+        "semanticMatches": true,
+        "artifactMatches": true
+      },
+      {
+        "name": "swap-storm",
+        "semanticMatches": true,
+        "artifactMatches": true
+      }
+    ]
+  }
+}

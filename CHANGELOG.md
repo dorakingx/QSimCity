@@ -3,6 +3,64 @@
 All notable changes to QSimCity are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.1] — 2026-07-31
+
+Release hardening. The 1.0.0 completion claim was rejected because the
+completion gate passed while a mandatory measurement had never run. The gate
+was rebuilt first; every other change below is a measurement that had been
+asserted rather than taken, or a defect that taking it exposed.
+
+### Changed
+
+- **Completion gate rebuilt on evidence envelopes.** Every mandatory verdict
+  now comes from a machine-readable envelope recording the command, tool
+  version, exit status, thresholds, and measurements. Prose is never accepted.
+  Envelopes bind to a hash of the tracked source rather than to `HEAD`, which
+  removes the regress where committing evidence invalidated it.
+- **Mutation testing is generative** across eleven scientific areas (84
+  mutants, 89.3%) instead of sixteen hand-written mutants. Two defects in the
+  mutation tool itself were fixed: mutants were applied at different sites than
+  they were reported at, and trailing comments were treated as live code.
+- **Trace hashing split** into `semanticHash` (reproducible science) and
+  `artifactHash` (exact bytes), with Qiskit transpiler pass telemetry restored
+  and excluded from the semantic hash rather than deleted.
+- **Coverage is gated per package**, not in aggregate.
+- **`pytest` upgraded to 9.0.3** to clear PYSEC-2026-1845 (CVE-2025-71176).
+- **Licensing wording corrected.** With no `LICENSE` file, QSimCity is
+  described as an unofficial, independent educational and research
+  visualization project, and no reuse rights are stated.
+  `LICENSE DECISION: OWNER REQUIRED`.
+- **Prettier configuration committed** so `pnpm format` passes; it is now part
+  of `pnpm verify`. Hand-wrapped prose and byte-pinned trace artifacts are
+  excluded, because reformatting the latter would break their artifact hashes.
+
+### Added
+
+- Ten-minute production soak (`pnpm soak`): 600.3 s, 290 workload cycles, heap
+  growth ratio 1.443, zero uncaught and zero console errors.
+- Lighthouse gate (`pnpm lighthouse`): four targets, three runs each, median
+  scored — performance 100 desktop / 84 mobile, accessibility 100, best
+  practices 96, SEO 91.
+- Security evidence (`pnpm security:audit`): `pnpm audit`, `pip-audit`, and a
+  repository secret scan in one envelope; a tool that cannot run fails rather
+  than reporting zero.
+- Trace reproducibility evidence (`pnpm repro:check`): twelve independent
+  processes, seed sensitivity, and cross-language verification of every
+  committed sample against the Python-generated manifest.
+- Comparative visual benchmark against the reference application over eighteen
+  categories, with three real visual deficits fixed as a result: an
+  atmospheric horizon, denser district interiors, and a walk-mode entry that
+  no longer strands the viewer outside the city.
+
+### Fixed
+
+- A Python test asserted that regenerated traces reproduce the committed
+  `artifactHash`, which cannot hold because each generated trace carries a
+  fresh id and timestamp. It now checks what each hash actually promises.
+- Vercel configuration tests build into a temporary directory instead of
+  depending on a previously built `apps/web/dist`.
+- Hypothesis's local example cache is no longer committed.
+
 ## [1.0.0] — 2026-07-31
 
 First production release.

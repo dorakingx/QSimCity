@@ -12,7 +12,7 @@ export default defineConfig({
         name: 'QSimCity',
         short_name: 'QSimCity',
         description:
-          'An explorable 3D quantum city driven by real computation traces. Unofficial, independent, open-source educational and research visualization project.',
+          'An explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.',
         theme_color: '#0a0d16',
         background_color: '#0a0d16',
         display: 'standalone',

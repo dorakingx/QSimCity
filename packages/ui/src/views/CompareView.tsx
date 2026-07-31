@@ -21,10 +21,7 @@ export function CompareView(): ReactElement {
         {!config.noiseEnabled && (
           <p className="hint">
             Noise is currently disabled, so both distributions would match.{' '}
-            <button
-              type="button"
-              onClick={() => updateConfig({ noiseEnabled: true })}
-            >
+            <button type="button" onClick={() => updateConfig({ noiseEnabled: true })}>
               Enable noise
             </button>{' '}
             and run again to compare ideal against noisy execution.

@@ -6,16 +6,24 @@ import { trackConsoleErrors, expectCityRendered } from './helpers.js';
 test('mobile: core workflow works with touch', async ({ page, browserName }) => {
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).tap();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .tap();
   await page.getByRole('button', { name: 'Run', exact: true }).tap();
-  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+    timeout: 20_000,
+  });
   assertClean();
 });
 
 test('mobile: 3D city loads and responds to touch drag', async ({ page, browserName }) => {
   const assertClean = trackConsoleErrors(page, browserName);
   await page.goto('/');
-  await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).tap();
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Explore' })
+    .tap();
   const canvas = page.locator('.city-canvas');
   await expect(canvas).toBeVisible({ timeout: 15_000 });
   await page.waitForTimeout(1500);

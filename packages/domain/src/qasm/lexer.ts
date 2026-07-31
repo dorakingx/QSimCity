@@ -1,9 +1,4 @@
-export type TokenType =
-  | 'identifier'
-  | 'number'
-  | 'string'
-  | 'symbol'
-  | 'eof';
+export type TokenType = 'identifier' | 'number' | 'string' | 'symbol' | 'eof';
 
 export interface Token {
   readonly type: TokenType;
@@ -60,11 +55,13 @@ export function tokenize(source: string): Token[] {
       advance(1);
       let value = '';
       while (i < source.length && source[i] !== '"') {
-        if (source[i] === '\n') throw new QasmError('Unterminated string literal', startLine, startCol);
+        if (source[i] === '\n')
+          throw new QasmError('Unterminated string literal', startLine, startCol);
         value += source[i];
         advance(1);
       }
-      if (i >= source.length) throw new QasmError('Unterminated string literal', startLine, startCol);
+      if (i >= source.length)
+        throw new QasmError('Unterminated string literal', startLine, startCol);
       advance(1);
       tokens.push({ type: 'string', value, line: startLine, col: startCol });
       continue;

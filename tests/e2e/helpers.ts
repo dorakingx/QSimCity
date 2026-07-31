@@ -22,8 +22,7 @@ const BROWSER_SPECIFIC_IGNORED: readonly {
 }[] = [
   {
     browser: 'webkit',
-    signature:
-      "texImage3D: FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures",
+    signature: "texImage3D: FLIP_Y or PREMULTIPLY_ALPHA isn't allowed for uploading 3D textures",
     adr: 'adr-0003',
   },
 ];

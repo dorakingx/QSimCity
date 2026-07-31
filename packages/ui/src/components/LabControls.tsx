@@ -88,8 +88,7 @@ export function LabControls(): ReactElement {
 
       <div className="field-row field-row-editor">
         <label htmlFor="lab-qasm">
-          OpenQASM 2.0 program{' '}
-          <span className="hint">(max 12 qubits for exact simulation)</span>
+          OpenQASM 2.0 program <span className="hint">(max 12 qubits for exact simulation)</span>
         </label>
         <textarea
           id="lab-qasm"
@@ -253,7 +252,9 @@ export function LabControls(): ReactElement {
         </p>
       )}
       {config.sampleId === null && (
-        <p className="hint">Share links are available for bundled samples (custom programs stay local).</p>
+        <p className="hint">
+          Share links are available for bundled samples (custom programs stay local).
+        </p>
       )}
     </form>
   );

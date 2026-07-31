@@ -17,14 +17,20 @@ test.describe('desktop surfaces', () => {
 
   test('city night (explore)', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
     await page.waitForTimeout(2500); // city assets + first frames
     await expect(page).toHaveScreenshot('city-night.png');
   });
 
   test('city day (explore)', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
     await page.getByRole('button', { name: 'Settings' }).click();
     await page.getByLabel('Time of day').selectOption('day');
     await page.keyboard.press('Escape');
@@ -34,7 +40,10 @@ test.describe('desktop surfaces', () => {
 
   test('city first-person', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
     await page.waitForTimeout(1500);
     await page.getByRole('button', { name: /^Walk/ }).click();
     await page.waitForTimeout(800);
@@ -49,19 +58,31 @@ test.describe('desktop surfaces', () => {
   });
 
   test('compare mode', async ({ page }) => {
-    await page.goto('/?sample=bell&shots=1024&seed=visual&device=linear-5&noise=0.05,0.001,0.01,0.02,0.02');
+    await page.goto(
+      '/?sample=bell&shots=1024&seed=visual&device=linear-5&noise=0.05,0.001,0.01,0.02,0.02',
+    );
     await page.getByRole('button', { name: 'Run', exact: true }).click();
-    await expect(page.getByRole('toolbar', { name: 'Replay timeline' })).toBeVisible({ timeout: 20_000 });
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Compare' }).click();
+    await expect(page.getByRole('toolbar', { name: 'Replay timeline' })).toBeVisible({
+      timeout: 20_000,
+    });
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Compare' })
+      .click();
     await expect(page.getByRole('heading', { name: 'Ideal vs noisy' })).toBeVisible();
     await expect(page).toHaveScreenshot('compare.png', { fullPage: false });
   });
 
   test('accessible 2D with results', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Accessible 2D' })
+      .click();
     await page.getByRole('button', { name: 'Run', exact: true }).click();
-    await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
+      timeout: 20_000,
+    });
     await page.getByRole('button', { name: 'Pause replay' }).click();
     await expect(page).toHaveScreenshot('accessible-2d.png');
   });
@@ -69,7 +90,10 @@ test.describe('desktop surfaces', () => {
   test('webgl-disabled fallback', async ({ page }) => {
     await disableWebgl(page);
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
     await expect(page.getByRole('status').first()).toContainText(/Accessible 2D Mode/);
     await expect(page).toHaveScreenshot('webgl-fallback.png');
   });
@@ -90,7 +114,10 @@ test.describe('mobile surfaces', () => {
 
   test('mobile portrait 2D', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Accessible 2D' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Accessible 2D' })
+      .click();
     await expect(page.getByRole('button', { name: 'Run', exact: true })).toBeVisible();
     await expect(page).toHaveScreenshot('mobile-portrait.png');
   });
@@ -98,7 +125,10 @@ test.describe('mobile surfaces', () => {
   test('mobile landscape city', async ({ page }) => {
     await page.setViewportSize({ width: 915, height: 412 });
     await page.goto('/');
-    await page.getByRole('navigation', { name: 'Modes' }).getByRole('button', { name: 'Explore' }).click();
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
     await page.waitForTimeout(2500);
     await expect(page).toHaveScreenshot('mobile-landscape.png');
   });

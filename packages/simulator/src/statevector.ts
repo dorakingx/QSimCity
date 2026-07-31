@@ -61,14 +61,22 @@ export function applyGate1(state: StateVector, m: ComplexMatrix, target: number)
   checkQubit(state, target);
   const { re, im } = state;
   const bit = 1 << target;
-  const m00r = m[0]!, m00i = m[1]!, m01r = m[2]!, m01i = m[3]!;
-  const m10r = m[4]!, m10i = m[5]!, m11r = m[6]!, m11i = m[7]!;
+  const m00r = m[0]!,
+    m00i = m[1]!,
+    m01r = m[2]!,
+    m01i = m[3]!;
+  const m10r = m[4]!,
+    m10i = m[5]!,
+    m11r = m[6]!,
+    m11i = m[7]!;
   const size = re.length;
   for (let base = 0; base < size; base++) {
     if ((base & bit) !== 0) continue;
     const j = base | bit;
-    const ar = re[base]!, ai = im[base]!;
-    const br = re[j]!, bi = im[j]!;
+    const ar = re[base]!,
+      ai = im[base]!;
+    const br = re[j]!,
+      bi = im[j]!;
     re[base] = m00r * ar - m00i * ai + m01r * br - m01i * bi;
     im[base] = m00r * ai + m00i * ar + m01r * bi + m01i * br;
     re[j] = m10r * ar - m10i * ai + m11r * br - m11i * bi;

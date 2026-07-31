@@ -122,9 +122,7 @@ def build_trace(
         shots=shots,
         noise=noise_dict,
         inputCircuit=circuit_to_trace_circuit(qc, name=name),
-        compiledCircuit=circuit_to_trace_circuit(
-            capture.transpiled, name=f"{name}@{device_id}"
-        ),
+        compiledCircuit=circuit_to_trace_circuit(capture.transpiled, name=f"{name}@{device_id}"),
         initialLayout=capture.initial_layout,
         finalLayout=capture.final_layout,
         metrics=[

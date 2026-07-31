@@ -21,7 +21,9 @@ describe('noise model validation', () => {
   });
 
   it('rejects out-of-range parameters', () => {
-    expect(() => validateNoiseModel({ ...ZERO_NOISE, readoutError: 1.5 })).toThrow(/within \[0, 1\]/);
+    expect(() => validateNoiseModel({ ...ZERO_NOISE, readoutError: 1.5 })).toThrow(
+      /within \[0, 1\]/,
+    );
     expect(() => validateNoiseModel({ ...ZERO_NOISE, amplitudeDamping: -0.1 })).toThrow(/within/);
     expect(() => validateNoiseModel({ ...ZERO_NOISE, phaseDamping: NaN })).toThrow(/within/);
   });

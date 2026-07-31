@@ -1,0 +1,52 @@
+import { test } from '@playwright/test';
+const OUT = 'release-evidence/visual-benchmark';
+test.use({ viewport: { width: 1280, height: 800 } });
+
+test('capture benchmark views', async ({ page }) => {
+  const nav = () => page.getByRole('navigation', { name: 'Modes' });
+  await page.goto('/');
+  // Dismiss the offline-ready toast so it does not sit in every capture.
+  const toast = page.getByRole('button', { name: 'Dismiss message' });
+  await page.waitForTimeout(1200);
+  if (await toast.count()) await toast.click();
+  await page.screenshot({ path: `${OUT}/qsimcity-01-first-impression.png` });
+
+  await nav().getByRole('button', { name: 'Explore' }).click();
+  await page.waitForTimeout(3000);
+  if (await toast.count()) await toast.click();
+  await page.screenshot({ path: `${OUT}/qsimcity-02-skyline-night.png` });
+
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByLabel('Time of day').selectOption('day');
+  // Close the settings popover without clicking the canvas (a canvas click
+  // would select a district and move the camera target).
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: `${OUT}/qsimcity-03-skyline-day.png` });
+
+  await page.getByRole('button', { name: /^Top-down/ }).click();
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${OUT}/qsimcity-04-topdown.png` });
+
+  await page.getByRole('button', { name: /^Fly/ }).click();
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${OUT}/qsimcity-05-fly.png` });
+
+  await page.getByRole('button', { name: /^Walk/ }).click();
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: `${OUT}/qsimcity-06-walk.png` });
+
+  await page.getByRole('button', { name: /^Orbit/ }).click();
+  await nav().getByRole('button', { name: 'Quantum Lab' }).click();
+  await page.getByRole('button', { name: 'Run', exact: true }).first().click();
+  await page.waitForTimeout(4000);
+  await page.screenshot({ path: `${OUT}/qsimcity-07-lab-running.png` });
+
+  await nav().getByRole('button', { name: 'Guided Tour' }).click();
+  await page.waitForTimeout(2500);
+  await page.screenshot({ path: `${OUT}/qsimcity-08-tour.png` });
+
+  await nav().getByRole('button', { name: 'Accessible 2D' }).click();
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: `${OUT}/qsimcity-09-accessible2d.png` });
+});

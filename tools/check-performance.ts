@@ -90,12 +90,14 @@ const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].split
 if (isMain) {
   const report = measure();
   console.log('Initial-load JavaScript (gzip):');
-  for (const c of report.eagerChunks) console.log(`  ${c.name.padEnd(44)} ${(c.gzipBytes / 1024).toFixed(1)} KiB`);
+  for (const c of report.eagerChunks)
+    console.log(`  ${c.name.padEnd(44)} ${(c.gzipBytes / 1024).toFixed(1)} KiB`);
   console.log(
     `  TOTAL ${(report.initialJsGzipBytes / 1024).toFixed(1)} KiB (budget ${(INITIAL_JS_GZIP_BUDGET / 1024).toFixed(0)} KiB)`,
   );
   console.log('Lazily loaded chunks (gzip):');
-  for (const c of report.lazyChunks) console.log(`  ${c.name.padEnd(44)} ${(c.gzipBytes / 1024).toFixed(1)} KiB`);
+  for (const c of report.lazyChunks)
+    console.log(`  ${c.name.padEnd(44)} ${(c.gzipBytes / 1024).toFixed(1)} KiB`);
   console.log(
     `  TOTAL ALL JS ${(report.totalJsGzipBytes / 1024).toFixed(1)} KiB (budget ${(TOTAL_JS_GZIP_BUDGET / 1024).toFixed(0)} KiB)`,
   );

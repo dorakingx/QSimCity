@@ -69,11 +69,31 @@ export class CameraRig {
     this.mode = mode;
     if (mode === 'first-person') {
       if (previous === 'orbit' || previous === 'top') {
-        // Step onto the ground just south of whatever the orbit camera was
-        // looking at, facing north into it — never outside the city.
-        this.fpPosition.set(this.target.x, EYE_HEIGHT, this.target.z + 70);
-        this.yaw = Math.PI;
-        this.pitch = -0.05;
+        // Step onto the street a short distance from the viewed district, on
+        // the side facing the city centre, and look back toward it. Offsetting
+        // blindly southward would strand the viewer outside the city whenever
+        // a peripheral district was being viewed.
+        const centreX = (CITY_BOUNDS.minX + CITY_BOUNDS.maxX) / 2;
+        const centreZ = (CITY_BOUNDS.minZ + CITY_BOUNDS.maxZ) / 2;
+        let dx = centreX - this.target.x;
+        let dz = centreZ - this.target.z;
+        const length = Math.hypot(dx, dz);
+        if (length < 1e-3) {
+          dx = 0;
+          dz = 1;
+        } else {
+          dx /= length;
+          dz /= length;
+        }
+        const standoff = 42;
+        this.fpPosition.set(
+          this.target.x + dx * standoff,
+          EYE_HEIGHT,
+          this.target.z + dz * standoff,
+        );
+        // Face back toward the district that was being viewed.
+        this.yaw = Math.atan2(-dx, -dz);
+        this.pitch = 0.06;
       } else {
         this.fpPosition.y = EYE_HEIGHT;
       }
@@ -161,10 +181,7 @@ export class CameraRig {
     if (touches.length === 1) this.onPointerDown(touches[0]!.x, touches[0]!.y);
     else if (touches.length === 2) {
       this.dragging = false;
-      this.pinchDistance = Math.hypot(
-        touches[0]!.x - touches[1]!.x,
-        touches[0]!.y - touches[1]!.y,
-      );
+      this.pinchDistance = Math.hypot(touches[0]!.x - touches[1]!.x, touches[0]!.y - touches[1]!.y);
     }
   }
 
@@ -225,9 +242,7 @@ export class CameraRig {
     }
     forward.set(Math.sin(this.yaw), 0, Math.cos(this.yaw));
     right.set(forward.z, 0, -forward.x);
-    move = forward
-      .multiplyScalar(fwd * speed * dt)
-      .add(right.multiplyScalar(strafe * speed * dt));
+    move = forward.multiplyScalar(fwd * speed * dt).add(right.multiplyScalar(strafe * speed * dt));
     if (this.mode === 'fly') move.y = up * speed * dt;
     const next = this.fpPosition.clone().add(move);
     if (this.mode === 'first-person') {

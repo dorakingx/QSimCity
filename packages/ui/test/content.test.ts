@@ -6,7 +6,11 @@ import { describeEvent } from '../src/components/EventLog.js';
 import { ACTIVE_SIMPLIFICATIONS } from '../src/components/ProvenancePanel.js';
 import { CERTAINTY_DESCRIPTIONS, SOURCE_DESCRIPTIONS } from '../src/components/CertaintyBadge.js';
 import { KEYBOARD_MAP } from '../src/components/HelpOverlay.js';
-import { layoutColumns, formatAngle, instructionDescription } from '../src/components/CircuitDiagram.js';
+import {
+  layoutColumns,
+  formatAngle,
+  instructionDescription,
+} from '../src/components/CircuitDiagram.js';
 
 describe('guided tour chapters (spec §7.2)', () => {
   it('has at least 16 chapters', () => {
@@ -19,12 +23,23 @@ describe('guided tour chapters (spec §7.2)', () => {
       expect(c.represents.length, c.id).toBeGreaterThan(40);
       expect(c.exactness.length, c.id).toBeGreaterThan(40);
       expect(c.why.length, c.id).toBeGreaterThan(40);
-      expect(DISTRICTS.some((d) => d.id === c.districtId), c.id).toBe(true);
+      expect(
+        DISTRICTS.some((d) => d.id === c.districtId),
+        c.id,
+      ).toBe(true);
     }
   });
 
   it('chapter exactness statements reference certainty vocabulary', () => {
-    const vocab = ['EXACT', 'COMPUTED', 'SAMPLED', 'ESTIMATED', 'ILLUSTRATIVE', 'MEASURED', 'CALIBRATION'];
+    const vocab = [
+      'EXACT',
+      'COMPUTED',
+      'SAMPLED',
+      'ESTIMATED',
+      'ILLUSTRATIVE',
+      'MEASURED',
+      'CALIBRATION',
+    ];
     for (const c of TOUR_CHAPTERS) {
       expect(
         vocab.some((v) => c.exactness.includes(v)),
@@ -128,7 +143,10 @@ describe('provenance vocabulary', () => {
   it('describes all 7 certainty labels and 9 source classifications', () => {
     expect(Object.keys(CERTAINTY_DESCRIPTIONS)).toHaveLength(7);
     expect(Object.keys(SOURCE_DESCRIPTIONS)).toHaveLength(9);
-    for (const text of [...Object.values(CERTAINTY_DESCRIPTIONS), ...Object.values(SOURCE_DESCRIPTIONS)]) {
+    for (const text of [
+      ...Object.values(CERTAINTY_DESCRIPTIONS),
+      ...Object.values(SOURCE_DESCRIPTIONS),
+    ]) {
       expect(text.length).toBeGreaterThan(15);
     }
   });
@@ -161,9 +179,33 @@ describe('circuit diagram helpers', () => {
       numClbits: 0,
       cregs: [],
       instructions: [
-        { id: 'a', kind: 'gate' as const, name: 'h', qubits: [0], params: [], clbits: [], condition: null },
-        { id: 'b', kind: 'gate' as const, name: 'h', qubits: [1], params: [], clbits: [], condition: null },
-        { id: 'c', kind: 'gate' as const, name: 'cx', qubits: [0, 1], params: [], clbits: [], condition: null },
+        {
+          id: 'a',
+          kind: 'gate' as const,
+          name: 'h',
+          qubits: [0],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
+        {
+          id: 'b',
+          kind: 'gate' as const,
+          name: 'h',
+          qubits: [1],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
+        {
+          id: 'c',
+          kind: 'gate' as const,
+          name: 'cx',
+          qubits: [0, 1],
+          params: [],
+          clbits: [],
+          condition: null,
+        },
       ],
     };
     const placed = layoutColumns(circuit);
@@ -181,13 +223,37 @@ describe('circuit diagram helpers', () => {
 
   it('instructionDescription covers gates, measures, resets, conditions', () => {
     expect(
-      instructionDescription({ id: 'i', kind: 'gate', name: 'rx', qubits: [0], params: [Math.PI], clbits: [], condition: null }),
+      instructionDescription({
+        id: 'i',
+        kind: 'gate',
+        name: 'rx',
+        qubits: [0],
+        params: [Math.PI],
+        clbits: [],
+        condition: null,
+      }),
     ).toBe('Gate rx (pi) on q0');
     expect(
-      instructionDescription({ id: 'i', kind: 'measure', name: 'measure', qubits: [1], params: [], clbits: [3], condition: null }),
+      instructionDescription({
+        id: 'i',
+        kind: 'measure',
+        name: 'measure',
+        qubits: [1],
+        params: [],
+        clbits: [3],
+        condition: null,
+      }),
     ).toContain('Measure q1 into classical bit 3');
     expect(
-      instructionDescription({ id: 'i', kind: 'reset', name: 'reset', qubits: [0], params: [], clbits: [], condition: null }),
+      instructionDescription({
+        id: 'i',
+        kind: 'reset',
+        name: 'reset',
+        qubits: [0],
+        params: [],
+        clbits: [],
+        condition: null,
+      }),
     ).toContain('Reset q0');
     expect(
       instructionDescription({

@@ -48,7 +48,12 @@ export function HelpOverlay(): ReactElement | null {
       >
         <div className="inspector-header">
           <h2>Help</h2>
-          <button ref={closeRef} type="button" aria-label="Close help" onClick={() => setHelpOpen(false)}>
+          <button
+            ref={closeRef}
+            type="button"
+            aria-label="Close help"
+            onClick={() => setHelpOpen(false)}
+          >
             ×
           </button>
         </div>
@@ -76,7 +81,11 @@ export function HelpOverlay(): ReactElement | null {
         <ul className="legend-list">
           {DISTRICTS.map((d) => (
             <li key={d.id}>
-              <span className="legend-swatch" style={{ background: d.accentColor }} aria-hidden="true" />
+              <span
+                className="legend-swatch"
+                style={{ background: d.accentColor }}
+                aria-hidden="true"
+              />
               <strong>{d.name}</strong> — {d.role}
             </li>
           ))}
@@ -84,9 +93,8 @@ export function HelpOverlay(): ReactElement | null {
         <h3>What moves in the city</h3>
         <p>
           Moving objects are jobs, instructions, classical messages, and measurement samples.
-          Quantum state itself never travels on roads — that would misrepresent the physics.
-          Every number on screen carries a certainty label; open the Provenance panel for the
-          full legend.
+          Quantum state itself never travels on roads — that would misrepresent the physics. Every
+          number on screen carries a certainty label; open the Provenance panel for the full legend.
         </p>
       </div>
     </div>

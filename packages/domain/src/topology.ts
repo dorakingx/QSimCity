@@ -110,14 +110,23 @@ export const DEVICES: readonly Device[] = [
     // H-shaped 7-qubit graph inspired by small superconducting devices:
     // 0-1-2 spine with 1-3, and 4-5-6 spine with 5-3.
     edges: [
-      [0, 1], [1, 2], [1, 3], [3, 5], [4, 5], [5, 6],
+      [0, 1],
+      [1, 2],
+      [1, 3],
+      [3, 5],
+      [4, 5],
+      [5, 6],
     ],
     basisGates: DEFAULT_BASIS,
     durations: DEFAULT_DURATIONS,
     positions: [
-      [0, 0], [1, 0], [2, 0],
+      [0, 0],
+      [1, 0],
+      [2, 0],
       [1, 1],
-      [0, 2], [1, 2], [2, 2],
+      [0, 2],
+      [1, 2],
+      [2, 2],
     ],
   },
   {

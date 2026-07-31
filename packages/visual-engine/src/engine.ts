@@ -6,7 +6,13 @@ import {
   INTERACTIVES,
   type WorldActivity,
 } from '@qsimcity/world';
-import { buildCity, buildQpu, type CityMeshes, type PickTarget, type QpuMeshes } from './instanced-city.js';
+import {
+  buildCity,
+  buildQpu,
+  type CityMeshes,
+  type PickTarget,
+  type QpuMeshes,
+} from './instanced-city.js';
 import { CameraRig, type CameraMode } from './cameras.js';
 
 /**
@@ -109,7 +115,14 @@ export class CityEngine {
     starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
     this.stars = new THREE.Points(
       starGeo,
-      new THREE.PointsMaterial({ color: '#c8d4ff', size: 2.4, sizeAttenuation: false }),
+      // fog:false keeps the sky dome at infinity: fogged stars would fade
+      // into the background and leave the night sky empty.
+      new THREE.PointsMaterial({
+        color: '#c8d4ff',
+        size: 2.4,
+        sizeAttenuation: false,
+        fog: false,
+      }),
     );
     this.scene.add(this.stars);
 
@@ -141,16 +154,25 @@ export class CityEngine {
     for (let i = 0; i < weatherCount; i++) {
       positions[i * 3] = qpuDistrict.bounds.x + (Math.random() - 0.5) * qpuDistrict.bounds.width;
       positions[i * 3 + 1] = 20 + Math.random() * 25;
-      positions[i * 3 + 2] = qpuDistrict.bounds.z + (Math.random() - 0.5) * qpuDistrict.bounds.depth;
+      positions[i * 3 + 2] =
+        qpuDistrict.bounds.z + (Math.random() - 0.5) * qpuDistrict.bounds.depth;
     }
     weatherGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     this.weather = new THREE.Points(
       weatherGeo,
-      new THREE.PointsMaterial({ color: '#b46ad8', size: 1.2, transparent: true, opacity: 0 }),
+      new THREE.PointsMaterial({
+        color: '#b46ad8',
+        size: 1.2,
+        transparent: true,
+        opacity: 0,
+      }),
     );
     this.scene.add(this.weather);
 
-    this.rig = new CameraRig(options.canvas.clientWidth / options.canvas.clientHeight, this.city.buildings);
+    this.rig = new CameraRig(
+      options.canvas.clientWidth / options.canvas.clientHeight,
+      this.city.buildings,
+    );
     this.rig.reducedMotion = options.reducedMotion;
 
     this.buildLabels();
@@ -216,17 +238,31 @@ export class CityEngine {
       // Treat short non-drag releases as picks.
       this.pick(e);
     });
-    c.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      this.rig.onWheel(e.deltaY);
-    }, { passive: false });
-    c.addEventListener('touchstart', (e) => {
-      this.rig.onTouchStart([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
-    }, { passive: true });
-    c.addEventListener('touchmove', (e) => {
-      this.rig.onTouchMove([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
-    }, { passive: true });
-    c.addEventListener('touchend', () => this.rig.onTouchEnd(), { passive: true });
+    c.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        this.rig.onWheel(e.deltaY);
+      },
+      { passive: false },
+    );
+    c.addEventListener(
+      'touchstart',
+      (e) => {
+        this.rig.onTouchStart([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
+      },
+      { passive: true },
+    );
+    c.addEventListener(
+      'touchmove',
+      (e) => {
+        this.rig.onTouchMove([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
+      },
+      { passive: true },
+    );
+    c.addEventListener('touchend', () => this.rig.onTouchEnd(), {
+      passive: true,
+    });
   }
 
   private downAt: { x: number; y: number } | null = null;
@@ -276,7 +312,11 @@ export class CityEngine {
     if (this.activity && this.activity.eventsAtTick.length > 0) {
       const latest = this.activity.eventsAtTick[this.activity.eventsAtTick.length - 1]!;
       const district = districtForStage(latest.stage);
-      this.jobTokenTarget.set(district.bounds.x, 6, district.bounds.z - district.bounds.depth / 2 - 6);
+      this.jobTokenTarget.set(
+        district.bounds.x,
+        6,
+        district.bounds.z - district.bounds.depth / 2 - 6,
+      );
     }
     if (this.reducedMotion) {
       this.jobToken.position.copy(this.jobTokenTarget);
@@ -369,7 +409,8 @@ export class CityEngine {
     // Noise weather visibility.
     const noiseNow = activity.eventsAtTick.some((e) => e.eventType === 'noise.applied');
     const weatherMaterial = this.weather.material as THREE.PointsMaterial;
-    weatherMaterial.opacity = this.particles && (noiseNow || noisyConfigured) ? (noiseNow ? 0.85 : 0.3) : 0;
+    weatherMaterial.opacity =
+      this.particles && (noiseNow || noisyConfigured) ? (noiseNow ? 0.85 : 0.3) : 0;
   }
 
   setDevice(view: DeviceView | null): void {
@@ -409,7 +450,13 @@ export class CityEngine {
     this.night = night;
     this.city.setNight(night);
     this.scene.background = new THREE.Color(night ? '#070a12' : '#9dc0e4');
-    this.scene.fog = new THREE.Fog(night ? '#070a12' : '#9dc0e4', 520, 1400);
+    // Fog closes well before the ground plane's far edge so distant terrain
+    // dissolves into the sky, producing a horizon instead of a flat expanse.
+    this.scene.fog = new THREE.Fog(
+      night ? '#070a12' : '#9dc0e4',
+      night ? 380 : 300,
+      night ? 1000 : 820,
+    );
     this.ambient.intensity = night ? 0.58 : 0.8;
     this.ambient.color.set(night ? '#6677bb' : '#ccddee');
     this.sun.intensity = night ? 0.45 : 1.15;

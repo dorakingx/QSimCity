@@ -27,7 +27,9 @@ describe('makeInstruction', () => {
 
   it('rejects wrong parameter count', () => {
     expect(() => makeInstruction({ name: 'rx', qubits: [0] })).toThrow(/expects 1 parameter/);
-    expect(() => makeInstruction({ name: 'h', qubits: [0], params: [1] })).toThrow(/expects 0 parameter/);
+    expect(() => makeInstruction({ name: 'h', qubits: [0], params: [1] })).toThrow(
+      /expects 0 parameter/,
+    );
   });
 
   it('rejects repeated qubits', () => {
@@ -61,7 +63,13 @@ describe('makeCircuit', () => {
 
   it('rejects duplicate creg names', () => {
     expect(() =>
-      makeCircuit({ numQubits: 1, cregs: [{ name: 'c', size: 1 }, { name: 'c', size: 1 }] }),
+      makeCircuit({
+        numQubits: 1,
+        cregs: [
+          { name: 'c', size: 1 },
+          { name: 'c', size: 1 },
+        ],
+      }),
     ).toThrow(/Duplicate/);
   });
 
@@ -79,7 +87,9 @@ describe('makeCircuit', () => {
       makeCircuit({
         numQubits: 1,
         cregs: [{ name: 'c', size: 1 }],
-        instructions: [makeInstruction({ kind: 'measure', name: 'measure', qubits: [0], clbits: [5] })],
+        instructions: [
+          makeInstruction({ kind: 'measure', name: 'measure', qubits: [0], clbits: [5] }),
+        ],
       }),
     ).toThrow(/classical bit 5/);
   });

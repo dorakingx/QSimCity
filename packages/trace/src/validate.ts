@@ -29,19 +29,20 @@ export function validateTrace(data: unknown): Trace {
   const trace = parsed.data as unknown as Trace;
   const issues: string[] = [];
 
-  const checkCircuitBounds = (
-    circuit: Trace['inputCircuit'],
-    label: string,
-  ): void => {
+  const checkCircuitBounds = (circuit: Trace['inputCircuit'], label: string): void => {
     for (const instr of circuit.instructions) {
       for (const q of instr.qubits) {
         if (q >= circuit.numQubits) {
-          issues.push(`${label}: instruction ${instr.id} references qubit ${q} >= ${circuit.numQubits}`);
+          issues.push(
+            `${label}: instruction ${instr.id} references qubit ${q} >= ${circuit.numQubits}`,
+          );
         }
       }
       for (const c of instr.clbits) {
         if (c >= circuit.numClbits) {
-          issues.push(`${label}: instruction ${instr.id} references clbit ${c} >= ${circuit.numClbits}`);
+          issues.push(
+            `${label}: instruction ${instr.id} references clbit ${c} >= ${circuit.numClbits}`,
+          );
         }
       }
     }
@@ -56,7 +57,9 @@ export function validateTrace(data: unknown): Trace {
   const checkLayout = (layout: readonly number[] | null, label: string): void => {
     if (!layout) return;
     if (layout.length !== trace.inputCircuit.numQubits) {
-      issues.push(`${label}: length ${layout.length} != logical qubit count ${trace.inputCircuit.numQubits}`);
+      issues.push(
+        `${label}: length ${layout.length} != logical qubit count ${trace.inputCircuit.numQubits}`,
+      );
     }
     if (new Set(layout).size !== layout.length) {
       issues.push(`${label}: physical qubit assignments must be distinct`);
@@ -73,7 +76,9 @@ export function validateTrace(data: unknown): Trace {
   let lastTick = -1;
   for (const ev of trace.events) {
     if (ev.logicalTick < lastTick) {
-      issues.push(`event ${ev.eventId}: logicalTick ${ev.logicalTick} decreases (previous ${lastTick})`);
+      issues.push(
+        `event ${ev.eventId}: logicalTick ${ev.logicalTick} decreases (previous ${lastTick})`,
+      );
       break;
     }
     lastTick = ev.logicalTick;

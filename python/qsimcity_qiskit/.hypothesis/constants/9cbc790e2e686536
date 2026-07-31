@@ -1,4 +1,0 @@
-# file: /Users/hatanakatomoya/Developer/App/QSimCity/python/qsimcity_qiskit/src/qsimcity_qiskit/aer_runs.py
-# hypothesis_version: 6.140.3
-
-[0.0, 'cx', 'cz', 'h', 'id', 'rz', 'sx', 'u', 'u3', 'x']

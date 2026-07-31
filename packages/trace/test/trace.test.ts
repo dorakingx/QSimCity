@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { TraceBuilder, deriveTraceId } from '../src/builder.js';
-import { serializeTrace, deserializeTrace, traceContentHash, traceFileName } from '../src/serialize.js';
+import {
+  serializeTrace,
+  deserializeTrace,
+  traceContentHash,
+  traceFileName,
+} from '../src/serialize.js';
 import { parseTraceJson, validateTrace, TraceValidationError } from '../src/validate.js';
 import { migrateTraceData, TraceMigrationError } from '../src/migrate.js';
 import { eventContext, TRACE_SCHEMA_VERSION, type Trace, type TraceCircuit } from '../src/types.js';
@@ -13,8 +18,24 @@ const bellCircuit: TraceCircuit = {
   instructions: [
     { id: 'i0', kind: 'gate', name: 'h', qubits: [0], params: [], clbits: [], condition: null },
     { id: 'i1', kind: 'gate', name: 'cx', qubits: [0, 1], params: [], clbits: [], condition: null },
-    { id: 'i2', kind: 'measure', name: 'measure', qubits: [0], params: [], clbits: [0], condition: null },
-    { id: 'i3', kind: 'measure', name: 'measure', qubits: [1], params: [], clbits: [1], condition: null },
+    {
+      id: 'i2',
+      kind: 'measure',
+      name: 'measure',
+      qubits: [0],
+      params: [],
+      clbits: [0],
+      condition: null,
+    },
+    {
+      id: 'i3',
+      kind: 'measure',
+      name: 'measure',
+      qubits: [1],
+      params: [],
+      clbits: [1],
+      condition: null,
+    },
   ],
 };
 
@@ -50,9 +71,7 @@ function buildSampleTrace(): Trace {
   });
   return builder.build({
     inputCircuit: bellCircuit,
-    metrics: [
-      { stage: 'input', gateCount: 2, twoQubitGateCount: 1, swapCount: 0, depth: 3 },
-    ],
+    metrics: [{ stage: 'input', gateCount: 2, twoQubitGateCount: 1, swapCount: 0, depth: 3 }],
     results: {
       idealProbabilities: { '00': 0.5, '11': 0.5 },
       idealCounts: {
@@ -92,7 +111,11 @@ describe('TraceBuilder', () => {
       packageVersions: {},
       programSource: 'p',
     });
-    const a = builder.emit({ eventType: 'program.loaded', stage: 'input', source: 'exact_simulation' });
+    const a = builder.emit({
+      eventType: 'program.loaded',
+      stage: 'input',
+      source: 'exact_simulation',
+    });
     const b = builder.emit({
       eventType: 'program.parsed',
       stage: 'parse',
@@ -131,7 +154,11 @@ describe('serialization round-trip', () => {
 
   it('content hash ignores traceId and createdAt', () => {
     const a = buildSampleTrace();
-    const b: Trace = { ...buildSampleTrace(), traceId: 'different', createdAt: '2020-01-01T00:00:00.000Z' };
+    const b: Trace = {
+      ...buildSampleTrace(),
+      traceId: 'different',
+      createdAt: '2020-01-01T00:00:00.000Z',
+    };
     expect(traceContentHash(a)).toBe(traceContentHash(b));
   });
 
@@ -156,7 +183,12 @@ describe('validateTrace invariants', () => {
     const bad = {
       ...trace,
       results: {
-        idealCounts: { counts: { '00': 1 }, shots: 100, source: 'sampled_simulation', certainty: 'SAMPLED' },
+        idealCounts: {
+          counts: { '00': 1 },
+          shots: 100,
+          source: 'sampled_simulation',
+          certainty: 'SAMPLED',
+        },
       },
     };
     expect(() => validateTrace(bad)).toThrow(TraceValidationError);
@@ -208,7 +240,15 @@ describe('validateTrace invariants', () => {
       inputCircuit: {
         ...trace.inputCircuit,
         instructions: [
-          { id: 'i0', kind: 'gate', name: 'h', qubits: [5], params: [], clbits: [], condition: null },
+          {
+            id: 'i0',
+            kind: 'gate',
+            name: 'h',
+            qubits: [5],
+            params: [],
+            clbits: [],
+            condition: null,
+          },
         ],
       },
     };

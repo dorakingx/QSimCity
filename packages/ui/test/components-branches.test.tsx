@@ -264,7 +264,9 @@ describe('trace-driven branches', () => {
     useAppStore.setState({ trace: noisyTrace, playbackTick: 4 });
     render(<Accessible2DView />);
     expect(screen.getAllByRole('group', { name: /Coupling map/ }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('group', { name: /Ideal vs noisy|Measured counts/ }).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole('group', { name: /Ideal vs noisy|Measured counts/ }).length,
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -282,9 +284,7 @@ describe('LabControls interaction branches', () => {
     useAppStore.setState({ trace });
     // Spy on the static helpers only: replacing globalThis.URL wholesale
     // would break every later `new URL(...)` in the suite.
-    const createObjectURL = vi
-      .spyOn(URL, 'createObjectURL')
-      .mockReturnValue('blob:mock');
+    const createObjectURL = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock');
     const revokeObjectURL = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     render(<LabControls />);
     await userEvent.click(screen.getByRole('button', { name: 'Export trace' }));
@@ -316,7 +316,9 @@ describe('LabControls interaction branches', () => {
   it('disables the share button and explains why for custom programs', () => {
     useAppStore.setState({ config: { ...DEFAULT_CONFIG, sampleId: null } });
     render(<LabControls />);
-    expect(screen.getByRole('button', { name: 'Copy share link' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Copy share link' }).hasAttribute('disabled')).toBe(
+      true,
+    );
     expect(screen.getByText(/custom programs stay local/)).toBeTruthy();
   });
 

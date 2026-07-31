@@ -88,19 +88,23 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | --- | --- | --- |
 | TypeScript strict passes | PASS | `pnpm typecheck` clean under `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` |
 | Python type checking passes | PASS | `pyright` 0 errors, 0 warnings |
-| ≥300 meaningful automated tests pass | PASS | 665 TypeScript unit/integration + 52 Python + 68 E2E |
-| Coverage thresholds pass | PASS | 96.3% lines / 88.4% branches; per-package gates on the scientific core |
-| Mutation threshold passes | PASS | 100% (16/16) — `release-evidence/mutation-report.json` |
+| ≥300 meaningful automated tests pass | PASS | 691 TypeScript unit/integration + 71 Python + 68 E2E |
+| Coverage thresholds pass | PASS | Per-package gate: domain 98.48/95.51, trace 97.58/95.87, simulator 100/97.07, reference-compiler 97.64/90.40; project 96.29/88.38 — `release-evidence/coverage/per-package-coverage.json` |
+| Mutation threshold passes | PASS | 89.3% (75/84) across 11 scientific areas and 15 files — `release-evidence/mutation/mutation-report.json`, scope in `scope-manifest.json` |
 | Production build passes | PASS | `pnpm build`; artifacts in `apps/web/dist` |
 | E2E tests pass | PASS | 68 passed, 0 failed |
 | Browser matrix passes | PASS | Chromium, Firefox, WebKit, mobile profile |
 | Accessibility requirements pass | PASS | axe WCAG 2.2 AA zero violations on 5 surfaces; keyboard walkthrough |
 | Performance budgets pass | PASS | 122.9 KiB initial JS gzip vs 320 KiB budget |
-| No high/critical dependency vulnerability | PASS | `pnpm audit`: no known vulnerabilities (whole tree) |
+| No high/critical dependency vulnerability | PASS | `pnpm audit` 0 high/critical; `pip-audit` 0 across 47 packages (pytest upgraded to 9.0.3 for PYSEC-2026-1845); secret scan 0 hits — `release-evidence/security/security-report.json` |
 | No blocking TODO/FIXME/placeholder | PASS | `pnpm check:todos` |
-| Sample traces regenerable | PASS | Regenerated 8× identically; hashes verified from TypeScript |
-| Fresh-clone reproduction passes | PASS | `docs/audits/final-release-audit.md` |
-| `pnpm goal:check` passes | PASS | `release-evidence/goal-check.txt` |
+| Sample traces regenerable | PASS | 12 independent processes agree on `semanticHash`; 5/5 committed samples reproduce the Python manifest from TypeScript — `release-evidence/trace-reproducibility/reproducibility.json` |
+| Fresh-clone reproduction passes | PASS | `docs/audits/release-hardening.md`, `docs/audits/final-release-audit.md` |
+| `pnpm goal:check` passes | PASS | Every mandatory verdict derived from a content-bound evidence envelope — `release-evidence/goal-check.txt` |
+| Ten-minute production soak passes | PASS | 600.3 s, 290 workload cycles, heap growth ratio 1.443, 0 uncaught and 0 console errors — `release-evidence/soak/soak-report.json` |
+| Lighthouse thresholds met | PASS | Median of 3 runs on 4 targets: performance 100 desktop / 84 mobile, accessibility 100, best practices 96, SEO 91 — `release-evidence/lighthouse/lighthouse-report.json` |
+| Visual quality benchmarked against the reference | PASS | 18 categories, lowest score 4/5, ahead in 8 — `docs/audits/visual-benchmark-final.md` |
+| Code formatting enforced | PASS | `pnpm format` (Prettier config committed) is part of `pnpm verify` |
 
 ## 24.7 Deployment
 
@@ -125,20 +129,30 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | README instructions followed in a fresh environment | PASS | Fresh clone: install from lockfile, verify, build — `docs/audits/final-release-audit.md` |
 | Architecture docs match code | PASS | Boundary rules in `docs/architecture.md` are the rules ESLint enforces |
 | Screenshots match current UI | PASS | README screenshots are the committed visual baselines, regenerated after the final visual pass |
-| No unfinished feature described as complete | PASS | Lighthouse substitution, soak-test scope, and deployment status all recorded honestly |
+| No unfinished feature described as complete | PASS | Deployment status, the day-mode visual loss, and the licensing decision are all recorded as open rather than claimed |
 | Independence/unofficial status stated | PASS | Home screen, README, notices |
+| No unsupported open-source claim while no license exists | PASS | `goal:check` license-claim policy over README/product-spec/CLAUDE/CONTRIBUTING, plus a UI assertion in `tests/e2e/smoke.spec.ts` — `LICENSE DECISION: OWNER REQUIRED` |
 
 ## Recorded substitutions and residual risks
 
 These are disclosed rather than hidden; none is a required-row failure.
 
-1. **Lighthouse was not executed** (no runner available on the build host). The
-   underlying categories are covered by stronger direct evidence — see
-   `docs/performance.md`.
-2. **A ten-minute soak test was not automated.** Structural mitigations are
-   described in `docs/performance.md`; long-session memory growth is the main
-   untested risk.
-3. **Screen-reader testing** was performed against the accessibility tree
+The first two entries in this list were previously substitutions — Lighthouse
+was never executed, and the ten-minute soak was never automated — and the
+completion gate passed anyway. Both are now measured, and the gate that let
+them pass has been rebuilt so that a missing measurement fails rather than
+being narrated. See `docs/audits/release-hardening.md`.
+
+1. **Screen-reader testing** was performed against the accessibility tree
    (axe + role/name assertions), not with a specific commercial screen reader.
-4. **External deployment is `NOT AUTHORIZED`** — the specification explicitly
+2. **External deployment is `NOT AUTHORIZED`** — the specification explicitly
    permits this, and no live URL is claimed anywhere.
+3. **Licensing is undecided.** No `LICENSE` file exists and none was selected
+   on the owner's behalf, so no reuse rights are stated anywhere.
+   `LICENSE DECISION: OWNER REQUIRED`.
+4. **Day-mode terrain** scores 4/5 against the reference's 5/5. Reported as a
+   loss rather than argued away; adding terrain and water would be a new
+   feature, not a repair.
+5. **Lighthouse and soak numbers are host-specific** (macOS, Chromium via
+   Playwright). They are reproducible by rerunning the commands, not universal
+   constants.

@@ -43,9 +43,9 @@ export function SchedulePanel(): ReactElement | null {
           </button>
         </div>
         <p className="hint">
-          Start times and durations are model estimates for teaching instruction-level
-          parallelism. They are not measurements of real hardware timing, and replay pacing is
-          separate presentation time.
+          Start times and durations are model estimates for teaching instruction-level parallelism.
+          They are not measurements of real hardware timing, and replay pacing is separate
+          presentation time.
         </p>
         {scheduled.length === 0 ? (
           <p className="hint">Run a circuit to see its schedule.</p>

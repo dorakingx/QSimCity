@@ -114,10 +114,13 @@ async function runCycle(page: Page, cycle: number): Promise<void> {
 
   // 5. Accessible 2D Mode: the whole workflow without WebGL.
   await nav.getByRole('button', { name: 'Accessible 2D' }).click();
-  await page.getByRole('group', { name: /Measured counts|Ideal vs noisy/ }).first().waitFor({
-    state: 'visible',
-    timeout: 30_000,
-  });
+  await page
+    .getByRole('group', { name: /Measured counts|Ideal vs noisy/ })
+    .first()
+    .waitFor({
+      state: 'visible',
+      timeout: 30_000,
+    });
 
   // 6. Compare Mode.
   await nav.getByRole('button', { name: 'Compare' }).click();
@@ -128,7 +131,12 @@ async function runCycle(page: Page, cycle: number): Promise<void> {
   const scenarioButton = page.getByRole('button', { name: /^Scenarios/ });
   if (await scenarioButton.count()) {
     await scenarioButton.click();
-    const target = cycle % 3 === 0 ? 'Variational Gridlock' : cycle % 3 === 1 ? 'SWAP Storm' : 'Decoherence Weather';
+    const target =
+      cycle % 3 === 0
+        ? 'Variational Gridlock'
+        : cycle % 3 === 1
+          ? 'SWAP Storm'
+          : 'Decoherence Weather';
     const entry = page.getByRole('button', { name: new RegExp(target) }).first();
     if (await entry.count()) {
       await entry.click();
@@ -187,21 +195,27 @@ async function main(): Promise<void> {
   page.on('requestfailed', (req) => {
     const failure = req.failure()?.errorText ?? 'unknown';
     if (failure.includes('ERR_ABORTED')) return; // navigation cancellations
-    failedRequests.push({ elapsedSeconds: elapsed(), type: 'requestfailed', text: `${req.url()}: ${failure}` });
+    failedRequests.push({
+      elapsedSeconds: elapsed(),
+      type: 'requestfailed',
+      text: `${req.url()}: ${failure}`,
+    });
   });
 
   await page.goto(baseUrl);
   await page.addInitScript(() => {
     window.addEventListener(
       'webglcontextlost',
-      () => ((window as unknown as { __ctxLost: number }).__ctxLost =
-        ((window as unknown as { __ctxLost?: number }).__ctxLost ?? 0) + 1),
+      () =>
+        ((window as unknown as { __ctxLost: number }).__ctxLost =
+          ((window as unknown as { __ctxLost?: number }).__ctxLost ?? 0) + 1),
       true,
     );
     window.addEventListener(
       'webglcontextrestored',
-      () => ((window as unknown as { __ctxRestored: number }).__ctxRestored =
-        ((window as unknown as { __ctxRestored?: number }).__ctxRestored ?? 0) + 1),
+      () =>
+        ((window as unknown as { __ctxRestored: number }).__ctxRestored =
+          ((window as unknown as { __ctxRestored?: number }).__ctxRestored ?? 0) + 1),
       true,
     );
   });
@@ -216,7 +230,11 @@ async function main(): Promise<void> {
       await runCycle(page, cycle);
     } catch (e) {
       lastError = e as Error;
-      uncaught.push({ elapsedSeconds: elapsed(), type: 'workload-error', text: (e as Error).message });
+      uncaught.push({
+        elapsedSeconds: elapsed(),
+        type: 'workload-error',
+        text: (e as Error).message,
+      });
       break;
     }
     const heap = await readHeap(page);
@@ -254,10 +272,13 @@ async function main(): Promise<void> {
         .getByRole('navigation', { name: 'Modes' })
         .getByRole('button', { name: 'Accessible 2D' })
         .click({ timeout: SOAK_CRITERIA.maxFinalInteractionMs });
-      await page.getByLabel(/OpenQASM 2.0 program/).first().waitFor({
-        state: 'visible',
-        timeout: SOAK_CRITERIA.maxFinalInteractionMs,
-      });
+      await page
+        .getByLabel(/OpenQASM 2.0 program/)
+        .first()
+        .waitFor({
+          state: 'visible',
+          timeout: SOAK_CRITERIA.maxFinalInteractionMs,
+        });
       finalInteractionMs = Date.now() - t0;
     } catch {
       finalInteractionMs = Number.POSITIVE_INFINITY;

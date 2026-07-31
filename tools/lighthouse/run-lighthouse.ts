@@ -72,7 +72,10 @@ const DESKTOP_CONFIG = {
   },
 };
 
-const MOBILE_CONFIG = { extends: 'lighthouse:default', settings: { formFactor: 'mobile' as const } };
+const MOBILE_CONFIG = {
+  extends: 'lighthouse:default',
+  settings: { formFactor: 'mobile' as const },
+};
 
 interface RunScores {
   performance: number;
@@ -87,7 +90,11 @@ function median(values: number[]): number {
   return sorted.length % 2 === 0 ? (sorted[mid - 1]! + sorted[mid]!) / 2 : sorted[mid]!;
 }
 
-async function auditTarget(baseUrl: string, target: TargetSpec, port: number): Promise<{
+async function auditTarget(
+  baseUrl: string,
+  target: TargetSpec,
+  port: number,
+): Promise<{
   scores: RunScores;
   runs: RunScores[];
   audits: Record<string, { score: number | null; title: string }>;
@@ -153,13 +160,17 @@ async function main(): Promise<void> {
       console.log(`Auditing ${target.label} (${RUNS_PER_TARGET} runs)…`);
       const { scores, runs, audits } = await auditTarget(baseUrl, target, chrome.port);
       const perfThreshold =
-        target.formFactor === 'desktop' ? THRESHOLDS.performanceDesktop : THRESHOLDS.performanceMobile;
+        target.formFactor === 'desktop'
+          ? THRESHOLDS.performanceDesktop
+          : THRESHOLDS.performanceMobile;
       const failures: string[] = [];
       if (scores.accessibility < THRESHOLDS.accessibility) {
         failures.push(`accessibility ${scores.accessibility} < ${THRESHOLDS.accessibility}`);
       }
       if (scores['best-practices'] < THRESHOLDS['best-practices']) {
-        failures.push(`best-practices ${scores['best-practices']} < ${THRESHOLDS['best-practices']}`);
+        failures.push(
+          `best-practices ${scores['best-practices']} < ${THRESHOLDS['best-practices']}`,
+        );
       }
       if (scores.seo < THRESHOLDS.seo) failures.push(`seo ${scores.seo} < ${THRESHOLDS.seo}`);
       if (scores.performance < perfThreshold) {

@@ -1,10 +1,4 @@
-import {
-  gateDef,
-  hasEdge,
-  shortestPath,
-  type Device,
-  type Instruction,
-} from '@qsimcity/domain';
+import { gateDef, hasEdge, shortestPath, type Device, type Instruction } from '@qsimcity/domain';
 import { normalizeAngle, unitaryToBasisOps } from './euler.js';
 
 /**
@@ -32,7 +26,12 @@ export function toMutable(instr: Instruction): MutableInstruction {
   };
 }
 
-function gate(name: string, qubits: number[], params: number[] = [], condition: Instruction['condition'] = null): MutableInstruction {
+function gate(
+  name: string,
+  qubits: number[],
+  params: number[] = [],
+  condition: Instruction['condition'] = null,
+): MutableInstruction {
   return { kind: 'gate', name, qubits, params, clbits: [], condition };
 }
 
@@ -92,8 +91,13 @@ export interface LayoutResult {
 }
 
 /** Interaction count between logical qubit pairs. */
-function interactionGraph(instructions: readonly MutableInstruction[], numQubits: number): number[][] {
-  const w: number[][] = Array.from({ length: numQubits }, () => new Array<number>(numQubits).fill(0));
+function interactionGraph(
+  instructions: readonly MutableInstruction[],
+  numQubits: number,
+): number[][] {
+  const w: number[][] = Array.from({ length: numQubits }, () =>
+    new Array<number>(numQubits).fill(0),
+  );
   for (const instr of instructions) {
     if (instr.kind !== 'gate' || instr.qubits.length !== 2) continue;
     const [a, b] = instr.qubits as [number, number];
@@ -219,7 +223,12 @@ export function routingPass(
     if (lb !== undefined) physToLog.set(pa, lb);
     else physToLog.delete(pa);
     swapCount++;
-    events.push({ kind: 'swap', logicalQubits: [la ?? -1, lb ?? -1].filter((x) => x >= 0), physicalPath: [], physicalQubits: [pa, pb] });
+    events.push({
+      kind: 'swap',
+      logicalQubits: [la ?? -1, lb ?? -1].filter((x) => x >= 0),
+      physicalPath: [],
+      physicalQubits: [pa, pb],
+    });
   };
 
   for (const instr of instructions) {
@@ -236,7 +245,12 @@ export function routingPass(
     if (!hasEdge(device, pa, pb)) {
       const path = shortestPath(device, pa, pb);
       if (!path) throw new Error(`No path between physical qubits ${pa} and ${pb} on ${device.id}`);
-      events.push({ kind: 'route', logicalQubits: [la, lb], physicalPath: path, physicalQubits: [] });
+      events.push({
+        kind: 'route',
+        logicalQubits: [la, lb],
+        physicalPath: path,
+        physicalQubits: [],
+      });
       // Swap la along the path until adjacent to pb.
       for (let i = 0; i + 2 < path.length; i++) {
         // SWAPs cannot be classically conditioned on hardware paths; the
@@ -267,7 +281,12 @@ export function translationPass(
   const basis = new Set(basisGates);
   const out: MutableInstruction[] = [];
   let translatedCount = 0;
-  const emit1q = (name: string, params: number[], qubit: number, condition: Instruction['condition']): void => {
+  const emit1q = (
+    name: string,
+    params: number[],
+    qubit: number,
+    condition: Instruction['condition'],
+  ): void => {
     const u = gateDef(name).matrix(params);
     for (const op of unitaryToBasisOps(u)) {
       out.push(gate(op.name, [qubit], op.param !== undefined ? [op.param] : [], condition));
@@ -370,7 +389,10 @@ export function optimizePass(instructions: readonly MutableInstruction[]): Optim
         }
         j++;
       }
-      if (partner && ((a.name === 'cx' && partner.name === 'cx') || (a.name === 'x' && partner.name === 'x'))) {
+      if (
+        partner &&
+        ((a.name === 'cx' && partner.name === 'cx') || (a.name === 'x' && partner.name === 'x'))
+      ) {
         current.splice(j, 1);
         current.splice(i, 1);
         cancelledCount += 2;

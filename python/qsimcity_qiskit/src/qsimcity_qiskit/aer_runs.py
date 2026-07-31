@@ -60,16 +60,12 @@ def build_noise_model(
         pd = phase_damping_error(phase_damping)
         one_qubit_error = pd if one_qubit_error is None else one_qubit_error.compose(pd)
     if one_qubit_error is not None:
-        model.add_all_qubit_quantum_error(
-            one_qubit_error, ["rz", "sx", "x", "h", "u", "u3", "id"]
-        )
+        model.add_all_qubit_quantum_error(one_qubit_error, ["rz", "sx", "x", "h", "u", "u3", "id"])
     if depolarizing_2q > 0:
         model.add_all_qubit_quantum_error(depolarizing_error(depolarizing_2q, 2), ["cx", "cz"])
     if readout_error > 0:
         model.add_all_qubit_readout_error(
-            ReadoutError(
-                [[1 - readout_error, readout_error], [readout_error, 1 - readout_error]]
-            )
+            ReadoutError([[1 - readout_error, readout_error], [readout_error, 1 - readout_error]])
         )
     return model
 

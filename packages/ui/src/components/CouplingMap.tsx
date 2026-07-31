@@ -36,8 +36,10 @@ export function CouplingMap({
   const w = 240;
   const h = 180;
   const pad = 30;
-  const px = (i: number): number => pad + ((device.positions[i]![0] - minX) / spanX) * (w - pad * 2);
-  const py = (i: number): number => pad + ((device.positions[i]![1] - minY) / spanY) * (h - pad * 2);
+  const px = (i: number): number =>
+    pad + ((device.positions[i]![0] - minX) / spanX) * (w - pad * 2);
+  const py = (i: number): number =>
+    pad + ((device.positions[i]![1] - minY) / spanY) * (h - pad * 2);
   const logicalFor = (physical: number): number | null => {
     if (!layout) return null;
     const l = layout.indexOf(physical);
@@ -47,10 +49,12 @@ export function CouplingMap({
     activeCouplings.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
 
   return (
-    <figure className="coupling-map" role="group" aria-label={`Coupling map: ${device.displayName}`}>
-      <figcaption className="panel-caption">
-        Coupling map — {device.displayName}
-      </figcaption>
+    <figure
+      className="coupling-map"
+      role="group"
+      aria-label={`Coupling map: ${device.displayName}`}
+    >
+      <figcaption className="panel-caption">Coupling map — {device.displayName}</figcaption>
       <svg
         width={w}
         height={h}
@@ -121,9 +125,7 @@ export function CouplingMap({
           {device.edges.map(([a, b]) => `${a}-${b}`).join(', ')}.
         </p>
         {layout && (
-          <p>
-            Layout: {layout.map((p, l) => `logical ${l} on physical ${p}`).join('; ')}.
-          </p>
+          <p>Layout: {layout.map((p, l) => `logical ${l} on physical ${p}`).join('; ')}.</p>
         )}
       </details>
     </figure>

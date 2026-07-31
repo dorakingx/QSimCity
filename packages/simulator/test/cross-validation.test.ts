@@ -1,7 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { getSampleCircuit, parseQasm, type Circuit, type Instruction, makeCircuit } from '@qsimcity/domain';
+import {
+  getSampleCircuit,
+  parseQasm,
+  type Circuit,
+  type Instruction,
+  makeCircuit,
+} from '@qsimcity/domain';
 import { fnv1a64 } from 'qsimcity-trace';
 import { simulate } from '../src/engine.js';
 import {

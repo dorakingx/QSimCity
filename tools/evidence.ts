@@ -16,9 +16,20 @@ import { dirname, join } from 'node:path';
 const ROOT = new URL('..', import.meta.url).pathname;
 
 export interface EvidenceEnvelope<T> {
-  /** Commit the evidence was generated from. */
+  /** Commit the evidence was generated from, for human traceability. */
   readonly commitSha: string;
-  /** True when the worktree had uncommitted changes at generation time. */
+  /**
+   * Hash of the exact content of every tracked source file, excluding
+   * `release-evidence/` itself. This — not `commitSha` — is what binds a
+   * measurement to what was measured. Binding to the commit alone was
+   * circular: committing the evidence moves HEAD, which would invalidate the
+   * evidence that was just produced, forever. Content binding has no such
+   * regress and is strictly more precise: no source byte can change without
+   * invalidating every measurement, while a commit that changes no source
+   * (a message edit, the evidence commit itself) correctly leaves it valid.
+   */
+  readonly sourceTreeHash: string;
+  /** True when tracked source (outside `release-evidence/`) was modified. */
   readonly worktreeDirty: boolean;
   readonly generatedAt: string;
   readonly tool: string;
@@ -34,15 +45,52 @@ export interface EvidenceEnvelope<T> {
 }
 
 export function currentCommit(): string {
-  return execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim();
-}
-
-export function worktreeDirty(): boolean {
-  const status = execFileSync('git', ['status', '--porcelain'], {
+  return execFileSync('git', ['rev-parse', 'HEAD'], {
     cwd: ROOT,
     encoding: 'utf8',
   }).trim();
-  return status.length > 0;
+}
+
+/** Paths whose modification does not invalidate a measurement. */
+const NON_SOURCE_PATHSPECS = [':(exclude)release-evidence'];
+
+/** Uncommitted source changes, one porcelain line each. */
+export function dirtySourcePaths(): string[] {
+  return execFileSync('git', ['status', '--porcelain', '--', '.', ...NON_SOURCE_PATHSPECS], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  })
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+export function worktreeDirty(): boolean {
+  return dirtySourcePaths().length > 0;
+}
+
+/**
+ * Content identity of the source tree: the blob id of every tracked file
+ * outside `release-evidence/`, hashed in path order.
+ */
+export function sourceTreeHash(): string {
+  const listing = execFileSync('git', ['ls-files', '-s', '--', '.', ...NON_SOURCE_PATHSPECS], {
+    cwd: ROOT,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const entries = listing
+    .split('\n')
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      // "<mode> <object> <stage>\t<path>"
+      const [meta = '', path = ''] = line.split('\t');
+      const parts = meta.split(/\s+/);
+      return `${parts[1] ?? ''} ${path}`;
+    })
+    .sort();
+  if (entries.length === 0) throw new Error('no tracked source files found');
+  return hashString(entries.join('\n'));
 }
 
 /** FNV-1a 64 over a string; matches packages/trace's hashing. */
@@ -59,10 +107,14 @@ export function hashString(text: string): string {
 
 export function writeEvidence<T>(
   relativePath: string,
-  envelope: Omit<EvidenceEnvelope<T>, 'commitSha' | 'worktreeDirty' | 'generatedAt'>,
+  envelope: Omit<
+    EvidenceEnvelope<T>,
+    'commitSha' | 'sourceTreeHash' | 'worktreeDirty' | 'generatedAt'
+  >,
 ): EvidenceEnvelope<T> {
   const full: EvidenceEnvelope<T> = {
     commitSha: currentCommit(),
+    sourceTreeHash: sourceTreeHash(),
     worktreeDirty: worktreeDirty(),
     generatedAt: new Date().toISOString(),
     ...envelope,
@@ -103,6 +155,7 @@ export function readEvidence<T>(
   }
   for (const field of [
     'commitSha',
+    'sourceTreeHash',
     'generatedAt',
     'tool',
     'toolVersion',
@@ -116,22 +169,29 @@ export function readEvidence<T>(
       throw new EvidenceError(`${relativePath} is missing required envelope field "${field}"`);
     }
   }
-  const head = currentCommit();
-  if (envelope.commitSha !== head) {
+  const current = sourceTreeHash();
+  if (envelope.sourceTreeHash !== current) {
     throw new EvidenceError(
-      `${relativePath} was generated from ${envelope.commitSha.slice(0, 12)} but HEAD is ` +
-        `${head.slice(0, 12)} — regenerate it against the current commit`,
+      `${relativePath} measured source tree ${envelope.sourceTreeHash} but the tree is now ` +
+        `${current} — the source changed after the measurement, so regenerate it`,
     );
   }
-  if (envelope.worktreeDirty && options.allowDirty !== true) {
-    throw new EvidenceError(
-      `${relativePath} was generated from a dirty worktree; commit the changes and regenerate`,
-    );
+  if (options.allowDirty !== true) {
+    if (envelope.worktreeDirty) {
+      throw new EvidenceError(
+        `${relativePath} was generated with uncommitted source changes; commit them and regenerate`,
+      );
+    }
+    const dirty = dirtySourcePaths();
+    if (dirty.length > 0) {
+      throw new EvidenceError(
+        `source has ${dirty.length} uncommitted change(s) (first: ${dirty[0]!}) that are not ` +
+          `covered by ${relativePath}; commit them and regenerate the evidence`,
+      );
+    }
   }
   if (envelope.exitStatus !== 0) {
-    throw new EvidenceError(
-      `${relativePath} records a failed run (exit ${envelope.exitStatus})`,
-    );
+    throw new EvidenceError(`${relativePath} records a failed run (exit ${envelope.exitStatus})`);
   }
   if (envelope.passed !== true) {
     throw new EvidenceError(`${relativePath} records passed=false`);

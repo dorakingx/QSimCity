@@ -129,7 +129,9 @@ function applyMutant(content: string, mutant: Mutant): string | null {
     const replacement = operator.replace(match);
     if (replacement === null || replacement === match[0]) continue;
     if (seen === mutant.index) {
-      return content.slice(0, match.index) + replacement + content.slice(match.index + match[0].length);
+      return (
+        content.slice(0, match.index) + replacement + content.slice(match.index + match[0].length)
+      );
     }
     seen++;
   }
@@ -263,7 +265,9 @@ function main(): void {
     detail: { byArea, survivors, outcomes },
   });
 
-  console.log(`\nMutation score: ${(score * 100).toFixed(1)}% (${killed.length}/${outcomes.length})`);
+  console.log(
+    `\nMutation score: ${(score * 100).toFixed(1)}% (${killed.length}/${outcomes.length})`,
+  );
   console.log('Per capability area:');
   for (const a of byArea) {
     console.log(

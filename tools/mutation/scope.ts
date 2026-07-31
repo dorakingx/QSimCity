@@ -52,7 +52,10 @@ export const SCOPE_AREAS: readonly ScopeArea[] = [
   {
     id: 'compiler-equivalence',
     capability: 'Basis translation and compiler equivalence',
-    files: ['packages/reference-compiler/src/euler.ts', 'packages/reference-compiler/src/compile.ts'],
+    files: [
+      'packages/reference-compiler/src/euler.ts',
+      'packages/reference-compiler/src/compile.ts',
+    ],
     tests: ['packages/reference-compiler'],
   },
   {

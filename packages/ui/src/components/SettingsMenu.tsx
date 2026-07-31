@@ -41,7 +41,9 @@ export function SettingsMenu(): ReactElement {
             <select
               id="set-quality"
               value={settings.quality}
-              onChange={(e) => updateSettings({ quality: e.target.value as 'high' | 'balanced' | 'low' })}
+              onChange={(e) =>
+                updateSettings({ quality: e.target.value as 'high' | 'balanced' | 'low' })
+              }
             >
               <option value="high">High</option>
               <option value="balanced">Balanced</option>

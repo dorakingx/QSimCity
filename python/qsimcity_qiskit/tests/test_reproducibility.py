@@ -137,14 +137,15 @@ class TestSemanticChangesAreDetected:
             pytest.param(lambda t: setattr(t, "seed", "999"), id="seed"),
             pytest.param(lambda t: setattr(t, "shots", 4096), id="shots"),
             pytest.param(lambda t: setattr(t, "deviceId", "ring-8"), id="device"),
-            pytest.param(
-                lambda t: setattr(t, "initialLayout", [4, 3]), id="initial-layout"
-            ),
+            pytest.param(lambda t: setattr(t, "initialLayout", [4, 3]), id="initial-layout"),
             pytest.param(lambda t: setattr(t, "finalLayout", [3, 4]), id="final-layout"),
             pytest.param(
-                lambda t: t.metrics.__setitem__(0, t.metrics[0].__class__(
-                    stage="input", gateCount=999, twoQubitGateCount=1, swapCount=0, depth=3
-                )),
+                lambda t: t.metrics.__setitem__(
+                    0,
+                    t.metrics[0].__class__(
+                        stage="input", gateCount=999, twoQubitGateCount=1, swapCount=0, depth=3
+                    ),
+                ),
                 id="metrics",
             ),
         ],

@@ -4,7 +4,13 @@ import { Histogram, type HistogramSeries } from './Histogram.js';
 import { CertaintyBadge } from './CertaintyBadge.js';
 
 /** Measurement results: ideal (and noisy when present) with certainty labels. */
-export function ResultsSection({ trace, compare }: { trace: Trace; compare?: boolean }): ReactElement {
+export function ResultsSection({
+  trace,
+  compare,
+}: {
+  trace: Trace;
+  compare?: boolean;
+}): ReactElement {
   const ideal = trace.results.idealCounts;
   const noisy = trace.results.noisyCounts;
   const exact = trace.results.idealProbabilities;
@@ -55,8 +61,8 @@ export function ResultsSection({ trace, compare }: { trace: Trace; compare?: boo
       )}
       {noisy && ideal && (
         <p className="hint">
-          Statistical note: with {ideal.shots} shots, observed fractions carry sampling
-          uncertainty of roughly ±{(100 / Math.sqrt(Math.max(1, ideal.shots))).toFixed(1)}
+          Statistical note: with {ideal.shots} shots, observed fractions carry sampling uncertainty
+          of roughly ±{(100 / Math.sqrt(Math.max(1, ideal.shots))).toFixed(1)}
           &nbsp;percentage points per outcome. <CertaintyBadge certainty="SAMPLED" />
         </p>
       )}

@@ -67,14 +67,23 @@ function part(
 }
 
 interface KitBuilder {
-  landmark(d: District): { name: string; parts: BuildingPart[]; extent: [number, number]; height: number };
-  filler(d: District, i: number, r: number): { parts: BuildingPart[]; extent: [number, number]; height: number };
+  landmark(d: District): {
+    name: string;
+    parts: BuildingPart[];
+    extent: [number, number];
+    height: number;
+  };
+  filler(
+    d: District,
+    i: number,
+    r: number,
+  ): { parts: BuildingPart[]; extent: [number, number]; height: number };
   fillerCount: number;
 }
 
 const KITS: Record<DistrictId, KitBuilder> = {
   'program-port': {
-    fillerCount: 7,
+    fillerCount: 11,
     landmark: () => ({
       name: 'Harbor Gate Terminal',
       parts: [
@@ -96,7 +105,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'ir-foundry': {
-    fillerCount: 6,
+    fillerCount: 10,
     landmark: () => ({
       name: 'Normalization Furnace',
       parts: [
@@ -119,7 +128,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'layout-exchange': {
-    fillerCount: 6,
+    fillerCount: 10,
     landmark: () => ({
       name: 'Assignment Hall',
       parts: [
@@ -141,7 +150,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'routing-transit': {
-    fillerCount: 6,
+    fillerCount: 10,
     landmark: () => ({
       name: 'Interchange Yard',
       parts: [
@@ -165,7 +174,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'translation-refinery': {
-    fillerCount: 6,
+    fillerCount: 9,
     landmark: () => ({
       name: 'Basis Cracking Column',
       parts: [
@@ -188,7 +197,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'optimization-works': {
-    fillerCount: 5,
+    fillerCount: 9,
     landmark: () => ({
       name: 'Cancellation Mill',
       parts: [
@@ -210,7 +219,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'scheduling-tower': {
-    fillerCount: 4,
+    fillerCount: 8,
     landmark: () => ({
       name: 'Chronarch Tower',
       parts: [
@@ -247,7 +256,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     filler: () => ({ parts: [], extent: [1, 1], height: 0 }),
   },
   'noise-atmosphere': {
-    fillerCount: 5,
+    fillerCount: 9,
     landmark: () => ({
       name: 'Decoherence Watch',
       parts: [
@@ -270,7 +279,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'measurement-harbor': {
-    fillerCount: 7,
+    fillerCount: 11,
     landmark: () => ({
       name: 'Readout Gantry',
       parts: [
@@ -295,7 +304,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   'classical-control': {
-    fillerCount: 5,
+    fillerCount: 9,
     landmark: () => ({
       name: 'Feedback Nexus',
       parts: [
@@ -317,7 +326,7 @@ const KITS: Record<DistrictId, KitBuilder> = {
     }),
   },
   observatory: {
-    fillerCount: 4,
+    fillerCount: 8,
     landmark: () => ({
       name: 'Provenance Dome',
       parts: [
@@ -387,9 +396,14 @@ export function generateBuildings(): Building[] {
     // Fillers ring the landmark on a deterministic spiral.
     for (let i = 0; i < kit.fillerCount; i++) {
       const r = jitter(`${district.id}-${i}`);
-      const angle = (i / kit.fillerCount) * Math.PI * 2 + r * 0.8;
+      // Alternate between an inner and an outer ring so higher filler counts
+      // build up a neighbourhood instead of crowding a single circle.
+      const ring = i % 2;
+      const angle = (i / kit.fillerCount) * Math.PI * 2 + r * 0.8 + ring * 0.4;
       const radius =
-        Math.min(district.bounds.width, district.bounds.depth) * 0.34 + r * 5 + 14;
+        Math.min(district.bounds.width, district.bounds.depth) * (ring === 0 ? 0.26 : 0.4) +
+        r * 5 +
+        10;
       const x = district.bounds.x + Math.cos(angle) * radius;
       const z = district.bounds.z + Math.sin(angle) * radius * 0.75;
       const spec = kit.filler(district, i, r);
@@ -402,10 +416,7 @@ export function generateBuildings(): Building[] {
         rotationY: r * Math.PI * 2,
         parts: spec.parts.map(scalePart),
         isLandmark: false,
-        collisionHalfExtents: [
-          spec.extent[0] * BUILDING_SCALE,
-          spec.extent[1] * BUILDING_SCALE,
-        ],
+        collisionHalfExtents: [spec.extent[0] * BUILDING_SCALE, spec.extent[1] * BUILDING_SCALE],
         collisionHeight: spec.height * BUILDING_SCALE,
       });
     }

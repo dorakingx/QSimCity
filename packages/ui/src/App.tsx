@@ -163,8 +163,8 @@ export function App(): ReactElement {
             {webglAvailable === false ? (
               <>
                 <p role="status">
-                  3D rendering is unavailable here, so QSimCity switched to Accessible 2D Mode —
-                  the complete product without WebGL.
+                  3D rendering is unavailable here, so QSimCity switched to Accessible 2D Mode — the
+                  complete product without WebGL.
                 </p>
                 <Accessible2DView />
               </>
