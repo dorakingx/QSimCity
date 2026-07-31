@@ -130,6 +130,14 @@ export const traceSchema = z
           .optional(),
         idealCounts: countsSchema.optional(),
         noisyCounts: countsSchema.optional(),
+        execution: z
+          .object({
+            logicalReference: countsSchema,
+            physicalIdeal: countsSchema.optional(),
+            physicalNoisy: countsSchema.optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict(),
     events: z.array(eventSchema).max(TRACE_LIMITS.maxEvents),

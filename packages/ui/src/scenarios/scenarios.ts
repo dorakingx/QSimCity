@@ -44,6 +44,18 @@ const noNoise = {
   noiseEnabled: false,
 } satisfies Partial<RunConfig>;
 
+/** Whether two outcome distributions are identical shot for shot. */
+function sameCounts(
+  a: Readonly<Record<string, number>>,
+  b: Readonly<Record<string, number>>,
+): boolean {
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  for (const key of keys) {
+    if ((a[key] ?? 0) !== (b[key] ?? 0)) return false;
+  }
+  return true;
+}
+
 export const SCENARIOS: readonly Scenario[] = [
   {
     id: 'bell-state',
@@ -192,19 +204,30 @@ export const SCENARIOS: readonly Scenario[] = [
       seed: 'scenario-swapstorm',
       deviceId: 'linear-5',
       layoutMethod: 'trivial',
-      ...noNoise,
+      noiseEnabled: true,
+      noise: { ...DEFAULT_NOISE, depolarizing2q: 0.04, readoutError: 0 },
     },
     causalChain: [
       'the program requests CX between distant qubits',
       'routing finds shortest paths on the line',
       'SWAPs shuttle logical qubits into adjacency',
-      'depth and two-qubit count balloon',
+      'each inserted SWAP is three more two-qubit gates that run on the device',
+      'the measured distribution drifts away from the ideal one',
     ],
-    healthyState: 'Several SWAPs inserted; compiled depth far above input depth.',
+    healthyState:
+      'Several SWAPs inserted, and the physical noisy result sits measurably further from the logical reference than the physical ideal does.',
     failureState: 'On the all-to-all device the storm disappears — compare!',
-    comparisonMetric: 'SWAP count and depth, linear-5 vs full-5',
-    completionText: 'At least 3 SWAPs were inserted during routing.',
-    isComplete: (trace) => (trace.metrics.find((m) => m.stage === 'compiled')?.swapCount ?? 0) >= 3,
+    comparisonMetric: 'SWAP count, depth, and physical-noisy drift, linear-5 vs full-5',
+    completionText:
+      'At least 3 SWAPs were inserted, and the SWAPs they added actually reached the measured result.',
+    isComplete: (trace) => {
+      const swaps = trace.metrics.find((m) => m.stage === 'compiled')?.swapCount ?? 0;
+      const execution = trace.results.execution;
+      if (swaps < 3 || !execution?.physicalNoisy || !execution.physicalIdeal) return false;
+      // The routed circuit must have run, not merely been counted: the noisy
+      // physical result has to differ from the physical ideal one.
+      return !sameCounts(execution.physicalNoisy.counts, execution.physicalIdeal.counts);
+    },
   },
   {
     id: 'bad-initial-layout',
@@ -218,19 +241,34 @@ export const SCENARIOS: readonly Scenario[] = [
       seed: 'scenario-badlayout',
       deviceId: 'tee-7',
       layoutMethod: 'trivial',
-      ...noNoise,
+      noiseEnabled: true,
+      noise: { ...DEFAULT_NOISE, depolarizing2q: 0.04, readoutError: 0 },
     },
     causalChain: [
       'trivial layout ignores the interaction pattern',
       'neighboring logical qubits land far apart',
       'routing inserts avoidable SWAPs',
-      'depth grows and (with noise) fidelity proxies fall',
+      'the extra native gates run on the device and the measured result degrades',
     ],
-    healthyState: 'Switching the Layout Desk to automatic reduces SWAPs.',
+    healthyState:
+      'Switching the Layout Desk to automatic reduces SWAPs, and the physical noisy result moves back toward the logical reference.',
     failureState: 'Trivial layout on this topology needs more routing.',
-    comparisonMetric: 'SWAP count: trivial vs interaction layout',
-    completionText: 'Run completes; compare the SWAP count after switching layout methods.',
-    isComplete: (trace) => trace.compiledCircuit !== null && trace.initialLayout !== null,
+    comparisonMetric: 'SWAP count and physical-noisy drift: trivial vs interaction layout',
+    completionText:
+      'The compiled circuit ran on mapped physical qubits and its noisy result reflects the routing it needed.',
+    isComplete: (trace) => {
+      if (trace.compiledCircuit === null || trace.initialLayout === null) return false;
+      const execution = trace.results.execution;
+      if (!execution?.physicalNoisy || !execution.physicalIdeal) return false;
+      // Physical identity has to be real: something must have executed on a
+      // device qubit, not on a logical index.
+      const ranPhysically = trace.events.some(
+        (e) => e.stage === 'execution' && e.physicalQubits.length > 0,
+      );
+      return (
+        ranPhysically && !sameCounts(execution.physicalNoisy.counts, execution.physicalIdeal.counts)
+      );
+    },
   },
   {
     id: 'decoherence-weather',

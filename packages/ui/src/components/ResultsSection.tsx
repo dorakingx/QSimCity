@@ -3,7 +3,15 @@ import type { Trace } from 'qsimcity-trace';
 import { Histogram, type HistogramSeries } from './Histogram.js';
 import { CertaintyBadge } from './CertaintyBadge.js';
 
-/** Measurement results: ideal (and noisy when present) with certainty labels. */
+/**
+ * Measurement results with certainty labels.
+ *
+ * A device run produces three distinct results, and they are labelled as such
+ * rather than collapsed into "ideal vs noisy": the logical reference says what
+ * the program means, the physical ideal says whether compiling preserved that
+ * meaning, and the physical noisy result says what the device did to the
+ * circuit that actually ran.
+ */
 export function ResultsSection({
   trace,
   compare,
@@ -14,10 +22,24 @@ export function ResultsSection({
   const ideal = trace.results.idealCounts;
   const noisy = trace.results.noisyCounts;
   const exact = trace.results.idealProbabilities;
+  const execution = trace.results.execution;
+  const physicalIdeal = execution?.physicalIdeal;
 
   const series: HistogramSeries[] = [];
-  if (ideal) series.push({ label: 'Ideal', counts: ideal.counts, certainty: ideal.certainty });
-  if (noisy) series.push({ label: 'Noisy', counts: noisy.counts, certainty: noisy.certainty });
+  if (ideal) {
+    series.push({
+      label: execution ? 'Logical reference' : 'Ideal',
+      counts: ideal.counts,
+      certainty: ideal.certainty,
+    });
+  }
+  if (noisy) {
+    series.push({
+      label: execution ? 'Physical noisy' : 'Noisy',
+      counts: noisy.counts,
+      certainty: noisy.certainty,
+    });
+  }
 
   return (
     <section className="results-section" aria-label="Measurement results">
@@ -32,6 +54,44 @@ export function ResultsSection({
         />
       ) : (
         <p className="hint">This trace contains no measurement counts.</p>
+      )}
+      {execution && (
+        <details className="table-alternative">
+          <summary>What these three results mean</summary>
+          <dl className="result-classes">
+            <dt>
+              Logical reference <CertaintyBadge certainty={execution.logicalReference.certainty} />
+            </dt>
+            <dd>
+              The circuit as written, simulated ideally. The reference for what the program is
+              supposed to produce.
+            </dd>
+            {physicalIdeal && (
+              <>
+                <dt>
+                  Physical ideal <CertaintyBadge certainty={physicalIdeal.certainty} />
+                </dt>
+                <dd>
+                  The compiled circuit with no noise, running on the device&apos;s qubits. It should
+                  agree with the logical reference; if it does not, compilation changed the meaning
+                  of the program.
+                </dd>
+              </>
+            )}
+            {execution.physicalNoisy && (
+              <>
+                <dt>
+                  Physical noisy <CertaintyBadge certainty={execution.physicalNoisy.certainty} />
+                </dt>
+                <dd>
+                  The compiled circuit with the configured noise applied to the native operations
+                  that actually ran, including every SWAP routing had to insert. This is a modeled
+                  result, not a measurement of any real device, and not a fidelity.
+                </dd>
+              </>
+            )}
+          </dl>
+        </details>
       )}
       {exact && (
         <details className="table-alternative">

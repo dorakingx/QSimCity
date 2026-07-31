@@ -5,7 +5,12 @@
  * reference compiler, the Qiskit bridge, and file imports.
  */
 
-export const TRACE_SCHEMA_VERSION = '1.0.0';
+/**
+ * 1.1.0 added the explicitly separated execution result classes
+ * (`TraceResults.execution`). The addition is optional, so 1.0.0 documents
+ * remain valid and are accepted unchanged — see `migrateTraceData`.
+ */
+export const TRACE_SCHEMA_VERSION = '1.1.0';
 
 /** Machine-level origin of a piece of data. */
 export const SOURCE_CLASSIFICATIONS = [
@@ -144,11 +149,39 @@ export interface TraceCounts {
   readonly certainty: CertaintyLabel;
 }
 
+/**
+ * The three result classes a device run produces, kept apart because they
+ * answer different questions and must never be conflated.
+ *
+ * A trace that compiles for a device carries all three. Comparing
+ * `logicalReference` with `physicalIdeal` checks that compilation preserved
+ * the program's meaning; comparing `physicalIdeal` with `physicalNoisy`
+ * isolates what the device's noise did to the circuit that actually ran,
+ * including the SWAPs routing had to insert.
+ */
+export interface TraceExecutionResults {
+  /** Ideal simulation of the original logical circuit: the semantic reference. */
+  readonly logicalReference: TraceCounts;
+  /** The compiled physical circuit with no noise. Must agree with the reference. */
+  readonly physicalIdeal?: TraceCounts;
+  /** The compiled physical circuit with the configured noise model applied. */
+  readonly physicalNoisy?: TraceCounts;
+}
+
 export interface TraceResults {
   /** Exact probabilities when available (browser simulator, small circuits). */
   readonly idealProbabilities?: Readonly<Record<string, number>>;
+  /** Logical reference counts. Mirrors `execution.logicalReference`. */
   readonly idealCounts?: TraceCounts;
+  /**
+   * The noisy distribution a user compares against the ideal one. When the
+   * program was compiled for a device this is the *physical* noisy result —
+   * noise applied to the native operations that actually ran — and mirrors
+   * `execution.physicalNoisy`.
+   */
   readonly noisyCounts?: TraceCounts;
+  /** Explicitly separated result classes; present for device runs. */
+  readonly execution?: TraceExecutionResults;
 }
 
 export interface TraceMetricsSnapshot {

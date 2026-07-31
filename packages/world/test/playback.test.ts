@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getSampleCircuit, parseQasm } from '@qsimcity/domain';
 import { runExperiment } from '@qsimcity/simulator';
+import { TraceBuilder, deriveTraceId } from 'qsimcity-trace';
 import {
   activityAtTick,
   eventsAt,
@@ -18,6 +19,44 @@ async function bellTrace() {
     programSource: qasm,
   });
   return trace;
+}
+
+/**
+ * A trace whose execution events are physical, as the production pipeline
+ * emits them: the compiled circuit ran on device qubits 3 and 4.
+ */
+function physicalTrace() {
+  const builder = new TraceBuilder({
+    traceId: deriveTraceId('physical', 'fixture'),
+    seed: 'physical',
+    generator: 'test',
+    generatorVersion: '1.0.0',
+    packageVersions: {},
+    programSource: 'fixture',
+    deviceId: 'linear-5',
+    shots: 8,
+    noise: null,
+  });
+  builder.emit({
+    eventType: 'gate.executed',
+    stage: 'execution',
+    source: 'exact_simulation',
+    certainty: 'EXACT',
+    physicalQubits: [3, 4],
+    instructionId: 'c0',
+    payload: { gate: 'cx', phase: 'physical-ideal' },
+  });
+  return builder.build({
+    inputCircuit: {
+      name: 'fixture',
+      numQubits: 2,
+      numClbits: 0,
+      cregs: [],
+      instructions: [],
+    },
+    metrics: [],
+    results: {},
+  });
 }
 
 describe('playback model', () => {
@@ -76,14 +115,31 @@ describe('playback model', () => {
     expect(late.executedInstructionIds.size).toBeGreaterThanOrEqual(4);
   });
 
-  it('reports active couplings for two-qubit gates', async () => {
-    const trace = await bellTrace();
-    const cxEvent = trace.events.find(
-      (e) => e.eventType === 'gate.executed' && (e.payload as { gate?: string }).gate === 'cx',
+  it('reports active couplings from the physical qubits that ran', () => {
+    // The QPU Grid draws device qubits and device edges, so its activity has
+    // to come from physical identities. A layout that maps logical 0 and 1
+    // onto physical 3 and 4 must light 3 and 4.
+    const trace = physicalTrace();
+    const twoQubitEvent = trace.events.find(
+      (e) => e.eventType === 'gate.executed' && e.physicalQubits.length === 2,
     )!;
-    const activity = activityAtTick(trace, cxEvent.logicalTick);
-    expect(activity.activeCouplings).toContainEqual([0, 1]);
-    expect(activity.activeQubits).toEqual([0, 1]);
+    expect(twoQubitEvent).toBeDefined();
+    const activity = activityAtTick(trace, twoQubitEvent.logicalTick);
+    expect(activity.activeCouplings).toContainEqual([3, 4]);
+    expect(activity.activeQubits).toEqual([3, 4]);
+  });
+
+  it('never lights the QPU Grid from logical qubit indices', async () => {
+    // A logical-only trace describes no device qubits. Lighting pylon N for
+    // logical qubit N would be a different qubit under any real layout, and a
+    // coupling edge that may not exist on the device at all.
+    const trace = await bellTrace();
+    const gateEvent = trace.events.find((e) => e.eventType === 'gate.executed')!;
+    expect(gateEvent.logicalQubits.length).toBeGreaterThan(0);
+    expect(gateEvent.physicalQubits).toEqual([]);
+    const activity = activityAtTick(trace, gateEvent.logicalTick);
+    expect(activity.activeQubits).toEqual([]);
+    expect(activity.activeCouplings).toEqual([]);
   });
 
   it('tick duration scales inversely with speed and clamps to 0.1x..5x', () => {

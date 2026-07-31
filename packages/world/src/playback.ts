@@ -72,14 +72,17 @@ export function activityAtTick(trace: Trace, tick: number): WorldActivity {
     }
   }
 
+  // The QPU Grid draws device qubits and device coupling edges, so only
+  // physical identities may light it. This previously fell back to
+  // `logicalQubits` when an event had no physical ones, which lit pylon N for
+  // logical qubit N — a different qubit entirely under any non-trivial
+  // layout, and a coupling edge that may not exist on the device.
   const activeCouplings: [number, number][] = [];
   const activeQubits = new Set<number>();
   for (const ev of atTick) {
     for (const q of ev.physicalQubits) activeQubits.add(q);
-    for (const q of ev.logicalQubits) activeQubits.add(q);
-    if (ev.eventType === 'gate.executed') {
-      const qubits = ev.physicalQubits.length >= 2 ? ev.physicalQubits : ev.logicalQubits;
-      if (qubits.length === 2) activeCouplings.push([qubits[0]!, qubits[1]!]);
+    if (ev.eventType === 'gate.executed' && ev.physicalQubits.length === 2) {
+      activeCouplings.push([ev.physicalQubits[0]!, ev.physicalQubits[1]!]);
     }
   }
 

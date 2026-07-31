@@ -30,9 +30,12 @@ const MIGRATIONS: Record<string, { to: string; migrate: Migration }> = {
 };
 
 /**
- * Brings raw trace data to the current schema version. Same-major newer
- * minor/patch versions are accepted as-is (forward-compatible fields are
- * rejected later by strict schema parsing if unknown).
+ * Brings raw trace data to a schema version this build can read. Same-major
+ * versions are accepted as-is, which is what keeps 1.0.0 documents byte-stable:
+ * 1.1.0 only *adds* optional fields, so an older 1.x trace is already valid,
+ * and rewriting its version string would change the content hash of every
+ * committed artifact the moment it was loaded. Only structural changes get a
+ * migration step.
  */
 export function migrateTraceData(data: unknown): unknown {
   if (typeof data !== 'object' || data === null || Array.isArray(data)) return data;

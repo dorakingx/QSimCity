@@ -206,8 +206,11 @@ describe('trace-driven branches', () => {
     });
     render(<Inspector />);
     expect(screen.getByText('Input circuit instruction')).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: /Jump timeline/ }));
-    expect(useAppStore.getState().playbackTick).toBeGreaterThanOrEqual(0);
+    // Execution runs the compiled circuit, so a logical instruction has no
+    // execution event of its own; the panel says so instead of offering a
+    // jump that would land on an unrelated tick.
+    expect(screen.getByText(/Execution runs the compiled circuit/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /Jump timeline/ })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: /View in 2D circuit/ }));
     expect(useAppStore.getState().mode).toBe('accessible-2d');
   });

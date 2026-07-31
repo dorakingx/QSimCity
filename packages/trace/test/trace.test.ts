@@ -292,7 +292,7 @@ describe('parseTraceJson', () => {
 });
 
 describe('schema migration', () => {
-  it('migrates 0.9.0 traces to the current version', () => {
+  it('migrates 0.9.0 traces onto the compatible 1.x line', () => {
     const legacy = {
       ...buildSampleTrace(),
       schemaVersion: '0.9.0',
@@ -301,7 +301,12 @@ describe('schema migration', () => {
     delete legacy['seed'];
     delete legacy['finalLayout'];
     const migrated = migrateTraceData(legacy) as Record<string, unknown>;
-    expect(migrated['schemaVersion']).toBe(TRACE_SCHEMA_VERSION);
+    // 0.9.0 is migrated structurally to 1.0.0. It is deliberately not
+    // rewritten to the current 1.1.0: 1.1.0 only adds optional fields, so a
+    // 1.x document is already valid, and rewriting its version string would
+    // change the content hash of every committed trace on load.
+    const [major] = String(migrated['schemaVersion']).split('.');
+    expect(major).toBe(TRACE_SCHEMA_VERSION.split('.')[0]);
     expect(migrated['seed']).toBe('old-seed');
     expect(migrated['finalLayout']).toBeNull();
     expect(() => validateTrace(legacy)).not.toThrow();

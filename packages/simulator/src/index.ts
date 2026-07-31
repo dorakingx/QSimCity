@@ -35,9 +35,12 @@ export {
 } from './engine.js';
 export {
   runExperiment,
+  emitExecutionEvents,
   circuitToTraceCircuit,
   SIMULATOR_VERSION,
   type ExperimentOptions,
   type ExperimentResult,
+  type EventEmissionOptions,
+  type QubitSpace,
 } from './experiment.js';
 export type { WorkerRequest, WorkerResponse } from './worker-protocol.js';

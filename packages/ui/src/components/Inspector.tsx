@@ -154,16 +154,24 @@ function InspectorBody({
               </>
             )}
           </dl>
-          {events.length > 0 && (
-            <div className="inspector-actions">
+          {events.length === 0 && which === 'input' && (
+            <p className="hint">
+              Execution runs the compiled circuit, so this logical instruction has no execution
+              event of its own. Layout, routing, and translation may have moved, split, merged, or
+              removed it. Select the corresponding compiled instruction to follow what ran on the
+              device.
+            </p>
+          )}
+          <div className="inspector-actions">
+            {events.length > 0 && (
               <button type="button" onClick={() => setTick(events[0]!.logicalTick)}>
                 Jump timeline to this instruction
               </button>
-              <button type="button" onClick={() => setMode('accessible-2d')}>
-                View in 2D circuit
-              </button>
-            </div>
-          )}
+            )}
+            <button type="button" onClick={() => setMode('accessible-2d')}>
+              View in 2D circuit
+            </button>
+          </div>
         </>
       );
     }

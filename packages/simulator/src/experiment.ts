@@ -46,10 +46,55 @@ export function circuitToTraceCircuit(circuit: Circuit): TraceCircuit {
   };
 }
 
+/**
+ * Which qubit space the executed circuit lives in.
+ *
+ * A logical run is the program as written; a physical run is the compiled
+ * circuit, whose qubit indices are device qubits. The distinction decides
+ * whether an event's qubits are recorded as `logicalQubits` or
+ * `physicalQubits`, and the QPU Grid only lights up for the latter.
+ */
+export type QubitSpace = 'logical' | 'physical';
+
+export interface EventEmissionOptions {
+  readonly phase: string;
+  readonly space: QubitSpace;
+  /**
+   * For a physical run, the logical qubit each physical qubit held when
+   * execution began (the inverse of the initial layout). It is reported as
+   * `logicalOrigin` in the payload rather than as `logicalQubits`, because
+   * routing SWAPs permute the mapping as the circuit runs: the physical
+   * identity is exact, the logical one is only true at the start.
+   */
+  readonly logicalOrigin?: readonly (number | null)[];
+}
+
+export function emitExecutionEvents(
+  builder: TraceBuilder,
+  events: readonly EngineEvent[],
+  options: EventEmissionOptions,
+): void {
+  const { phase, space } = options;
+  const physical = space === 'physical';
+  const originOf = (qubits: readonly number[]): Record<string, unknown> => {
+    if (!physical || options.logicalOrigin === undefined) return {};
+    const origin = qubits.map((q) => options.logicalOrigin![q] ?? null);
+    return { logicalOrigin: origin };
+  };
+  /** Places the executed qubits in the space the circuit actually used. */
+  const qubitFields = (qubits: readonly number[]): Record<string, readonly number[]> =>
+    physical ? { physicalQubits: qubits } : { logicalQubits: qubits };
+
+  emitEngineEvents(builder, events, phase, physical, qubitFields, originOf);
+}
+
 function emitEngineEvents(
   builder: TraceBuilder,
   events: readonly EngineEvent[],
-  phase: 'ideal' | 'noisy',
+  phase: string,
+  physical: boolean,
+  qubitFields: (qubits: readonly number[]) => Record<string, readonly number[]>,
+  originOf: (qubits: readonly number[]) => Record<string, unknown>,
 ): void {
   for (const ev of events) {
     switch (ev.kind) {
@@ -61,8 +106,8 @@ function emitEngineEvents(
             source: 'exact_simulation',
             certainty: phase === 'ideal' ? 'EXACT' : 'SAMPLED',
             instructionId: ev.instructionId,
-            logicalQubits: ev.qubits,
-            payload: { gate: ev.name, params: ev.params, phase },
+            ...qubitFields(ev.qubits),
+            payload: { gate: ev.name, params: ev.params, phase, ...originOf(ev.qubits) },
           });
         }
         break;
@@ -72,8 +117,8 @@ function emitEngineEvents(
           stage: 'noise',
           source: 'sampled_simulation',
           instructionId: ev.instructionId,
-          logicalQubits: [ev.noise.qubit],
-          payload: { ...ev.noise, phase },
+          ...qubitFields([ev.noise.qubit]),
+          payload: { ...ev.noise, phase, ...originOf([ev.noise.qubit]) },
         });
         break;
       case 'measurement':
@@ -82,8 +127,9 @@ function emitEngineEvents(
           stage: 'measurement',
           source: 'sampled_simulation',
           instructionId: ev.instructionId,
-          logicalQubits: [ev.qubit],
+          ...qubitFields([ev.qubit]),
           payload: {
+            ...originOf([ev.qubit]),
             clbit: ev.clbit,
             outcome: ev.outcome,
             readoutFlipped: ev.readoutFlipped,
@@ -98,8 +144,8 @@ function emitEngineEvents(
           stage: 'execution',
           source: 'sampled_simulation',
           instructionId: ev.instructionId,
-          logicalQubits: [ev.qubit],
-          payload: { gate: 'reset', collapsedFrom: ev.outcome, phase },
+          ...qubitFields([ev.qubit]),
+          payload: { gate: 'reset', collapsedFrom: ev.outcome, phase, ...originOf([ev.qubit]) },
         });
         break;
       case 'condition':
@@ -175,7 +221,7 @@ export async function runExperiment(
     ...(options.shouldCancel ? { shouldCancel: options.shouldCancel } : {}),
     onProgress: (done, total) => options.onProgress?.((hasNoise ? 0.5 : 1) * (done / total)),
   });
-  emitEngineEvents(builder, ideal.representativeEvents, 'ideal');
+  emitExecutionEvents(builder, ideal.representativeEvents, { phase: 'ideal', space: 'logical' });
 
   let noisy: SimulationResult | null = null;
   if (hasNoise) {
@@ -186,7 +232,7 @@ export async function runExperiment(
       ...(options.shouldCancel ? { shouldCancel: options.shouldCancel } : {}),
       onProgress: (done, total) => options.onProgress?.(0.5 + 0.5 * (done / total)),
     });
-    emitEngineEvents(builder, noisy.representativeEvents, 'noisy');
+    emitExecutionEvents(builder, noisy.representativeEvents, { phase: 'noisy', space: 'logical' });
   }
 
   builder.emit({
