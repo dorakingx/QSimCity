@@ -1,5 +1,6 @@
 import { gzipSync } from 'node:zlib';
-import { readFileSync, readdirSync, mkdirSync, writeFileSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { hashString, writeEvidence } from './evidence.js';
 import { join } from 'node:path';
 
 /**
@@ -101,11 +102,29 @@ if (isMain) {
   console.log(
     `  TOTAL ALL JS ${(report.totalJsGzipBytes / 1024).toFixed(1)} KiB (budget ${(TOTAL_JS_GZIP_BUDGET / 1024).toFixed(0)} KiB)`,
   );
-  mkdirSync(join(ROOT, 'release-evidence'), { recursive: true });
-  writeFileSync(
-    join(ROOT, 'release-evidence', 'performance.json'),
-    JSON.stringify(report, null, 2) + '\n',
-  );
+  writeEvidence('release-evidence/performance.json', {
+    tool: 'qsimcity-performance-budget',
+    toolVersion: '1.0.0',
+    command: 'pnpm check:perf',
+    exitStatus: report.passed ? 0 : 1,
+    inputHash: hashString(
+      [...report.eagerChunks, ...report.lazyChunks]
+        .map((c) => `${c.name}:${c.gzipBytes}`)
+        .join('\n'),
+    ),
+    thresholds: {
+      initialJsGzipBytes: INITIAL_JS_GZIP_BUDGET,
+      totalJsGzipBytes: TOTAL_JS_GZIP_BUDGET,
+    },
+    measurements: {
+      initialJsGzipBytes: report.initialJsGzipBytes,
+      totalJsGzipBytes: report.totalJsGzipBytes,
+      eagerChunks: report.eagerChunks.length,
+      lazyChunks: report.lazyChunks.length,
+    },
+    passed: report.passed,
+    detail: report,
+  });
   if (!report.passed) {
     console.error('Performance budget exceeded.');
     process.exit(1);

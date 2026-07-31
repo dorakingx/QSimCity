@@ -221,6 +221,11 @@ afterwards.
 **Repository hygiene.** Hypothesis's local example cache had been committed by
 accident; it is now ignored and untracked.
 
+**Performance evidence.** The performance budget wrote a bare report rather
+than an envelope, so the gate would have consumed a number with no record of
+what produced it or which source it measured. It now writes a full envelope
+like every other measurement.
+
 ## Licensing
 
 No `LICENSE` file exists, and none was selected on the owner's behalf. Until

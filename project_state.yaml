@@ -116,5 +116,8 @@ accessibility_status: wcag-2.2-aa-zero-axe-violations
 performance_status: within-budget-122.9KiB-initial-js-gzip
 license_status: LICENSE DECISION OWNER REQUIRED (no license file; no reuse rights stated)
 deployment_status: NOT AUTHORIZED (vercel-ready, locally validated, no public URL)
-completion_gate_status: pending-final-evidence-regeneration
+completion_gate_status: >-
+  enforced by `pnpm goal:check`, which derives every mandatory verdict from an
+  evidence envelope bound to the source tree it measured; the recorded run is
+  in release-evidence/goal-check.txt
 last_updated: 2026-07-31

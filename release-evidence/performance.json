@@ -1,40 +1,62 @@
 {
-  "initialJsGzipBytes": 125987,
-  "totalJsGzipBytes": 304547,
-  "budgetGzipBytes": 327680,
-  "totalBudgetGzipBytes": 614400,
-  "lazyChunks": [
-    {
-      "name": "three-bAKDV79k.js",
-      "gzipBytes": 135194
-    },
-    {
-      "name": "pipeline.worker-CHc2qla6.js",
-      "gzipBytes": 33111
-    },
-    {
-      "name": "CityView-noF246dv.js",
-      "gzipBytes": 7996
-    },
-    {
-      "name": "workbox-window.prod.es5-DsELeUxu.js",
-      "gzipBytes": 2259
-    }
-  ],
-  "eagerChunks": [
-    {
-      "name": "index-B5AQ_31V.js",
-      "gzipBytes": 66658
-    },
-    {
-      "name": "react-VZnIVrcg.js",
-      "gzipBytes": 58969
-    },
-    {
-      "name": "rolldown-runtime-Bh1tDfsg.js",
-      "gzipBytes": 360
-    }
-  ],
+  "commitSha": "4f97ca37dedf2ffd5182174a7b362460e32d1e3f",
+  "sourceTreeHash": "d6f5c63a062700f9",
+  "worktreeDirty": true,
+  "generatedAt": "2026-07-31T00:57:08.875Z",
+  "tool": "qsimcity-performance-budget",
+  "toolVersion": "1.0.0",
+  "command": "pnpm check:perf",
+  "exitStatus": 0,
+  "inputHash": "091cd472d2bcacfe",
+  "thresholds": {
+    "initialJsGzipBytes": 327680,
+    "totalJsGzipBytes": 614400
+  },
+  "measurements": {
+    "initialJsGzipBytes": 125987,
+    "totalJsGzipBytes": 304547,
+    "eagerChunks": 3,
+    "lazyChunks": 4
+  },
   "passed": true,
-  "generatedAt": "2026-07-31T00:41:24.152Z"
+  "detail": {
+    "initialJsGzipBytes": 125987,
+    "totalJsGzipBytes": 304547,
+    "budgetGzipBytes": 327680,
+    "totalBudgetGzipBytes": 614400,
+    "lazyChunks": [
+      {
+        "name": "three-bAKDV79k.js",
+        "gzipBytes": 135194
+      },
+      {
+        "name": "pipeline.worker-CHc2qla6.js",
+        "gzipBytes": 33111
+      },
+      {
+        "name": "CityView-noF246dv.js",
+        "gzipBytes": 7996
+      },
+      {
+        "name": "workbox-window.prod.es5-DsELeUxu.js",
+        "gzipBytes": 2259
+      }
+    ],
+    "eagerChunks": [
+      {
+        "name": "index-B5AQ_31V.js",
+        "gzipBytes": 66658
+      },
+      {
+        "name": "react-VZnIVrcg.js",
+        "gzipBytes": 58969
+      },
+      {
+        "name": "rolldown-runtime-Bh1tDfsg.js",
+        "gzipBytes": 360
+      }
+    ],
+    "passed": true,
+    "generatedAt": "2026-07-31T00:57:08.798Z"
+  }
 }
