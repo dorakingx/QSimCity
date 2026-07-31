@@ -28,10 +28,12 @@ asserted rather than taken, or a defect that taking it exposed.
   and excluded from the semantic hash rather than deleted.
 - **Coverage is gated per package**, not in aggregate.
 - **`pytest` upgraded to 9.0.3** to clear PYSEC-2026-1845 (CVE-2025-71176).
-- **Licensing wording corrected.** With no `LICENSE` file, QSimCity is
-  described as an unofficial, independent educational and research
-  visualization project, and no reuse rights are stated.
-  `LICENSE DECISION: OWNER REQUIRED`.
+- **Licensing resolved.** No license was selected on the owner's behalf; when
+  the owner authorized publication they chose **Apache License 2.0**, matching
+  the reference application. `LICENSE` holds the canonical Apache-2.0 text with
+  this project's own copyright holder, alongside a `NOTICE` file. The gate's
+  license check inverted rather than switching off: with a license present, the
+  documentation must name the license the file actually grants.
 - **Prettier configuration committed** so `pnpm format` passes; it is now part
   of `pnpm verify`. Hand-wrapped prose and byte-pinned trace artifacts are
   excluded, because reformatting the latter would break their artifact hashes.

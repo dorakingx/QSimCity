@@ -169,25 +169,89 @@ check('Blocking TODO/FIXME/placeholder scan', () => {
   return 'no blocking markers';
 });
 
-check('License-claim policy (no open-source claim without a license)', () => {
-  const hasLicense =
-    existsSync(join(ROOT, 'LICENSE')) ||
-    existsSync(join(ROOT, 'LICENSE.md')) ||
-    existsSync(join(ROOT, 'LICENSE.txt'));
-  if (hasLicense) return 'a license file exists; open-source wording is permitted';
-  const offenders: string[] = [];
-  for (const file of ['README.md', 'docs/product-spec.md', 'CLAUDE.md', 'CONTRIBUTING.md']) {
-    const path = join(ROOT, file);
-    if (!existsSync(path)) continue;
-    const content = readFileSync(path, 'utf8');
-    if (/open[- ]source/i.test(content)) offenders.push(file);
+check('License claims match the license file', () => {
+  const licensePath = ['LICENSE', 'LICENSE.md', 'LICENSE.txt']
+    .map((f) => join(ROOT, f))
+    .find((f) => existsSync(f));
+  const claimants = ['README.md', 'docs/product-spec.md', 'CLAUDE.md', 'CONTRIBUTING.md'];
+
+  // Without a license file, default copyright applies and no reuse rights
+  // exist, so nothing may describe the project as open-source.
+  if (licensePath === undefined) {
+    const offenders = claimants.filter((file) => {
+      const path = join(ROOT, file);
+      return existsSync(path) && /open[- ]source/i.test(readFileSync(path, 'utf8'));
+    });
+    if (offenders.length > 0) {
+      throw new Error(
+        `no license file exists, so these must not claim open-source status: ${offenders.join(', ')}`,
+      );
+    }
+    return 'no license file, and no open-source claim is made';
   }
-  if (offenders.length > 0) {
+
+  // With one, the risk inverts: the documentation must not name a different
+  // license from the one the file actually grants.
+  const license = readFileSync(licensePath, 'utf8');
+  // `marker` identifies the license from the file's own text; `named` matches
+  // how a document may legitimately refer to it, since prose says "Apache
+  // License 2.0" where an SPDX identifier says "Apache-2.0".
+  const KNOWN: readonly { readonly id: string; readonly marker: RegExp; readonly named: RegExp }[] =
+    [
+      {
+        id: 'Apache-2.0',
+        marker: /Apache License\s+Version 2\.0/,
+        named: /Apache(?:-|\s+License\s+)2\.0/i,
+      },
+      {
+        id: 'MIT',
+        marker: /Permission is hereby granted, free of charge/,
+        named: /\bMIT License\b|\bMIT\b/,
+      },
+      {
+        id: 'GPL-3.0',
+        marker: /GNU GENERAL PUBLIC LICENSE\s+Version 3/,
+        named: /GPL(?:-|\s+)?3(?:\.0)?/i,
+      },
+      {
+        id: 'BSD-3-Clause',
+        marker: /Redistribution and use in source and binary forms/,
+        named: /BSD(?:-3-Clause|\s+3-Clause)/i,
+      },
+      {
+        id: 'MPL-2.0',
+        marker: /Mozilla Public License Version 2\.0/,
+        named: /Mozilla Public License\s+2\.0|MPL-2\.0/i,
+      },
+    ];
+  const actual = KNOWN.find((k) => k.marker.test(license));
+  if (actual === undefined) {
+    throw new Error(`${licensePath} does not contain a recognized license text`);
+  }
+  const named = claimants.filter((file) => {
+    const path = join(ROOT, file);
+    return existsSync(path) && actual.named.test(readFileSync(path, 'utf8'));
+  });
+  if (named.length === 0) {
+    throw new Error(`the license file grants ${actual.id}, but no first-party document names it`);
+  }
+  const conflicting = claimants.filter((file) => {
+    const path = join(ROOT, file);
+    if (!existsSync(path)) return false;
+    const content = readFileSync(path, 'utf8');
+    return KNOWN.some(
+      (k) =>
+        k.id !== actual.id &&
+        new RegExp(`licensed under[^.]{0,40}`, 'i').test(content) &&
+        k.named.test(content),
+    );
+  });
+  if (conflicting.length > 0) {
     throw new Error(
-      `no license file exists, so these must not claim open-source status: ${offenders.join(', ')}`,
+      `${conflicting.join(', ')} name a license other than the ${actual.id} the file grants`,
     );
   }
-  return 'no license file, and no open-source claim is made';
+  return `${actual.id}, named consistently in ${named.length} document(s)`;
 });
 
 // --------------------------------------------------------------- tests

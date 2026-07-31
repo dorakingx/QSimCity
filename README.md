@@ -8,12 +8,11 @@ measurement, and classical feedback — into a city you can fly over, walk
 through, and interrogate. Every light in the city is driven by a real
 computation trace, and every number on screen tells you how certain it is.
 
-> QSimCity is an **unofficial, independent educational and research
-> visualization project**. It is not produced, endorsed, sponsored, or
-> approved by Electronic Arts, Maxis, IBM, or any quantum-hardware vendor.
-> All artwork is original and generated procedurally from source.
->
-> **No license has been selected yet**, so no reuse rights are granted.
+> QSimCity is an **unofficial, independent, open-source educational and
+> research visualization project**, released under the Apache License 2.0. It
+> is not produced, endorsed, sponsored, or approved by Electronic Arts, Maxis,
+> IBM, or any quantum-hardware vendor. All artwork is original and generated
+> procedurally from source.
 
 ![The quantum city at night](tests/e2e/visual.spec.ts-snapshots/city-night-chromium-darwin.png)
 
@@ -195,13 +194,14 @@ procedurally from source in this repository (`tools/make-icons.ts`,
 maps, or branding is bundled. Runtime dependencies and their licenses are
 recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-**No license has been selected**, and none was chosen on the owner's behalf
-(see [ADR-0001](docs/adr/adr-0001-no-license-selection.md)). Until the owner
-selects one, default copyright applies and **no reuse, redistribution, or
-modification rights are granted**. The source is published for review and
-evaluation only.
+### Licensing
 
-`LICENSE DECISION: OWNER REQUIRED`
+QSimCity is licensed under the **Apache License 2.0** (SPDX: `Apache-2.0`) —
+see [LICENSE](LICENSE) and [NOTICE](NOTICE). You may use, modify, and redistribute it under those
+terms, which include a patent grant and require you to preserve attribution and
+state your changes. Selecting a license waited for an explicit decision by the
+project owner; the reasoning is recorded in
+[ADR-0004](docs/adr/adr-0004-apache-2-0-license.md).
 
 ## Documentation
 

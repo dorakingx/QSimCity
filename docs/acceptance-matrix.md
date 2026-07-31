@@ -131,7 +131,7 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | Screenshots match current UI | PASS | README screenshots are the committed visual baselines, regenerated after the final visual pass |
 | No unfinished feature described as complete | PASS | Deployment status, the day-mode visual loss, and the licensing decision are all recorded as open rather than claimed |
 | Independence/unofficial status stated | PASS | Home screen, README, notices |
-| No unsupported open-source claim while no license exists | PASS | `goal:check` license-claim policy over README/product-spec/CLAUDE/CONTRIBUTING, plus a UI assertion in `tests/e2e/smoke.spec.ts` — `LICENSE DECISION: OWNER REQUIRED` |
+| License claims match the license file | PASS | Apache-2.0 in `LICENSE`, named consistently across README/product-spec/CLAUDE; `goal:check` fails if a document names a different license, and refuses any open-source claim when no license file exists |
 
 ## Recorded substitutions and residual risks
 
@@ -150,9 +150,9 @@ being narrated. See `docs/audits/release-hardening.md`.
    revealed that deep links 404'd because a rewrite pattern the local emulator
    accepted was one Vercel could not match. Both were fixed; see
    `docs/audits/release-hardening.md`.
-3. **Licensing is undecided.** No `LICENSE` file exists and none was selected
-   on the owner's behalf, so no reuse rights are stated anywhere.
-   `LICENSE DECISION: OWNER REQUIRED`.
+3. **Licensing was decided late and deliberately.** No license was selected on
+   the owner's behalf; the owner chose Apache-2.0 when authorizing publication.
+   See `docs/adr/adr-0004-apache-2-0-license.md`.
 4. **Day-mode terrain** scores 4/5 against the reference's 5/5. Reported as a
    loss rather than argued away; adding terrain and water would be a new
    feature, not a repair.

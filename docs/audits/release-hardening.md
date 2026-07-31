@@ -281,15 +281,25 @@ did.
 
 ## Licensing
 
-No `LICENSE` file exists, and none was selected on the owner's behalf. Until
-one is chosen, default copyright applies and no reuse rights are granted, so no
-document, UI string, or package description describes QSimCity as an
-open-source project. `goal:check` enforces this against README.md,
-docs/product-spec.md, CLAUDE.md, and CONTRIBUTING.md, and relaxes automatically
-once a license file appears. The end-to-end suite asserts the same for rendered
-UI text. See [ADR-0001](../adr/adr-0001-no-license-selection.md).
+Throughout the hardening work no `LICENSE` file existed, and none was selected
+on the owner's behalf. Default copyright applied, no reuse rights existed, and
+`goal:check` therefore refused to let any document describe the project as
+open-source — a deliberate constraint, since publishing source without a
+license invites exactly that misreading.
 
-`LICENSE DECISION: OWNER REQUIRED`
+The owner has since authorized publication and selected **Apache License 2.0**,
+matching the reference application's license. `LICENSE` contains the canonical
+Apache-2.0 text with this project's own copyright holder; nothing was copied
+from the reference project's repository, because reusing another project's
+copyright line would assert their ownership over original work here.
+
+The check did not simply switch off when the file appeared. While a license
+exists it now verifies the opposite risk: the documentation must name the same
+license the file actually grants, and naming a different one fails the gate. So
+the wording could not be wrong before, and cannot silently drift now.
+
+See [ADR-0004](../adr/adr-0004-apache-2-0-license.md), which supersedes
+ADR-0001.
 
 ## Deployment
 

@@ -38,12 +38,13 @@ completed_items:
   - security-audit-evidence
   - trace-reproducibility-evidence
   - license-wording-corrected
+  - apache-2-0-license-adopted
+  - repository-published-public
   - fresh-clone-verification-automated
   - evidence-reader-refusal-paths-tested
 failed_items: []
 blocked_items: []
-next_actions:
-  - owner decision required on licensing before any reuse rights can be stated
+next_actions: []
 resolved_findings:
   - id: goal-checker-accepted-untested-mandatory-risk
     resolution: >-
@@ -117,7 +118,7 @@ visual_evidence:
 scientific_review_status: complete-zero-blocking-findings
 accessibility_status: wcag-2.2-aa-zero-axe-violations
 performance_status: within-budget-122.9KiB-initial-js-gzip
-license_status: LICENSE DECISION OWNER REQUIRED (no license file; no reuse rights stated)
+license_status: Apache-2.0 (owner selected 2026-07-31; see docs/adr/adr-0004-apache-2-0-license.md)
 deployment_status: >-
   deployed to Vercel production on owner authorization (project doraking/qsimcity);
   GitHub remote is the private repository dorakingx/QSimCity

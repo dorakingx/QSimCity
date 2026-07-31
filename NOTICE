@@ -1,0 +1,14 @@
+QSimCity
+Copyright 2026 dorakingx
+
+This product includes software developed as an original work by the QSimCity
+project. All 3D geometry, icons, the logo, and the PWA icons are generated
+procedurally from source in this repository; no third-party art, audio, fonts,
+maps, or branding is bundled.
+
+QSimCity is an unofficial, independent educational and research visualization
+project. It is not produced, endorsed, sponsored, or approved by Electronic
+Arts, Maxis, IBM, or any quantum-hardware vendor.
+
+Third-party runtime dependencies retain their own licenses, which are recorded
+in THIRD_PARTY_NOTICES.md.

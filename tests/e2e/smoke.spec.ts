@@ -9,9 +9,10 @@ test('home page presents the product and three entry points', async ({ page, bro
   await expect(page.getByRole('button', { name: 'Guided Tour' }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Explore', exact: true }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Quantum Lab' }).first()).toBeVisible();
+  // The independence disclaimer is a product requirement and is independent of
+  // licensing; the license wording itself is checked against the LICENSE file
+  // by `pnpm goal:check`, not here.
   await expect(page.getByText('unofficial, independent educational and research')).toBeVisible();
-  // No license file exists yet, so the UI must not imply open-source reuse rights.
-  await expect(page.getByText(/open[- ]source/i)).toHaveCount(0);
   assertClean();
 });
 
