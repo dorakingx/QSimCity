@@ -44,7 +44,6 @@ failed_items: []
 blocked_items: []
 next_actions:
   - owner decision required on licensing before any reuse rights can be stated
-  - owner authorization required before any deployment
 resolved_findings:
   - id: goal-checker-accepted-untested-mandatory-risk
     resolution: >-
@@ -115,7 +114,9 @@ scientific_review_status: complete-zero-blocking-findings
 accessibility_status: wcag-2.2-aa-zero-axe-violations
 performance_status: within-budget-122.9KiB-initial-js-gzip
 license_status: LICENSE DECISION OWNER REQUIRED (no license file; no reuse rights stated)
-deployment_status: NOT AUTHORIZED (vercel-ready, locally validated, no public URL)
+deployment_status: >-
+  deployed to Vercel production on owner authorization (project doraking/qsimcity);
+  GitHub remote is the private repository dorakingx/QSimCity
 completion_gate_status: >-
   enforced by `pnpm goal:check`, which derives every mandatory verdict from an
   evidence envelope bound to the source tree it measured; the recorded run is

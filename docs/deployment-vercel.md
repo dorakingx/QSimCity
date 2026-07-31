@@ -84,18 +84,34 @@ browser matrix before any deployment step.
 
 ## Deployment status for this build
 
-**NOT AUTHORIZED.** No authenticated Vercel session and no deployment
-authorization were available in this environment, so QSimCity has **not** been
-deployed and **no public URL exists**. What was done instead:
+**Deployed**, on the owner's explicit authorization, to the Vercel project
+`doraking/qsimcity`. The source lives in the private GitHub repository
+`dorakingx/QSimCity`.
 
-- the exact production artifact was built (`apps/web/dist`),
-- the Vercel configuration was validated against that artifact,
-- a production-equivalent local server applied the same headers, caching, and
-  routing, and the full smoke suite passed against it,
-- PWA installability and offline startup were verified in a real browser.
+The first production deployment immediately exposed a defect that no local run
+had caught: every deep link returned 404. Vercel compiles a rewrite `source`
+with path-to-regexp rather than as a raw regular expression, so the
+negative-lookahead pattern that had been used to protect asset paths matched
+nothing and no rewrite fired. The configuration now uses the documented
+catch-all, which is safe because Vercel applies rewrites only after the
+filesystem check:
 
-The project is Vercel-ready and locally validated. Deploying requires only
-`vercel link` and `vercel --prod` by an authorized account holder.
+```json
+"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+```
+
+The local production-equivalent server had hidden this by falling back to
+`index.html` unconditionally; it now mirrors Vercel's order — filesystem,
+then rewrites, then 404 — so a rewrite the platform cannot match fails locally
+too.
+
+Verified against the live deployment, not only against the local emulator:
+the root and every deep link return the application shell, `sw.js` and
+`manifest.webmanifest` are served directly, and the full security-header set
+is present on the real response.
+
+Note that Vercel requires lowercase project names, so the project slug is
+`qsimcity` while the product and repository name remain QSimCity.
 
 ## Portability
 

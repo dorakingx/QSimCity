@@ -16,7 +16,7 @@ interface VercelHeaderRule {
   headers: { key: string; value: string }[];
 }
 
-interface VercelConfig {
+export interface VercelConfig {
   headers: VercelHeaderRule[];
   rewrites: { source: string; destination: string }[];
   outputDirectory: string;
@@ -53,20 +53,37 @@ export function headersFor(pathname: string): Record<string, string> {
   return out;
 }
 
-export function resolvePath(pathname: string, distDir: string = DIST): string | null {
+/**
+ * Resolves a request the way Vercel does: the filesystem is consulted first,
+ * and only then are `rewrites` applied; an unmatched path is a 404.
+ *
+ * This previously ended with an unconditional fallback to `index.html`, which
+ * made the rewrite configuration untestable — the SPA was served even when no
+ * rule matched, so a `source` pattern that Vercel could not match still looked
+ * correct locally. It was, and the real deployment answered 404 for every
+ * route. The fallback is gone: what is served now depends on `vercel.json`.
+ */
+export function resolveWithConfig(
+  pathname: string,
+  distDir: string,
+  config: VercelConfig,
+): string | null {
   const clean = normalize(pathname).replace(/^(\.\.[/\\])+/, '');
   const direct = join(distDir, clean);
   if (!direct.startsWith(distDir)) return null; // path traversal guard
   if (existsSync(direct) && statSync(direct).isFile()) return direct;
   // Vercel matches `source` against the pathname including its leading slash.
-  for (const rule of vercelConfig.rewrites) {
+  for (const rule of config.rewrites) {
     if (matches(rule.source, clean)) {
       const target = join(distDir, rule.destination);
       if (existsSync(target)) return target;
     }
   }
-  const indexHtml = join(distDir, 'index.html');
-  return existsSync(indexHtml) ? indexHtml : null;
+  return null;
+}
+
+export function resolvePath(pathname: string, distDir: string = DIST): string | null {
+  return resolveWithConfig(pathname, distDir, vercelConfig);
 }
 
 export function createProductionServer(distDir: string = DIST): ReturnType<typeof createServer> {

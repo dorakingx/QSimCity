@@ -114,12 +114,12 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | vercel.json + deployment docs complete | PASS | 32 configuration assertions against the real build |
 | Node and pnpm pinned | PASS | `.nvmrc`, `engines.node`, `packageManager` |
 | Production build output verified | PASS | index.html, sw.js, manifest all present and served |
-| Direct routing/refresh works | PASS | `/explore` returns the app shell; assets served directly |
+| Direct routing/refresh works | PASS | Verified against the live deployment, not only the local emulator, after both were found to disagree |
 | Security headers verified | PASS | CSP without unsafe-eval/inline scripts, HSTS, COOP/CORP, Permissions-Policy |
 | Cache behavior verified | PASS | Immutable hashed assets; must-revalidate HTML and service worker |
 | PWA verified in a Vercel-compatible environment | PASS | Manifest, registration, offline startup, offline run |
 | Production-equivalent local smoke test passes | PASS | `tools/serve-production.ts` + `tools/test/vercel-config.test.ts` |
-| Live deployment smoke test | NOT AUTHORIZED | No Vercel credentials or deployment authorization in this environment; no public URL is claimed |
+| Live deployment smoke test | PASS | Deployed to Vercel production on owner authorization; live checks: `/` 200, `/explore` and deep links return the shell, `sw.js` and `manifest.webmanifest` 200, and every security header present on the real response |
 
 ## 24.8 Documentation
 
@@ -145,8 +145,11 @@ being narrated. See `docs/audits/release-hardening.md`.
 
 1. **Screen-reader testing** was performed against the accessibility tree
    (axe + role/name assertions), not with a specific commercial screen reader.
-2. **External deployment is `NOT AUTHORIZED`** — the specification explicitly
-   permits this, and no live URL is claimed anywhere.
+2. **Deployment happened late, and found a defect.** The application was
+   deployed only after the owner authorized it, and the first deployment
+   revealed that deep links 404'd because a rewrite pattern the local emulator
+   accepted was one Vercel could not match. Both were fixed; see
+   `docs/audits/release-hardening.md`.
 3. **Licensing is undecided.** No `LICENSE` file exists and none was selected
    on the owner's behalf, so no reuse rights are stated anywhere.
    `LICENSE DECISION: OWNER REQUIRED`.

@@ -7,6 +7,7 @@ import {
   createProductionServer,
   headersFor,
   resolvePath,
+  resolveWithConfig,
   vercelConfig,
 } from '../serve-production.js';
 
@@ -142,12 +143,35 @@ describe('vercel.json contract', () => {
     void cpSync;
   });
 
-  it('rewrite pattern excludes the service worker so it is never shadowed', () => {
+  it('uses a rewrite source Vercel can actually match', () => {
+    // Vercel compiles `source` with path-to-regexp, not as a raw JavaScript
+    // regular expression. An earlier config used a negative-lookahead pattern
+    // to exclude asset paths; it read correctly, passed a RegExp-based test,
+    // and matched nothing on Vercel, so every deep link 404'd in production.
+    // The catch-all is the pattern Vercel documents, and it is safe because
+    // rewrites are applied only after the filesystem check.
+    expect(vercelConfig.rewrites).toHaveLength(1);
     const rewrite = vercelConfig.rewrites[0]!;
-    expect(new RegExp(`^${rewrite.source}$`).test('/sw.js')).toBe(false);
-    expect(new RegExp(`^${rewrite.source}$`).test('/assets/index.js')).toBe(false);
-    expect(new RegExp(`^${rewrite.source}$`).test('/manifest.webmanifest')).toBe(false);
-    expect(new RegExp(`^${rewrite.source}$`).test('/explore')).toBe(true);
+    expect(rewrite.source).toBe('/(.*)');
+    expect(rewrite.destination).toBe('/index.html');
+    expect(rewrite.source).not.toMatch(/\(\?!/);
+  });
+
+  it('serves real files from disk in preference to the rewrite', () => {
+    // The filesystem-first order is what keeps the catch-all from shadowing
+    // the service worker, the manifest, and hashed assets.
+    expect(resolvePath('/sw.js', distDir)).toMatch(/sw\.js$/);
+    expect(resolvePath('/manifest.webmanifest', distDir)).toMatch(/manifest\.webmanifest$/);
+    expect(resolvePath('/favicon.svg', distDir)).toMatch(/favicon\.svg$/);
+  });
+
+  it('404s an unmatched path instead of silently serving the shell', () => {
+    // Guards the defect this file previously hid: resolvePath fell back to
+    // index.html unconditionally, so a broken or missing rewrite still looked
+    // healthy locally while production returned 404.
+    const noRewrites = { ...vercelConfig, rewrites: [] as typeof vercelConfig.rewrites };
+    const resolved = resolveWithConfig('/explore', distDir, noRewrites);
+    expect(resolved).toBeNull();
   });
 });
 

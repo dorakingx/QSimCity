@@ -64,6 +64,12 @@ asserted rather than taken, or a defect that taking it exposed.
 
 ### Fixed
 
+- Deep links returned 404 in production. The SPA rewrite used a
+  negative-lookahead `source`, which Vercel compiles with path-to-regexp
+  rather than as a regular expression, so no rewrite ever fired. The local
+  production-equivalent server had masked this with an unconditional fallback
+  to `index.html`, making the rewrite configuration untestable; it now mirrors
+  Vercel's filesystem-then-rewrite order and 404s an unmatched path.
 - A Python test asserted that regenerated traces reproduce the committed
   `artifactHash`, which cannot hold because each generated trace carries a
   fresh id and timestamp. It now checks what each hash actually promises.
@@ -138,5 +144,6 @@ fault-tolerance simulation, multiplayer, VR, accounts, and localization.
 ### Deployment
 
 Vercel-ready and locally validated against a production-equivalent server.
-Not deployed: no deployment authorization was available in the build
-environment, and no public URL exists.
+Not deployed at the time of this release: no deployment authorization was
+available in the build environment. Deployment was authorized and performed
+later; see the 1.0.1 entry and `docs/deployment-vercel.md`.

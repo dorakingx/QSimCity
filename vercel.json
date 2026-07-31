@@ -6,12 +6,7 @@
   "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [
-    {
-      "source": "/((?!assets/|icons/|favicon.svg|manifest.webmanifest|sw.js|workbox-.*\\.js|registerSW.js).*)",
-      "destination": "/index.html"
-    }
-  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/(.*)",

@@ -237,6 +237,27 @@ than an envelope, so the gate would have consumed a number with no record of
 what produced it or which source it measured. It now writes a full envelope
 like every other measurement.
 
+**Deep links 404'd in production, and a local test hid it.** The first real
+deployment answered 404 for `/explore`, `/lab`, and every other route, while
+the local production-equivalent server served them correctly. Two defects,
+compounding:
+
+- `vercel.json` used a negative-lookahead pattern to keep the SPA rewrite from
+  shadowing assets. Vercel compiles `source` with path-to-regexp, not as a raw
+  JavaScript regular expression, so the pattern matched nothing and no rewrite
+  ever fired. The catch-all `/(.*)` is what Vercel documents, and it is safe
+  because rewrites are applied only after the filesystem check.
+- `tools/serve-production.ts` ended with an unconditional fallback to
+  `index.html`. That made the rewrite configuration untestable: the shell was
+  served whether or not any rule matched, so a pattern the real platform could
+  not match still looked healthy locally. The fallback is gone — an unmatched
+  path now 404s — and a test asserts that behaviour with an empty rewrite list,
+  so a broken or missing rewrite fails locally instead of in production.
+
+This is the clearest case in this work of a test that passed for the wrong
+reason. No amount of rerunning it would have found the bug; only deploying
+did.
+
 ## Licensing
 
 No `LICENSE` file exists, and none was selected on the owner's behalf. Until
@@ -251,10 +272,12 @@ UI text. See [ADR-0001](../adr/adr-0001-no-license-selection.md).
 
 ## Deployment
 
-`NOT AUTHORIZED`. The application is not deployed. `vercel.json` is verified
-against the real build output by a hermetic test, but no account was created,
-no DNS was changed, and no deployment was performed. Deployment remains a
-non-blocking item awaiting the owner's authorization.
+Deployment was `NOT AUTHORIZED` throughout the hardening work and was
+performed only after the owner authorized it explicitly. No account was
+created and no DNS was changed: the existing authenticated Vercel session was
+used, and the source was pushed to a private GitHub repository. The live
+deployment is verified by direct checks against the public URL, and it
+immediately found the routing defect described above.
 
 ## What this audit does not claim
 
