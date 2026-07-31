@@ -1,20 +1,24 @@
 {
-  "commitSha": "9b58109270706e6befd324bfc52568047347a87a",
+  "commitSha": "8f3ae0cdeda2a24c0a312203b134f2f84fc6f644",
+  "sourceTreeHash": "31ebf392ebc5bf8a",
   "worktreeDirty": true,
-  "generatedAt": "2026-07-30T18:17:49.354Z",
+  "generatedAt": "2026-07-31T00:39:12.712Z",
   "tool": "qsimcity-mutation",
   "toolVersion": "2.0.0",
   "command": "pnpm test:mutation",
   "exitStatus": 0,
   "inputHash": "c80b42f234d53d67",
   "thresholds": {
-    "score": 0.7
+    "score": 0.7,
+    "survivorsPendingReview": 0
   },
   "measurements": {
-    "score": 0.8929,
+    "score": 0.9643,
     "generated": 84,
-    "killed": 75,
-    "survived": 9,
+    "killed": 81,
+    "survived": 3,
+    "survivorsReviewedEquivalent": 3,
+    "survivorsPendingReview": 0,
     "areas": 11,
     "filesInScope": 14
   },
@@ -39,8 +43,8 @@
           "packages/domain/src/circuit.ts"
         ],
         "generated": 6,
-        "killed": 5,
-        "score": 0.8333333333333334
+        "killed": 6,
+        "score": 1
       },
       {
         "area": "measurement-collapse-reset",
@@ -69,8 +73,8 @@
           "packages/reference-compiler/src/passes.ts"
         ],
         "generated": 6,
-        "killed": 5,
-        "score": 0.8333333333333334
+        "killed": 6,
+        "score": 1
       },
       {
         "area": "compiler-equivalence",
@@ -80,8 +84,8 @@
           "packages/reference-compiler/src/compile.ts"
         ],
         "generated": 12,
-        "killed": 10,
-        "score": 0.8333333333333334
+        "killed": 12,
+        "score": 1
       },
       {
         "area": "global-phase-comparison",
@@ -100,8 +104,8 @@
           "packages/domain/src/topology.ts"
         ],
         "generated": 6,
-        "killed": 5,
-        "score": 0.8333333333333334
+        "killed": 6,
+        "score": 1
       },
       {
         "area": "trace-validation",
@@ -121,8 +125,8 @@
           "packages/trace/src/hashing-contract.ts"
         ],
         "generated": 12,
-        "killed": 11,
-        "score": 0.9166666666666666
+        "killed": 12,
+        "score": 1
       },
       {
         "area": "seeded-randomness",
@@ -141,7 +145,7 @@
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/simulator/src/statevector.ts",
         "operator": "numeric-literal",
-        "line": 102,
+        "line": 110,
         "original": "4",
         "mutated": "5",
         "tests": [
@@ -150,16 +154,16 @@
           "packages/domain"
         ],
         "index": 33,
-        "id": "gate-evolution:statevector.ts:102:numeric-literal",
+        "id": "gate-evolution:statevector.ts:110:numeric-literal",
         "killed": false,
-        "durationMs": 2284
+        "durationMs": 2260
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "comparison",
-        "line": 68,
+        "line": 153,
         "original": "<",
         "mutated": "<=",
         "tests": [
@@ -168,124 +172,25 @@
           "packages/domain"
         ],
         "index": 0,
-        "id": "gate-evolution:gates.ts:68:comparison",
+        "id": "gate-evolution:gates.ts:153:comparison",
         "killed": false,
-        "durationMs": 1837
-      },
-      {
-        "area": "indexing-endianness",
-        "capability": "Qubit indexing, endianness, and classical-bit mapping",
-        "file": "packages/domain/src/circuit.ts",
-        "operator": "numeric-literal",
-        "line": 133,
-        "original": "1",
-        "mutated": "0",
-        "tests": [
-          "packages/domain",
-          "packages/simulator",
-          "packages/reference-compiler"
-        ],
-        "index": 8,
-        "id": "indexing-endianness:circuit.ts:133:numeric-literal",
-        "killed": false,
-        "durationMs": 1672
+        "durationMs": 1839
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "comparison",
-        "line": 97,
+        "line": 103,
         "original": "<",
         "mutated": "<=",
         "tests": [
           "packages/simulator"
         ],
         "index": 11,
-        "id": "noise-channels:noise.ts:97:comparison",
+        "id": "noise-channels:noise.ts:103:comparison",
         "killed": false,
-        "durationMs": 548
-      },
-      {
-        "area": "layout-routing-swap",
-        "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
-        "file": "packages/reference-compiler/src/passes.ts",
-        "operator": "boolean-literal",
-        "line": 397,
-        "original": "true",
-        "mutated": "false",
-        "tests": [
-          "packages/reference-compiler"
-        ],
-        "index": 4,
-        "id": "layout-routing-swap:passes.ts:397:boolean-literal",
-        "killed": false,
-        "durationMs": 1609
-      },
-      {
-        "area": "compiler-equivalence",
-        "capability": "Basis translation and compiler equivalence",
-        "file": "packages/reference-compiler/src/euler.ts",
-        "operator": "comparison",
-        "line": 28,
-        "original": "<",
-        "mutated": "<=",
-        "tests": [
-          "packages/reference-compiler"
-        ],
-        "index": 0,
-        "id": "compiler-equivalence:euler.ts:28:comparison",
-        "killed": false,
-        "durationMs": 1501
-      },
-      {
-        "area": "compiler-equivalence",
-        "capability": "Basis translation and compiler equivalence",
-        "file": "packages/reference-compiler/src/euler.ts",
-        "operator": "comparison",
-        "line": 103,
-        "original": "===",
-        "mutated": "!==",
-        "tests": [
-          "packages/reference-compiler"
-        ],
-        "index": 7,
-        "id": "compiler-equivalence:euler.ts:103:comparison",
-        "killed": false,
-        "durationMs": 1527
-      },
-      {
-        "area": "topology",
-        "capability": "Device topology and shortest-path routing support",
-        "file": "packages/domain/src/topology.ts",
-        "operator": "numeric-literal",
-        "line": 118,
-        "original": "0",
-        "mutated": "1",
-        "tests": [
-          "packages/domain",
-          "packages/reference-compiler"
-        ],
-        "index": 56,
-        "id": "topology:topology.ts:118:numeric-literal",
-        "killed": false,
-        "durationMs": 1579
-      },
-      {
-        "area": "trace-canonicalization",
-        "capability": "Trace canonicalization and deterministic hashing",
-        "file": "packages/trace/src/hash.ts",
-        "operator": "numeric-literal",
-        "line": 30,
-        "original": "6",
-        "mutated": "7",
-        "tests": [
-          "packages/trace"
-        ],
-        "index": 6,
-        "id": "trace-canonicalization:hash.ts:30:numeric-literal",
-        "killed": false,
-        "durationMs": 398
+        "durationMs": 510
       }
     ],
     "outcomes": [
@@ -305,14 +210,14 @@
         "index": 0,
         "id": "gate-evolution:statevector.ts:18:comparison",
         "killed": true,
-        "durationMs": 1676
+        "durationMs": 1714
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/simulator/src/statevector.ts",
         "operator": "comparison",
-        "line": 214,
+        "line": 222,
         "original": "<",
         "mutated": "<=",
         "tests": [
@@ -321,16 +226,16 @@
           "packages/domain"
         ],
         "index": 31,
-        "id": "gate-evolution:statevector.ts:214:comparison",
+        "id": "gate-evolution:statevector.ts:222:comparison",
         "killed": true,
-        "durationMs": 759
+        "durationMs": 876
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/simulator/src/statevector.ts",
         "operator": "arithmetic",
-        "line": 106,
+        "line": 114,
         "original": "*",
         "mutated": "/",
         "tests": [
@@ -339,9 +244,9 @@
           "packages/domain"
         ],
         "index": 29,
-        "id": "gate-evolution:statevector.ts:106:arithmetic",
+        "id": "gate-evolution:statevector.ts:114:arithmetic",
         "killed": true,
-        "durationMs": 29404
+        "durationMs": 34610
       },
       {
         "area": "gate-evolution",
@@ -359,14 +264,14 @@
         "index": 2,
         "id": "gate-evolution:statevector.ts:26:numeric-literal",
         "killed": true,
-        "durationMs": 897
+        "durationMs": 1004
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/simulator/src/statevector.ts",
         "operator": "numeric-literal",
-        "line": 102,
+        "line": 110,
         "original": "4",
         "mutated": "5",
         "tests": [
@@ -375,16 +280,16 @@
           "packages/domain"
         ],
         "index": 33,
-        "id": "gate-evolution:statevector.ts:102:numeric-literal",
+        "id": "gate-evolution:statevector.ts:110:numeric-literal",
         "killed": false,
-        "durationMs": 2284
+        "durationMs": 2260
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/simulator/src/statevector.ts",
         "operator": "numeric-literal",
-        "line": 149,
+        "line": 157,
         "original": "1",
         "mutated": "0",
         "tests": [
@@ -393,16 +298,16 @@
           "packages/domain"
         ],
         "index": 64,
-        "id": "gate-evolution:statevector.ts:149:numeric-literal",
+        "id": "gate-evolution:statevector.ts:157:numeric-literal",
         "killed": true,
-        "durationMs": 1803
+        "durationMs": 1689
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "comparison",
-        "line": 68,
+        "line": 153,
         "original": "<",
         "mutated": "<=",
         "tests": [
@@ -411,16 +316,16 @@
           "packages/domain"
         ],
         "index": 0,
-        "id": "gate-evolution:gates.ts:68:comparison",
+        "id": "gate-evolution:gates.ts:153:comparison",
         "killed": false,
-        "durationMs": 1837
+        "durationMs": 1839
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "numeric-literal",
-        "line": 28,
+        "line": 45,
         "original": "0",
         "mutated": "1",
         "tests": [
@@ -429,16 +334,16 @@
           "packages/domain"
         ],
         "index": 30,
-        "id": "gate-evolution:gates.ts:28:numeric-literal",
+        "id": "gate-evolution:gates.ts:45:numeric-literal",
         "killed": true,
-        "durationMs": 1873
+        "durationMs": 1782
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "numeric-literal",
-        "line": 40,
+        "line": 88,
         "original": "0.5",
         "mutated": "1",
         "tests": [
@@ -447,16 +352,16 @@
           "packages/domain"
         ],
         "index": 84,
-        "id": "gate-evolution:gates.ts:40:numeric-literal",
+        "id": "gate-evolution:gates.ts:88:numeric-literal",
         "killed": true,
-        "durationMs": 1754
+        "durationMs": 1681
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "numeric-literal",
-        "line": 55,
+        "line": 122,
         "original": "0",
         "mutated": "1",
         "tests": [
@@ -465,16 +370,16 @@
           "packages/domain"
         ],
         "index": 138,
-        "id": "gate-evolution:gates.ts:55:numeric-literal",
+        "id": "gate-evolution:gates.ts:122:numeric-literal",
         "killed": true,
-        "durationMs": 1757
+        "durationMs": 1755
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "numeric-literal",
-        "line": 69,
+        "line": 154,
         "original": "3",
         "mutated": "4",
         "tests": [
@@ -483,16 +388,16 @@
           "packages/domain"
         ],
         "index": 192,
-        "id": "gate-evolution:gates.ts:69:numeric-literal",
+        "id": "gate-evolution:gates.ts:154:numeric-literal",
         "killed": true,
-        "durationMs": 1787
+        "durationMs": 1724
       },
       {
         "area": "gate-evolution",
         "capability": "Single-qubit and multi-qubit gate evolution",
         "file": "packages/domain/src/gates.ts",
         "operator": "numeric-literal",
-        "line": 120,
+        "line": 232,
         "original": "0",
         "mutated": "1",
         "tests": [
@@ -501,9 +406,9 @@
           "packages/domain"
         ],
         "index": 246,
-        "id": "gate-evolution:gates.ts:120:numeric-literal",
+        "id": "gate-evolution:gates.ts:232:numeric-literal",
         "killed": true,
-        "durationMs": 1748
+        "durationMs": 1733
       },
       {
         "area": "indexing-endianness",
@@ -521,14 +426,14 @@
         "index": 0,
         "id": "indexing-endianness:circuit.ts:64:comparison",
         "killed": true,
-        "durationMs": 1932
+        "durationMs": 1720
       },
       {
         "area": "indexing-endianness",
         "capability": "Qubit indexing, endianness, and classical-bit mapping",
         "file": "packages/domain/src/circuit.ts",
         "operator": "comparison",
-        "line": 139,
+        "line": 143,
         "original": "<",
         "mutated": "<=",
         "tests": [
@@ -537,16 +442,16 @@
           "packages/reference-compiler"
         ],
         "index": 12,
-        "id": "indexing-endianness:circuit.ts:139:comparison",
+        "id": "indexing-endianness:circuit.ts:143:comparison",
         "killed": true,
-        "durationMs": 1807
+        "durationMs": 1802
       },
       {
         "area": "indexing-endianness",
         "capability": "Qubit indexing, endianness, and classical-bit mapping",
         "file": "packages/domain/src/circuit.ts",
         "operator": "comparison",
-        "line": 179,
+        "line": 185,
         "original": "<",
         "mutated": "<=",
         "tests": [
@@ -555,16 +460,16 @@
           "packages/reference-compiler"
         ],
         "index": 24,
-        "id": "indexing-endianness:circuit.ts:179:comparison",
+        "id": "indexing-endianness:circuit.ts:185:comparison",
         "killed": true,
-        "durationMs": 1717
+        "durationMs": 1779
       },
       {
         "area": "indexing-endianness",
         "capability": "Qubit indexing, endianness, and classical-bit mapping",
         "file": "packages/domain/src/circuit.ts",
         "operator": "arithmetic",
-        "line": 198,
+        "line": 211,
         "original": "+",
         "mutated": "-",
         "tests": [
@@ -573,9 +478,9 @@
           "packages/reference-compiler"
         ],
         "index": 5,
-        "id": "indexing-endianness:circuit.ts:198:arithmetic",
+        "id": "indexing-endianness:circuit.ts:211:arithmetic",
         "killed": true,
-        "durationMs": 1743
+        "durationMs": 1804
       },
       {
         "area": "indexing-endianness",
@@ -593,14 +498,14 @@
         "index": 2,
         "id": "indexing-endianness:circuit.ts:127:negation",
         "killed": true,
-        "durationMs": 694
+        "durationMs": 815
       },
       {
         "area": "indexing-endianness",
         "capability": "Qubit indexing, endianness, and classical-bit mapping",
         "file": "packages/domain/src/circuit.ts",
         "operator": "numeric-literal",
-        "line": 133,
+        "line": 136,
         "original": "1",
         "mutated": "0",
         "tests": [
@@ -609,9 +514,9 @@
           "packages/reference-compiler"
         ],
         "index": 8,
-        "id": "indexing-endianness:circuit.ts:133:numeric-literal",
-        "killed": false,
-        "durationMs": 1672
+        "id": "indexing-endianness:circuit.ts:136:numeric-literal",
+        "killed": true,
+        "durationMs": 1752
       },
       {
         "area": "measurement-collapse-reset",
@@ -628,7 +533,7 @@
         "index": 0,
         "id": "measurement-collapse-reset:engine.ts:80:comparison",
         "killed": true,
-        "durationMs": 574
+        "durationMs": 578
       },
       {
         "area": "measurement-collapse-reset",
@@ -645,7 +550,7 @@
         "index": 26,
         "id": "measurement-collapse-reset:engine.ts:252:comparison",
         "killed": true,
-        "durationMs": 559
+        "durationMs": 584
       },
       {
         "area": "measurement-collapse-reset",
@@ -662,7 +567,7 @@
         "index": 52,
         "id": "measurement-collapse-reset:engine.ts:355:comparison",
         "killed": true,
-        "durationMs": 568
+        "durationMs": 635
       },
       {
         "area": "measurement-collapse-reset",
@@ -679,7 +584,7 @@
         "index": 3,
         "id": "measurement-collapse-reset:engine.ts:180:logical",
         "killed": true,
-        "durationMs": 584
+        "durationMs": 575
       },
       {
         "area": "measurement-collapse-reset",
@@ -696,7 +601,7 @@
         "index": 13,
         "id": "measurement-collapse-reset:engine.ts:126:numeric-literal",
         "killed": true,
-        "durationMs": 576
+        "durationMs": 618
       },
       {
         "area": "measurement-collapse-reset",
@@ -713,215 +618,215 @@
         "index": 39,
         "id": "measurement-collapse-reset:engine.ts:269:numeric-literal",
         "killed": true,
-        "durationMs": 571
+        "durationMs": 597
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "comparison",
-        "line": 35,
+        "line": 41,
         "original": "===",
         "mutated": "!==",
         "tests": [
           "packages/simulator"
         ],
         "index": 0,
-        "id": "noise-channels:noise.ts:35:comparison",
+        "id": "noise-channels:noise.ts:41:comparison",
         "killed": true,
-        "durationMs": 622
+        "durationMs": 656
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "comparison",
-        "line": 97,
+        "line": 103,
         "original": "<",
         "mutated": "<=",
         "tests": [
           "packages/simulator"
         ],
         "index": 11,
-        "id": "noise-channels:noise.ts:97:comparison",
+        "id": "noise-channels:noise.ts:103:comparison",
         "killed": false,
-        "durationMs": 548
+        "durationMs": 510
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "arithmetic",
-        "line": 96,
+        "line": 102,
         "original": "-",
         "mutated": "+",
         "tests": [
           "packages/simulator"
         ],
         "index": 2,
-        "id": "noise-channels:noise.ts:96:arithmetic",
+        "id": "noise-channels:noise.ts:102:arithmetic",
         "killed": true,
-        "durationMs": 531
+        "durationMs": 544
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "negation",
-        "line": 45,
+        "line": 51,
         "original": "!",
         "mutated": "",
         "tests": [
           "packages/simulator"
         ],
         "index": 0,
-        "id": "noise-channels:noise.ts:45:negation",
+        "id": "noise-channels:noise.ts:51:negation",
         "killed": true,
-        "durationMs": 507
+        "durationMs": 509
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "numeric-literal",
-        "line": 45,
+        "line": 51,
         "original": "0",
         "mutated": "1",
         "tests": [
           "packages/simulator"
         ],
         "index": 10,
-        "id": "noise-channels:noise.ts:45:numeric-literal",
+        "id": "noise-channels:noise.ts:51:numeric-literal",
         "killed": true,
-        "durationMs": 483
+        "durationMs": 516
       },
       {
         "area": "noise-channels",
         "capability": "Readout, depolarizing, amplitude damping, phase damping",
         "file": "packages/simulator/src/noise.ts",
         "operator": "numeric-literal",
-        "line": 98,
+        "line": 104,
         "original": "0",
         "mutated": "1",
         "tests": [
           "packages/simulator"
         ],
         "index": 21,
-        "id": "noise-channels:noise.ts:98:numeric-literal",
+        "id": "noise-channels:noise.ts:104:numeric-literal",
         "killed": true,
-        "durationMs": 547
+        "durationMs": 530
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "comparison",
-        "line": 51,
+        "line": 50,
         "original": "!==",
         "mutated": "===",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 0,
-        "id": "layout-routing-swap:passes.ts:51:comparison",
+        "id": "layout-routing-swap:passes.ts:50:comparison",
         "killed": true,
-        "durationMs": 1577
+        "durationMs": 1552
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "comparison",
-        "line": 219,
+        "line": 223,
         "original": "!==",
         "mutated": "===",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 29,
-        "id": "layout-routing-swap:passes.ts:219:comparison",
+        "id": "layout-routing-swap:passes.ts:223:comparison",
         "killed": true,
-        "durationMs": 3366
+        "durationMs": 3282
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "comparison",
-        "line": 387,
+        "line": 409,
         "original": "===",
         "mutated": "!==",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 58,
-        "id": "layout-routing-swap:passes.ts:387:comparison",
+        "id": "layout-routing-swap:passes.ts:409:comparison",
         "killed": true,
-        "durationMs": 1482
+        "durationMs": 1537
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "boolean-literal",
-        "line": 397,
+        "line": 419,
         "original": "true",
         "mutated": "false",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 4,
-        "id": "layout-routing-swap:passes.ts:397:boolean-literal",
-        "killed": false,
-        "durationMs": 1609
+        "id": "layout-routing-swap:passes.ts:419:boolean-literal",
+        "killed": true,
+        "durationMs": 1548
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "negation",
-        "line": 238,
+        "line": 247,
         "original": "!",
         "mutated": "",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 4,
-        "id": "layout-routing-swap:passes.ts:238:negation",
+        "id": "layout-routing-swap:passes.ts:247:negation",
         "killed": true,
-        "durationMs": 1659
+        "durationMs": 2794
       },
       {
         "area": "layout-routing-swap",
         "capability": "Initial layout, routing, SWAP insertion, basis compliance, scheduling",
         "file": "packages/reference-compiler/src/passes.ts",
         "operator": "numeric-literal",
-        "line": 306,
+        "line": 325,
         "original": "2",
         "mutated": "3",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 27,
-        "id": "layout-routing-swap:passes.ts:306:numeric-literal",
+        "id": "layout-routing-swap:passes.ts:325:numeric-literal",
         "killed": true,
-        "durationMs": 1524
+        "durationMs": 1618
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/euler.ts",
         "operator": "comparison",
-        "line": 28,
+        "line": 32,
         "original": "<",
         "mutated": "<=",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 0,
-        "id": "compiler-equivalence:euler.ts:28:comparison",
-        "killed": false,
-        "durationMs": 1501
+        "id": "compiler-equivalence:euler.ts:32:comparison",
+        "killed": true,
+        "durationMs": 1641
       },
       {
         "area": "compiler-equivalence",
@@ -936,38 +841,38 @@
         ],
         "index": 7,
         "id": "compiler-equivalence:euler.ts:103:comparison",
-        "killed": false,
-        "durationMs": 1527
+        "killed": true,
+        "durationMs": 1609
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/euler.ts",
         "operator": "arithmetic",
-        "line": 53,
+        "line": 57,
         "original": "*",
         "mutated": "/",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 6,
-        "id": "compiler-equivalence:euler.ts:53:arithmetic",
+        "id": "compiler-equivalence:euler.ts:57:arithmetic",
         "killed": true,
-        "durationMs": 1562
+        "durationMs": 1581
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/euler.ts",
         "operator": "arithmetic",
-        "line": 77,
+        "line": 78,
         "original": "-",
         "mutated": "+",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 13,
-        "id": "compiler-equivalence:euler.ts:77:arithmetic",
+        "id": "compiler-equivalence:euler.ts:78:arithmetic",
         "killed": true,
         "durationMs": 1577
       },
@@ -985,71 +890,71 @@
         "index": 0,
         "id": "compiler-equivalence:euler.ts:89:negation",
         "killed": true,
-        "durationMs": 1453
+        "durationMs": 1431
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/euler.ts",
         "operator": "numeric-literal",
-        "line": 23,
+        "line": 26,
         "original": "5",
         "mutated": "6",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 6,
-        "id": "compiler-equivalence:euler.ts:23:numeric-literal",
+        "id": "compiler-equivalence:euler.ts:26:numeric-literal",
         "killed": true,
-        "durationMs": 1723
+        "durationMs": 1640
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/compile.ts",
         "operator": "comparison",
-        "line": 121,
+        "line": 126,
         "original": "===",
         "mutated": "!==",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 0,
-        "id": "compiler-equivalence:compile.ts:121:comparison",
+        "id": "compiler-equivalence:compile.ts:126:comparison",
         "killed": true,
-        "durationMs": 1541
+        "durationMs": 1595
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/compile.ts",
         "operator": "comparison",
-        "line": 144,
+        "line": 149,
         "original": ">",
         "mutated": ">=",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 1,
-        "id": "compiler-equivalence:compile.ts:144:comparison",
+        "id": "compiler-equivalence:compile.ts:149:comparison",
         "killed": true,
-        "durationMs": 1519
+        "durationMs": 1588
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/compile.ts",
         "operator": "comparison",
-        "line": 165,
+        "line": 170,
         "original": ">",
         "mutated": ">=",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 2,
-        "id": "compiler-equivalence:compile.ts:165:comparison",
+        "id": "compiler-equivalence:compile.ts:170:comparison",
         "killed": true,
-        "durationMs": 1537
+        "durationMs": 1565
       },
       {
         "area": "compiler-equivalence",
@@ -1065,39 +970,39 @@
         "index": 0,
         "id": "compiler-equivalence:compile.ts:81:boolean-literal",
         "killed": true,
-        "durationMs": 1551
+        "durationMs": 1582
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/compile.ts",
         "operator": "boolean-literal",
-        "line": 202,
+        "line": 213,
         "original": "false",
         "mutated": "true",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 1,
-        "id": "compiler-equivalence:compile.ts:202:boolean-literal",
+        "id": "compiler-equivalence:compile.ts:213:boolean-literal",
         "killed": true,
-        "durationMs": 1564
+        "durationMs": 1593
       },
       {
         "area": "compiler-equivalence",
         "capability": "Basis translation and compiler equivalence",
         "file": "packages/reference-compiler/src/compile.ts",
         "operator": "numeric-literal",
-        "line": 144,
+        "line": 149,
         "original": "0",
         "mutated": "1",
         "tests": [
           "packages/reference-compiler"
         ],
         "index": 0,
-        "id": "compiler-equivalence:compile.ts:144:numeric-literal",
+        "id": "compiler-equivalence:compile.ts:149:numeric-literal",
         "killed": true,
-        "durationMs": 1630
+        "durationMs": 1561
       },
       {
         "area": "global-phase-comparison",
@@ -1114,7 +1019,7 @@
         "index": 0,
         "id": "global-phase-comparison:complex.ts:11:comparison",
         "killed": true,
-        "durationMs": 519
+        "durationMs": 547
       },
       {
         "area": "global-phase-comparison",
@@ -1131,7 +1036,7 @@
         "index": 12,
         "id": "global-phase-comparison:complex.ts:28:arithmetic",
         "killed": true,
-        "durationMs": 1573
+        "durationMs": 1632
       },
       {
         "area": "global-phase-comparison",
@@ -1148,7 +1053,7 @@
         "index": 40,
         "id": "global-phase-comparison:complex.ts:46:arithmetic",
         "killed": true,
-        "durationMs": 1585
+        "durationMs": 1681
       },
       {
         "area": "global-phase-comparison",
@@ -1165,7 +1070,7 @@
         "index": 68,
         "id": "global-phase-comparison:complex.ts:83:arithmetic",
         "killed": true,
-        "durationMs": 1677
+        "durationMs": 1708
       },
       {
         "area": "global-phase-comparison",
@@ -1182,7 +1087,7 @@
         "index": 0,
         "id": "global-phase-comparison:complex.ts:91:negation",
         "killed": true,
-        "durationMs": 1690
+        "durationMs": 1761
       },
       {
         "area": "global-phase-comparison",
@@ -1199,7 +1104,7 @@
         "index": 27,
         "id": "global-phase-comparison:complex.ts:47:numeric-literal",
         "killed": true,
-        "durationMs": 1609
+        "durationMs": 1617
       },
       {
         "area": "topology",
@@ -1216,14 +1121,14 @@
         "index": 0,
         "id": "topology:topology.ts:15:comparison",
         "killed": true,
-        "durationMs": 490
+        "durationMs": 532
       },
       {
         "area": "topology",
         "capability": "Device topology and shortest-path routing support",
         "file": "packages/domain/src/topology.ts",
         "operator": "comparison",
-        "line": 181,
+        "line": 190,
         "original": "===",
         "mutated": "!==",
         "tests": [
@@ -1231,16 +1136,16 @@
           "packages/reference-compiler"
         ],
         "index": 21,
-        "id": "topology:topology.ts:181:comparison",
+        "id": "topology:topology.ts:190:comparison",
         "killed": true,
-        "durationMs": 1586
+        "durationMs": 1679
       },
       {
         "area": "topology",
         "capability": "Device topology and shortest-path routing support",
         "file": "packages/domain/src/topology.ts",
         "operator": "arithmetic",
-        "line": 152,
+        "line": 161,
         "original": "-",
         "mutated": "+",
         "tests": [
@@ -1248,9 +1153,9 @@
           "packages/reference-compiler"
         ],
         "index": 13,
-        "id": "topology:topology.ts:152:arithmetic",
+        "id": "topology:topology.ts:161:arithmetic",
         "killed": true,
-        "durationMs": 1564
+        "durationMs": 1629
       },
       {
         "area": "topology",
@@ -1267,7 +1172,7 @@
         "index": 14,
         "id": "topology:topology.ts:48:numeric-literal",
         "killed": true,
-        "durationMs": 1587
+        "durationMs": 1722
       },
       {
         "area": "topology",
@@ -1284,14 +1189,14 @@
         "index": 35,
         "id": "topology:topology.ts:100:numeric-literal",
         "killed": true,
-        "durationMs": 3608
+        "durationMs": 4015
       },
       {
         "area": "topology",
         "capability": "Device topology and shortest-path routing support",
         "file": "packages/domain/src/topology.ts",
         "operator": "numeric-literal",
-        "line": 118,
+        "line": 123,
         "original": "0",
         "mutated": "1",
         "tests": [
@@ -1299,9 +1204,9 @@
           "packages/reference-compiler"
         ],
         "index": 56,
-        "id": "topology:topology.ts:118:numeric-literal",
-        "killed": false,
-        "durationMs": 1579
+        "id": "topology:topology.ts:123:numeric-literal",
+        "killed": true,
+        "durationMs": 1536
       },
       {
         "area": "trace-validation",
@@ -1317,87 +1222,87 @@
         "index": 0,
         "id": "trace-validation:validate.ts:9:comparison",
         "killed": true,
-        "durationMs": 407
+        "durationMs": 396
       },
       {
         "area": "trace-validation",
         "capability": "Trace validation and invariants",
         "file": "packages/trace/src/validate.ts",
         "operator": "comparison",
-        "line": 61,
+        "line": 64,
         "original": "!==",
         "mutated": "===",
         "tests": [
           "packages/trace"
         ],
         "index": 7,
-        "id": "trace-validation:validate.ts:61:comparison",
+        "id": "trace-validation:validate.ts:64:comparison",
         "killed": true,
-        "durationMs": 394
+        "durationMs": 391
       },
       {
         "area": "trace-validation",
         "capability": "Trace validation and invariants",
         "file": "packages/trace/src/validate.ts",
         "operator": "comparison",
-        "line": 98,
+        "line": 103,
         "original": "!==",
         "mutated": "===",
         "tests": [
           "packages/trace"
         ],
         "index": 14,
-        "id": "trace-validation:validate.ts:98:comparison",
+        "id": "trace-validation:validate.ts:103:comparison",
         "killed": true,
-        "durationMs": 401
+        "durationMs": 393
       },
       {
         "area": "trace-validation",
         "capability": "Trace validation and invariants",
         "file": "packages/trace/src/validate.ts",
         "operator": "arithmetic",
-        "line": 106,
+        "line": 111,
         "original": "-",
         "mutated": "+",
         "tests": [
           "packages/trace"
         ],
         "index": 3,
-        "id": "trace-validation:validate.ts:106:arithmetic",
+        "id": "trace-validation:validate.ts:111:arithmetic",
         "killed": true,
-        "durationMs": 394
+        "durationMs": 396
       },
       {
         "area": "trace-validation",
         "capability": "Trace validation and invariants",
         "file": "packages/trace/src/validate.ts",
         "operator": "negation",
-        "line": 88,
+        "line": 93,
         "original": "!",
         "mutated": "",
         "tests": [
           "packages/trace"
         ],
         "index": 2,
-        "id": "trace-validation:validate.ts:88:negation",
+        "id": "trace-validation:validate.ts:93:negation",
         "killed": true,
-        "durationMs": 406
+        "durationMs": 392
       },
       {
         "area": "trace-validation",
         "capability": "Trace validation and invariants",
         "file": "packages/trace/src/validate.ts",
         "operator": "numeric-literal",
-        "line": 105,
+        "line": 110,
         "original": "0",
         "mutated": "1",
         "tests": [
           "packages/trace"
         ],
         "index": 6,
-        "id": "trace-validation:validate.ts:105:numeric-literal",
+        "id": "trace-validation:validate.ts:110:numeric-literal",
         "killed": true,
-        "durationMs": 393
+        "durationMs": 399
       },
       {
         "area": "trace-canonicalization",
@@ -1413,7 +1318,7 @@
         "index": 0,
         "id": "trace-canonicalization:hash.ts:13:comparison",
         "killed": true,
-        "durationMs": 395
+        "durationMs": 397
       },
       {
         "area": "trace-canonicalization",
@@ -1445,7 +1350,7 @@
         "index": 10,
         "id": "trace-canonicalization:hash.ts:53:comparison",
         "killed": true,
-        "durationMs": 395
+        "durationMs": 416
       },
       {
         "area": "trace-canonicalization",
@@ -1461,7 +1366,7 @@
         "index": 0,
         "id": "trace-canonicalization:hash.ts:20:arithmetic",
         "killed": true,
-        "durationMs": 395
+        "durationMs": 436
       },
       {
         "area": "trace-canonicalization",
@@ -1477,7 +1382,7 @@
         "index": 1,
         "id": "trace-canonicalization:hash.ts:23:numeric-literal",
         "killed": true,
-        "durationMs": 396
+        "durationMs": 425
       },
       {
         "area": "trace-canonicalization",
@@ -1492,8 +1397,8 @@
         ],
         "index": 6,
         "id": "trace-canonicalization:hash.ts:30:numeric-literal",
-        "killed": false,
-        "durationMs": 398
+        "killed": true,
+        "durationMs": 467
       },
       {
         "area": "trace-canonicalization",
@@ -1509,7 +1414,7 @@
         "index": 0,
         "id": "trace-canonicalization:hashing-contract.ts:30:comparison",
         "killed": true,
-        "durationMs": 395
+        "durationMs": 424
       },
       {
         "area": "trace-canonicalization",
@@ -1525,7 +1430,7 @@
         "index": 1,
         "id": "trace-canonicalization:hashing-contract.ts:30:comparison",
         "killed": true,
-        "durationMs": 396
+        "durationMs": 415
       },
       {
         "area": "trace-canonicalization",
@@ -1541,7 +1446,7 @@
         "index": 2,
         "id": "trace-canonicalization:hashing-contract.ts:58:comparison",
         "killed": true,
-        "durationMs": 388
+        "durationMs": 398
       },
       {
         "area": "trace-canonicalization",
@@ -1557,7 +1462,7 @@
         "index": 3,
         "id": "trace-canonicalization:hashing-contract.ts:58:comparison",
         "killed": true,
-        "durationMs": 398
+        "durationMs": 416
       },
       {
         "area": "trace-canonicalization",
@@ -1573,7 +1478,7 @@
         "index": 4,
         "id": "trace-canonicalization:hashing-contract.ts:59:comparison",
         "killed": true,
-        "durationMs": 395
+        "durationMs": 428
       },
       {
         "area": "trace-canonicalization",
@@ -1589,7 +1494,7 @@
         "index": 5,
         "id": "trace-canonicalization:hashing-contract.ts:59:comparison",
         "killed": true,
-        "durationMs": 397
+        "durationMs": 424
       },
       {
         "area": "seeded-randomness",
@@ -1606,7 +1511,7 @@
         "index": 0,
         "id": "seeded-randomness:rng.ts:21:comparison",
         "killed": true,
-        "durationMs": 608
+        "durationMs": 651
       },
       {
         "area": "seeded-randomness",
@@ -1623,7 +1528,7 @@
         "index": 4,
         "id": "seeded-randomness:rng.ts:45:arithmetic",
         "killed": true,
-        "durationMs": 599
+        "durationMs": 603
       },
       {
         "area": "seeded-randomness",
@@ -1640,7 +1545,7 @@
         "index": 3,
         "id": "seeded-randomness:rng.ts:23:numeric-literal",
         "killed": true,
-        "durationMs": 572
+        "durationMs": 694
       },
       {
         "area": "seeded-randomness",
@@ -1657,7 +1562,7 @@
         "index": 9,
         "id": "seeded-randomness:rng.ts:28:numeric-literal",
         "killed": true,
-        "durationMs": 570
+        "durationMs": 624
       },
       {
         "area": "seeded-randomness",
@@ -1674,7 +1579,7 @@
         "index": 15,
         "id": "seeded-randomness:rng.ts:39:numeric-literal",
         "killed": true,
-        "durationMs": 570
+        "durationMs": 614
       },
       {
         "area": "seeded-randomness",
@@ -1691,7 +1596,7 @@
         "index": 21,
         "id": "seeded-randomness:rng.ts:43:numeric-literal",
         "killed": true,
-        "durationMs": 708
+        "durationMs": 608
       }
     ]
   }

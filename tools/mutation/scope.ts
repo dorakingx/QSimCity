@@ -174,3 +174,32 @@ export const OPERATORS: readonly MutationOperator[] = [
     },
   },
 ];
+
+/**
+ * Mutants that survive because they cannot change observable behaviour.
+ *
+ * A surviving mutant is either a hole in the tests or an equivalent mutant,
+ * and the difference matters: the first is a defect, the second is a fact
+ * about the language. Only mutants whose equivalence can be stated precisely
+ * appear here, keyed by `file:line:operator`, and the mutation run fails if
+ * any survivor is not either killed or listed here. "Hard to test" is not a
+ * justification.
+ */
+export const REVIEWED_EQUIVALENT: Readonly<Record<string, string>> = {
+  'packages/simulator/src/statevector.ts:110:comparison':
+    'Extends the 4x4 row loop by one iteration. The extra row reads matrix ' +
+    'entries past the end (undefined, giving NaN) and writes to idx[4], which ' +
+    'is undefined; assigning to a non-index key of a Float64Array is discarded ' +
+    'by the language, so no amplitude changes.',
+  'packages/simulator/src/statevector.ts:110:numeric-literal':
+    'Same site and same reason as the comparison mutant: the extra iteration ' +
+    'writes to an undefined typed-array index, which JavaScript discards.',
+  'packages/domain/src/gates.ts:153:comparison':
+    'Extends the CCX basis loop to i = 8, which writes m[144] on a 128-element ' +
+    'Float64Array. Out-of-range typed-array writes are discarded, so the gate ' +
+    'matrix is unchanged.',
+  'packages/simulator/src/noise.ts:103:comparison':
+    'Extends the amplitude-damping scaling loop one element past the state ' +
+    'vector. Reading gives undefined and the write is discarded, so no ' +
+    'amplitude is scaled twice and none is missed.',
+};

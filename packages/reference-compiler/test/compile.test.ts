@@ -13,6 +13,7 @@ import {
 } from '@qsimcity/domain';
 import { TraceBuilder } from 'qsimcity-trace';
 import { compile } from '../src/compile.js';
+import { optimizePass, toMutable, type MutableInstruction } from '../src/passes.js';
 import { circuitUnitary, reducedCompiledUnitary } from './utils.js';
 
 const LINEAR5 = getDevice('linear-5');
@@ -455,5 +456,30 @@ describe('scheduling and translation event details', () => {
     });
     // sx*4 = x*2 = identity, so a converged optimizer leaves nothing behind.
     expect(result.compiledMetrics.gateCount).toBe(0);
+  });
+});
+
+describe('optimizePass fixpoint', () => {
+  const rz = (angle: number): MutableInstruction =>
+    toMutable(makeInstruction({ id: 'x', kind: 'gate', name: 'rz', qubits: [0], params: [angle] }));
+  const sx = (): MutableInstruction =>
+    toMutable(makeInstruction({ id: 'x', kind: 'gate', name: 'sx', qubits: [0] }));
+
+  it('re-runs after an rz merge exposes an earlier pair', () => {
+    // The scan is forward-only, so cancelling the two rz gates makes the two
+    // sx gates adjacent only from the next round's point of view. Without a
+    // second round the output keeps both sx gates instead of fusing them.
+    const result = optimizePass([sx(), rz(0.4), rz(-0.4), sx()]);
+    expect(result.instructions.map((i) => i.name)).toEqual(['x']);
+    expect(result.cancelledCount).toBe(2);
+    expect(result.mergedCount).toBe(1);
+  });
+
+  it('merges rz rotations into a single normalized angle', () => {
+    const result = optimizePass([rz(0.5), rz(0.25)]);
+    expect(result.instructions).toHaveLength(1);
+    expect(result.instructions[0]!.name).toBe('rz');
+    expect(result.instructions[0]!.params[0]).toBeCloseTo(0.75, 12);
+    expect(result.mergedCount).toBe(1);
   });
 });

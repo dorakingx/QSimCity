@@ -1,7 +1,8 @@
 {
-  "commitSha": "9fa4de5883067e0856a6740bf799fb9059d33e7d",
-  "worktreeDirty": true,
-  "generatedAt": "2026-07-31T00:19:19.922Z",
+  "commitSha": "8f3ae0cdeda2a24c0a312203b134f2f84fc6f644",
+  "sourceTreeHash": "31ebf392ebc5bf8a",
+  "worktreeDirty": false,
+  "generatedAt": "2026-07-31T00:30:07.083Z",
   "tool": "qsimcity-trace-reproducibility",
   "toolVersion": "v22.23.1",
   "command": "12 independent `tsx tools/trace-reproducibility/hash-one-run.ts` processes + committed-sample verification",
@@ -24,9 +25,15 @@
   "passed": true,
   "detail": {
     "perCircuitHashes": {
-      "bell": ["bd2f99c68ca39252"],
-      "ghz-4": ["4848e0b76662f420"],
-      "grover-2": ["b4330f9bbc3b06e3"]
+      "bell": [
+        "bd2f99c68ca39252"
+      ],
+      "ghz-4": [
+        "4848e0b76662f420"
+      ],
+      "grover-2": [
+        "b4330f9bbc3b06e3"
+      ]
     },
     "sampleChecks": [
       {

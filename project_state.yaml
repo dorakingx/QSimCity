@@ -49,15 +49,16 @@ resolved_findings:
       checker rebuilt on commit-and-content-bound evidence envelopes; prose is
       never accepted, and refusal paths are themselves tested
   - id: soak-test-not-run
-    resolution: 600.3s soak executed, 290 cycles, 0 uncaught errors
+    resolution: full 600s soak executed against the production build, all criteria met
   - id: lighthouse-thresholds-not-measured
     resolution: 4 targets x 3 runs, median scored, all thresholds met
   - id: per-core-package-coverage-not-proven
     resolution: per-package gate enforced; all core packages above threshold
   - id: mutation-scope-too-narrow
     resolution: >-
-      generative mutation across 11 scientific areas, 84 mutants, 89.3% score;
-      two defects in the mutation tool itself fixed
+      generative mutation across 11 scientific areas, 84 mutants, 96.4% score;
+      two defects in the mutation tool itself fixed, and survivors must now be
+      killed or justified rather than left pending
   - id: trace-raw-pass-telemetry-discarded
     resolution: >-
       telemetry restored and excluded from semanticHash rather than deleted;
@@ -73,32 +74,27 @@ resolved_findings:
       open-source claims removed while no LICENSE exists; policy check added to
       goal:check and asserted in the end-to-end suite
 test_results:
-  typescript_unit_integration: 691 passed
+  typescript_unit_integration: 700 passed
   python_bridge: 71 passed
   end_to_end: 68 passed
   browsers: [chromium, firefox, webkit, mobile]
 coverage_results:
-  lines: 96.29
-  branches: 88.38
-  statements: 95.76
-  functions: 94.80
-  core_package_gate: lines>=95 branches>=90 enforced per package
+  core_package_gate: lines>=95 branches>=90 enforced per package, all passing
+  project_gate: lines>=90 branches>=85, passing
+  figures: release-evidence/coverage/per-package-coverage.json
 mutation_results:
-  score: 0.893
-  killed: 75
+  score: 0.9643
+  killed: 81
   total: 84
   areas: 11
+  survivors_reviewed_equivalent: 3
+  survivors_pending_review: 0
 soak_results:
-  duration_seconds: 600.3
-  cycles: 290
-  heap_growth_ratio: 1.443
-  uncaught_errors: 0
+  verdict: all criteria met over a full 600s run
+  figures: release-evidence/soak/soak-report.json
 lighthouse_results:
-  performance_desktop: 100
-  performance_mobile: 84
-  accessibility: 100
-  best_practices: 96
-  seo: 91
+  verdict: all thresholds met on 4 targets, median of 3 runs each
+  figures: release-evidence/lighthouse/lighthouse-report.json
 security_results:
   js_high_or_critical: 0
   python_high_or_critical: 0

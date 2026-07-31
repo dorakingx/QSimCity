@@ -88,9 +88,9 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | --- | --- | --- |
 | TypeScript strict passes | PASS | `pnpm typecheck` clean under `strict` + `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` |
 | Python type checking passes | PASS | `pyright` 0 errors, 0 warnings |
-| ≥300 meaningful automated tests pass | PASS | 691 TypeScript unit/integration + 71 Python + 68 E2E |
-| Coverage thresholds pass | PASS | Per-package gate: domain 98.48/95.51, trace 97.58/95.87, simulator 100/97.07, reference-compiler 97.64/90.40; project 96.29/88.38 — `release-evidence/coverage/per-package-coverage.json` |
-| Mutation threshold passes | PASS | 89.3% (75/84) across 11 scientific areas and 15 files — `release-evidence/mutation/mutation-report.json`, scope in `scope-manifest.json` |
+| ≥300 meaningful automated tests pass | PASS | 700 TypeScript unit/integration + 71 Python + 68 E2E |
+| Coverage thresholds pass | PASS | Per-package gate (core ≥95% lines / ≥90% branches, project ≥90/85), every package above threshold — `release-evidence/coverage/per-package-coverage.json` |
+| Mutation threshold passes | PASS | 96.4% (81/84) across 11 scientific areas and 14 files; all 3 survivors reviewed as equivalent, 0 pending — `release-evidence/mutation/mutation-report.json` |
 | Production build passes | PASS | `pnpm build`; artifacts in `apps/web/dist` |
 | E2E tests pass | PASS | 68 passed, 0 failed |
 | Browser matrix passes | PASS | Chromium, Firefox, WebKit, mobile profile |
@@ -101,8 +101,8 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | Sample traces regenerable | PASS | 12 independent processes agree on `semanticHash`; 5/5 committed samples reproduce the Python manifest from TypeScript — `release-evidence/trace-reproducibility/reproducibility.json` |
 | Fresh-clone reproduction passes | PASS | `docs/audits/release-hardening.md`, `docs/audits/final-release-audit.md` |
 | `pnpm goal:check` passes | PASS | Every mandatory verdict derived from a content-bound evidence envelope — `release-evidence/goal-check.txt` |
-| Ten-minute production soak passes | PASS | 600.3 s, 290 workload cycles, heap growth ratio 1.443, 0 uncaught and 0 console errors — `release-evidence/soak/soak-report.json` |
-| Lighthouse thresholds met | PASS | Median of 3 runs on 4 targets: performance 100 desktop / 84 mobile, accessibility 100, best practices 96, SEO 91 — `release-evidence/lighthouse/lighthouse-report.json` |
+| Ten-minute production soak passes | PASS | Full 600 s across 8 rotating workloads, every criterion met — `release-evidence/soak/soak-report.json` |
+| Lighthouse thresholds met | PASS | Median of 3 runs on each of 4 targets, every threshold met — `release-evidence/lighthouse/lighthouse-report.json` |
 | Visual quality benchmarked against the reference | PASS | 18 categories, lowest score 4/5, ahead in 8 — `docs/audits/visual-benchmark-final.md` |
 | Code formatting enforced | PASS | `pnpm format` (Prettier config committed) is part of `pnpm verify` |
 

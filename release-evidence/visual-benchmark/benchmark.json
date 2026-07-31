@@ -1,8 +1,8 @@
 {
-  "commitSha": "9fa4de5883067e0856a6740bf799fb9059d33e7d",
-  "sourceTreeHash": "0c9b131793814c79",
-  "worktreeDirty": true,
-  "generatedAt": "2026-07-31T00:29:02.913Z",
+  "commitSha": "8f3ae0cdeda2a24c0a312203b134f2f84fc6f644",
+  "sourceTreeHash": "31ebf392ebc5bf8a",
+  "worktreeDirty": false,
+  "generatedAt": "2026-07-31T00:30:07.508Z",
   "tool": "qsimcity-visual-benchmark",
   "toolVersion": "1.0.0",
   "command": "pnpm benchmark:visual",

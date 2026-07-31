@@ -94,6 +94,27 @@ describe('makeCircuit', () => {
     ).toThrow(/classical bit 5/);
   });
 
+  it('names the valid classical-bit range in the error message', () => {
+    // The message is the only guidance a user gets for a bad index, so the
+    // upper bound it quotes has to be the real one.
+    expect(() =>
+      makeCircuit({
+        numQubits: 1,
+        cregs: [{ name: 'c', size: 3 }],
+        instructions: [
+          makeInstruction({ kind: 'measure', name: 'measure', qubits: [0], clbits: [7] }),
+        ],
+      }),
+    ).toThrow('Instruction measure references classical bit 7 outside 0..2');
+
+    expect(() =>
+      makeCircuit({
+        numQubits: 2,
+        instructions: [makeInstruction({ name: 'h', qubits: [4] })],
+      }),
+    ).toThrow('Instruction h references qubit 4 outside 0..1');
+  });
+
   it('rejects conditions on unknown registers', () => {
     expect(() =>
       makeCircuit({

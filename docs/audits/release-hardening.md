@@ -58,9 +58,12 @@ Criteria: at least 600 s, zero uncaught errors, zero console errors, zero
 unrecovered WebGL context losses, trailing heap growth ratio below 1.5 after a
 60 s warm-up, and a final interaction under 3000 ms.
 
-Measured: **600.3 s, 290 cycles, growth ratio 1.443, 0 uncaught errors, 0
-console errors, 0 unrecovered context losses.** Artifacts: `soak-report.json`,
-`heap-samples.csv`, `console-events.json`, `soak-summary.md`.
+**Result: every criterion met.** The exact figures — duration, cycle count,
+heap growth ratio, and per-sample heap readings — are in
+`release-evidence/soak/soak-report.json`, `heap-samples.csv`,
+`console-events.json`, and `soak-summary.md`, and they are quoted from the
+evidence rather than restated here because a rerun reproduces the verdict, not
+the same numbers to three decimal places.
 
 ## 3. Lighthouse (previously asserted, never measured)
 
@@ -69,9 +72,11 @@ desktop and mobile), three runs each, and scores the median so a single noisy
 run cannot decide the verdict.
 
 Thresholds: accessibility 100, best practices 95, SEO 90, performance 85
-desktop / 75 mobile. Measured: **desktop performance 100, mobile performance
-84, accessibility 100, best practices 96, SEO 91.** All twelve raw run reports
-are kept alongside the summary.
+desktop / 75 mobile. **Result: every threshold met on every target.** The
+scored medians are in `release-evidence/lighthouse/lighthouse-report.json`, and
+all twelve raw run reports are kept alongside it. As with the soak, the numbers
+live in the evidence because they are host-dependent; what is stable is the
+verdict.
 
 One dependency problem surfaced here and was fixed rather than worked around:
 `intl-messageformat` has an undeclared runtime dependency on `tslib`, which
@@ -92,7 +97,7 @@ global-phase comparison, topology, trace validation, trace canonicalization,
 and seeded randomness. Exclusions are declared with reasons in
 `tools/mutation/scope.ts` and published in `scope-manifest.json`.
 
-Measured: **89.3% (75 of 84 mutants killed) across 11 areas and 15 files**,
+Measured: **96.4% (81 of 84 mutants killed) across 11 areas and 14 files**,
 against a 70% threshold.
 
 Two bugs in the tool itself were found and fixed while doing this, both of
@@ -105,12 +110,24 @@ which had made the earlier run meaningless:
 - Trailing comments were treated as live code, so "surviving mutants" included
   edits to comment text such as `// U[0][1]`.
 
-The nine survivors were not waived. Each was killed by a new test with pinned
-expected values: RNG output vectors, exact `grid-3x3` edge lists and neighbor
-ordering, route-versus-SWAP event distinctions, translation and cancellation
-guards, scheduling tick sharing, multi-round optimization, noisy zero-clbit
-execution, skipped conditioned measure/reset, and UTF-8 byte-length classes in
-canonical hashing.
+**Survivors must be reviewed, not tolerated.** The threshold alone would have
+accepted nine unexamined survivors at 89.3%. A survivor is either a hole in the
+tests or an equivalent mutant, and those are different facts, so the run now
+fails unless every survivor is either killed or carries a written justification
+in `REVIEWED_EQUIVALENT`. "Hard to test" is not a justification.
+
+Fourteen survivors were killed by new tests across two rounds, including the
+six found in the final review: the exact wording of out-of-range circuit
+errors, the ZYZ decomposition boundary at exactly the diagonal tolerance,
+composition of basis ops from their own gate definitions, the optimizer's need
+for a second round when an rz cancellation exposes an earlier sx pair, distinct
+and correct coupling-map coordinates for every device, and the exact UTF-8 byte
+sequence emitted for each encoding class rather than merely distinct hashes.
+
+Three survivors remain, all in the same category and all justified: each
+extends a loop one iteration past the end of a `Float64Array`, where the read
+yields `undefined` and the write is discarded by the language. No amplitude,
+gate matrix, or noise scaling can change, so no test can distinguish them.
 
 ## 5. Per-package coverage
 
@@ -118,8 +135,8 @@ canonical hashing.
 than in aggregate, where a well-covered package can hide a poorly covered one.
 
 Core packages require 95% lines and 90% branches; the project requires 90% and
-85%. Measured: **domain 98.48/95.51, trace 97.58/95.87, simulator 100/97.07,
-reference-compiler 97.64/90.40, project 96.29/88.38.**
+85%. **Result: every package above its threshold**, with the per-package
+figures in `release-evidence/coverage/per-package-coverage.json`.
 
 ## 6. Trace hashing: semantic, artifact, and preserved telemetry
 
@@ -178,8 +195,8 @@ This found a real advisory the previous release missed: `pytest 8.4.2` is
 affected by PYSEC-2026-1845 (CVE-2025-71176), fixed in 9.0.3. The dependency
 was upgraded rather than excused; the bridge suite passes on pytest 9.
 
-Measured: **0 JavaScript high/critical, 0 Python high/critical across 47
-audited packages, 0 secret-scan hits.**
+Measured: **0 JavaScript high/critical advisories, 0 Python high/critical
+advisories, 0 secret-scan hits.**
 
 **Formatting.** `pnpm format` had never passed: the repository declared a
 Prettier script but shipped no Prettier configuration, so the check ran against
@@ -217,9 +234,10 @@ non-blocking item awaiting the owner's authorization.
 ## What this audit does not claim
 
 - No real quantum hardware was used, and no measurement here says otherwise.
-- The Lighthouse and soak numbers are from this machine (macOS, Chromium via
-  Playwright). They are reproducible by running the same commands, not
-  universal constants.
+- The Lighthouse and soak figures are from this machine (macOS, Chromium via
+  Playwright), which is why this document cites the verdict and points at the
+  evidence for the numbers. Running the same commands elsewhere should
+  reproduce the verdict, not the identical figures.
 - Mutation score is a measure of test sensitivity in the scoped areas, not a
   proof of correctness.
 - `sourceTreeHash` binds evidence to tracked source. Evidence generated with

@@ -110,6 +110,26 @@ describe('UTF-8 encoding across all byte-length classes', () => {
     expect(fnv1a64(THREE_BYTE_A)).not.toBe(fnv1a64(THREE_BYTE_B));
   });
 
+  it('emits the exact UTF-8 byte sequence for every class', () => {
+    // Distinctness alone does not pin the encoder: a wrong shift still yields
+    // different hashes for different characters. This hashes the known byte
+    // sequences independently, so any wrong byte value fails.
+    const fnvOfBytes = (bytes: readonly number[]): string => {
+      let hash = 0xcbf29ce484222325n;
+      for (const byte of bytes) {
+        hash ^= BigInt(byte);
+        hash = (hash * 0x100000001b3n) & 0xffffffffffffffffn;
+      }
+      return hash.toString(16).padStart(16, '0');
+    };
+
+    expect(fnv1a64(ONE_BYTE)).toBe(fnvOfBytes([0x41]));
+    expect(fnv1a64(TWO_BYTE)).toBe(fnvOfBytes([0xc3, 0xa9]));
+    expect(fnv1a64(THREE_BYTE_A)).toBe(fnvOfBytes([0xe2, 0x82, 0xac]));
+    expect(fnv1a64(THREE_BYTE_B)).toBe(fnvOfBytes([0xe2, 0x86, 0x92]));
+    expect(fnv1a64(FOUR_BYTE)).toBe(fnvOfBytes([0xf0, 0x9f, 0x9a, 0x80]));
+  });
+
   it('encodes a three-byte character as its exact UTF-8 bytes', () => {
     // U+20AC encodes to E2 82 AC. Hashing those bytes one code point at a
     // time must differ from hashing the character, proving the encoder is

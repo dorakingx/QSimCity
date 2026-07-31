@@ -1,7 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXCLUSIONS, OPERATORS, SCOPE_AREAS, type ScopeArea } from './scope.js';
+import {
+  EXCLUSIONS,
+  OPERATORS,
+  REVIEWED_EQUIVALENT,
+  SCOPE_AREAS,
+  type ScopeArea,
+} from './scope.js';
 import { hashString, writeEvidence } from '../evidence.js';
 
 /**
@@ -191,6 +197,12 @@ function main(): void {
   const survivors = outcomes.filter((o) => !o.killed);
   const score = outcomes.length > 0 ? killed.length / outcomes.length : 0;
 
+  // A survivor is either a hole in the tests or an equivalent mutant. Only the
+  // second kind may remain, and only with a written justification.
+  const justificationOf = (s: MutantOutcome): string | undefined =>
+    REVIEWED_EQUIVALENT[`${s.file}:${s.line}:${s.operator}`];
+  const pending = survivors.filter((s) => justificationOf(s) === undefined);
+
   const byArea = SCOPE_AREAS.map((area) => {
     const areaOutcomes = outcomes.filter((o) => o.area === area.id);
     return {
@@ -231,17 +243,23 @@ function main(): void {
     `# Mutation Survivors\n\n` +
       (survivors.length === 0
         ? 'No mutants survived.\n'
-        : `${survivors.length} mutant(s) survived. Each must be killed by a new test or\n` +
-          `justified as equivalent or unreachable.\n\n` +
+        : `${survivors.length} mutant(s) survived: ${survivors.length - pending.length} ` +
+          `reviewed as equivalent, ${pending.length} pending.\n\n` +
+          `A pending survivor is a hole in the tests and fails this run. An\n` +
+          `equivalent mutant may remain only with the written justification below.\n\n` +
           survivors
-            .map(
-              (s) =>
+            .map((s) => {
+              const justification = justificationOf(s);
+              return (
                 `## \`${s.file}:${s.line}\` — ${s.operator}\n\n` +
                 `- Capability: ${s.capability}\n` +
                 `- Mutation: \`${s.original}\` → \`${s.mutated}\`\n` +
                 `- Tests run: ${s.tests.join(', ')}\n` +
-                `- Review: **pending**\n`,
-            )
+                (justification === undefined
+                  ? `- Review: **pending — kill this mutant with a test**\n`
+                  : `- Review: **equivalent** — ${justification}\n`)
+              );
+            })
             .join('\n')) +
       '\n',
   );
@@ -250,18 +268,20 @@ function main(): void {
     tool: 'qsimcity-mutation',
     toolVersion: '2.0.0',
     command: 'pnpm test:mutation',
-    exitStatus: score >= THRESHOLD ? 0 : 1,
+    exitStatus: score >= THRESHOLD && pending.length === 0 ? 0 : 1,
     inputHash: hashString(JSON.stringify(SCOPE_AREAS) + MUTANTS_PER_FILE),
-    thresholds: { score: THRESHOLD },
+    thresholds: { score: THRESHOLD, survivorsPendingReview: 0 },
     measurements: {
       score: Number(score.toFixed(4)),
       generated: outcomes.length,
       killed: killed.length,
       survived: survivors.length,
+      survivorsReviewedEquivalent: survivors.length - pending.length,
+      survivorsPendingReview: pending.length,
       areas: SCOPE_AREAS.length,
       filesInScope: new Set(SCOPE_AREAS.flatMap((a) => a.files)).size,
     },
-    passed: score >= THRESHOLD,
+    passed: score >= THRESHOLD && pending.length === 0,
     detail: { byArea, survivors, outcomes },
   });
 

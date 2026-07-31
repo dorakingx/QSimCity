@@ -175,3 +175,44 @@ describe('neighbor ordering is deterministic', () => {
     }
   });
 });
+
+describe('device diagram positions', () => {
+  /**
+   * `positions` is presentation data, but the coupling map is a real product
+   * surface: two qubits sharing a coordinate would silently overlap in the
+   * diagram, and a shifted coordinate would misrepresent the device shape.
+   */
+  it('gives every qubit of every device a distinct coordinate', () => {
+    for (const device of DEVICES) {
+      expect(device.positions).toHaveLength(device.numQubits);
+      const seen = new Set(device.positions.map(([x, y]) => `${x},${y}`));
+      expect(seen.size).toBe(device.numQubits);
+    }
+  });
+
+  it('lays out the T-shaped device as a T', () => {
+    expect(getDevice('tee-7').positions).toEqual([
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [1, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ]);
+  });
+
+  it('lays out the 3x3 grid device as a grid', () => {
+    expect(getDevice('grid-3x3').positions).toEqual([
+      [0, 0],
+      [1, 0],
+      [2, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ]);
+  });
+});

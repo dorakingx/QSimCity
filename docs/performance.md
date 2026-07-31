@@ -71,16 +71,18 @@ home screen and Accessible 2D Mode, each on a desktop and a mobile profile —
 three times per target, and judges the median so one noisy run cannot decide
 the verdict. All twelve raw reports are kept in `release-evidence/lighthouse/`.
 
-| Category | Threshold | Measured |
-| --- | --- | --- |
-| Performance (desktop) | 85 | 100 |
-| Performance (mobile) | 75 | 84 |
-| Accessibility | 100 | 100 |
-| Best Practices | 95 | 96 |
-| SEO | 90 | 91 |
+| Category | Threshold |
+| --- | --- |
+| Performance (desktop) | 85 |
+| Performance (mobile) | 75 |
+| Accessibility | 100 |
+| Best Practices | 95 |
+| SEO | 90 |
 
-These scores are from this host (macOS, Chromium via Playwright); they are
-reproducible by rerunning the command, not universal constants.
+Every threshold is met. The scored medians are recorded in
+`release-evidence/lighthouse/lighthouse-report.json` rather than copied here,
+because they are host-dependent (macOS, Chromium via Playwright): rerunning
+reproduces the verdict, not the identical scores.
 
 An earlier release recorded Lighthouse as "not executed" and substituted other
 evidence for it, and the completion gate passed anyway. The gate no longer
@@ -102,15 +104,18 @@ all four camera modes, a noise change with a rerun, Accessible 2D Mode, Compare
 Mode, a rotating scenario including Variational Gridlock, and the guided tour.
 Heap is sampled throughout and every console and page error is recorded.
 
-| Criterion | Threshold | Measured |
-| --- | --- | --- |
-| Duration | ≥ 600 s | 600.3 s |
-| Workload cycles | ≥ 5 | 290 |
-| Trailing heap growth ratio (after 60 s warm-up) | < 1.5 | 1.443 |
-| Uncaught errors | 0 | 0 |
-| Console errors | 0 | 0 |
-| Unrecovered WebGL context losses | 0 | 0 |
-| Final interaction latency | < 3000 ms | within budget |
+| Criterion | Threshold |
+| --- | --- |
+| Duration | ≥ 600 s |
+| Workload cycles | ≥ 5 |
+| Trailing heap growth ratio (after 60 s warm-up) | < 1.5 |
+| Uncaught errors | 0 |
+| Console errors | 0 |
+| Unrecovered WebGL context losses | 0 |
+| Final interaction latency | < 3000 ms |
+
+Every criterion is met; the measured figures are in the evidence artifacts
+below rather than copied here, for the same host-dependence reason.
 
 Artifacts: `release-evidence/soak/soak-report.json`, `heap-samples.csv`,
 `console-events.json`, and `soak-summary.md`.

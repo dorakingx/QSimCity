@@ -1,7 +1,8 @@
 {
-  "commitSha": "9fa4de5883067e0856a6740bf799fb9059d33e7d",
-  "worktreeDirty": true,
-  "generatedAt": "2026-07-31T00:17:08.730Z",
+  "commitSha": "8f3ae0cdeda2a24c0a312203b134f2f84fc6f644",
+  "sourceTreeHash": "31ebf392ebc5bf8a",
+  "worktreeDirty": false,
+  "generatedAt": "2026-07-31T00:30:00.183Z",
   "tool": "qsimcity-security-audit",
   "toolVersion": "pnpm 11.14.0; uv 0.9.10 (44f5a14f4 2025-11-17)",
   "command": "pnpm audit --json --audit-level low && uv run --with pip-audit pip-audit --format json && repository secret scan",

@@ -18,7 +18,9 @@ asserted rather than taken, or a defect that taking it exposed.
   Envelopes bind to a hash of the tracked source rather than to `HEAD`, which
   removes the regress where committing evidence invalidated it.
 - **Mutation testing is generative** across eleven scientific areas (84
-  mutants, 89.3%) instead of sixteen hand-written mutants. Two defects in the
+  mutants, 96.4%) instead of sixteen hand-written mutants, and a surviving
+  mutant must now be killed or justified in writing as equivalent — the run
+  fails while any survivor is unreviewed. Two defects in the
   mutation tool itself were fixed: mutants were applied at different sites than
   they were reported at, and trailing comments were treated as live code.
 - **Trace hashing split** into `semanticHash` (reproducible science) and
@@ -36,11 +38,11 @@ asserted rather than taken, or a defect that taking it exposed.
 
 ### Added
 
-- Ten-minute production soak (`pnpm soak`): 600.3 s, 290 workload cycles, heap
-  growth ratio 1.443, zero uncaught and zero console errors.
+- Ten-minute production soak (`pnpm soak`): a full 600 seconds across eight
+  rotating workloads, with heap sampling and zero tolerated errors.
 - Lighthouse gate (`pnpm lighthouse`): four targets, three runs each, median
-  scored — performance 100 desktop / 84 mobile, accessibility 100, best
-  practices 96, SEO 91.
+  scored against thresholds for performance, accessibility, best practices,
+  and SEO.
 - Security evidence (`pnpm security:audit`): `pnpm audit`, `pip-audit`, and a
   repository secret scan in one envelope; a tool that cannot run fails rather
   than reporting zero.
