@@ -193,3 +193,24 @@ function within(container: HTMLElement, name: string): HTMLElement {
   if (!button) throw new Error(`No button named ${name}`);
   return button;
 }
+
+describe('landmark structure', () => {
+  /**
+   * A page may expose exactly one `main` landmark. HomeView rendered its own
+   * `<main>` inside the shell's, so the home screen shipped two, which leaves
+   * screen-reader users with an ambiguous "skip to main content" target.
+   */
+  const MODES = ['home', 'explore', 'lab', 'compare', 'accessible-2d', 'tour'] as const;
+
+  for (const mode of MODES) {
+    it(`exposes exactly one main landmark in ${mode} mode`, () => {
+      cleanup();
+      useAppStore.setState({ mode, webglAvailable: false });
+      const { container } = render(<App />);
+      expect(screen.getAllByRole('main')).toHaveLength(1);
+      expect(container.querySelectorAll('main')).toHaveLength(1);
+      // The skip link's target has to be that one landmark.
+      expect(container.querySelector('main')!.id).toBe('main-content');
+    });
+  }
+});

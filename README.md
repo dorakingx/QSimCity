@@ -14,6 +14,8 @@ computation trace, and every number on screen tells you how certain it is.
 > IBM, or any quantum-hardware vendor. All artwork is original and generated
 > procedurally from source.
 
+**Live: <https://qsimcity.vercel.app>**
+
 ![The quantum city at night](tests/e2e/visual.spec.ts-snapshots/city-night-chromium-darwin.png)
 
 *The twelve districts along the processing boulevard, west to east: Program

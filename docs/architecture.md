@@ -58,6 +58,25 @@ runPipeline()
 Because 3D and 2D consume the same derivation, they cannot show different
 science — a property asserted by tests rather than assumed.
 
+## Execution runs the compiled circuit
+
+`runPipeline` parses, compiles for the selected device, and then executes the
+**compiled** circuit. It produces three separated results — logical reference,
+physical ideal, and physical noisy — which the trace names explicitly under
+`results.execution`. See `docs/scientific-accuracy.md` for what each one
+means.
+
+Two consequences are structural rather than cosmetic:
+
+- Execution events are emitted in the qubit space the circuit ran in. Physical
+  events carry `physicalQubits`, so the QPU Grid lights real device qubits and
+  real coupling edges. `activityAtTick` deliberately has no fallback to logical
+  indices: an event with no physical qubits contributes nothing to the grid.
+- Execution events reference **compiled** instruction ids. A logical
+  instruction may have been split, merged, moved, or removed by compilation, so
+  the Inspector says so rather than offering a timeline jump that would land on
+  an unrelated tick.
+
 ## Threading
 
 The pipeline runs in a dedicated Web Worker

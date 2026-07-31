@@ -180,6 +180,22 @@ describe('vercel.json contract', () => {
 });
 
 describe('production-equivalent server behavior', () => {
+  it('publishes canonical and social metadata from its own origin', async () => {
+    const res = await fetch(`${baseUrl}/`);
+    const html = await res.text();
+    expect(html).toContain('<link rel="canonical" href="https://qsimcity.vercel.app/"');
+    expect(html).toContain('property="og:title"');
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('name="twitter:card"');
+    // Every referenced asset must live on this origin: a social card that
+    // pulls from a third party would be an external runtime dependency and a
+    // tracking vector, and the CSP forbids it anyway.
+    const urls = [...html.matchAll(/(?:content|href)="(https?:\/\/[^"]+)"/g)].map((m) => m[1]!);
+    for (const url of urls) {
+      expect(url.startsWith('https://qsimcity.vercel.app/')).toBe(true);
+    }
+  });
+
   it('serves index.html with security headers', async () => {
     const res = await fetch(`${baseUrl}/`);
     expect(res.status).toBe(200);

@@ -44,6 +44,9 @@ const STEPS: readonly Step[] = [
   { id: 'coverage-gate', command: 'pnpm', args: ['coverage:check'], timeoutMinutes: 10 },
   { id: 'security-audit', command: 'pnpm', args: ['security:audit'], timeoutMinutes: 20 },
   { id: 'trace-reproducibility', command: 'pnpm', args: ['repro:check'], timeoutMinutes: 30 },
+  // The Qiskit bridge cross-validates the browser simulator, so a clone that
+  // cannot verify it is not a verified clone.
+  { id: 'python-verify', command: 'pnpm', args: ['python:verify'], timeoutMinutes: 60 },
   { id: 'build', command: 'pnpm', args: ['build'], timeoutMinutes: 20 },
   { id: 'perf-budget', command: 'pnpm', args: ['check:perf'], timeoutMinutes: 10 },
   { id: 'e2e', command: 'pnpm', args: ['test:e2e'], timeoutMinutes: 45 },

@@ -21,17 +21,31 @@ repository, and `tools/test/vercel-config.test.ts` asserts each value.
 
 ## Routing
 
-QSimCity is a single-page application. The rewrite sends every path to
-`index.html` **except** real static assets:
+QSimCity is a single-page application, so every path has to reach the shell.
+The active configuration is a single catch-all:
 
-```
-/((?!assets/|icons/|favicon.svg|manifest.webmanifest|sw.js|workbox-.*\.js|registerSW.js).*)  ->  /index.html
+```json
+"cleanUrls": true,
+"rewrites": [{ "source": "/(.*)", "destination": "/" }]
 ```
 
-The exclusion list matters: if `sw.js` or the manifest were rewritten to HTML,
-the service worker would fail to register and the PWA would silently break.
-Tests assert that `/explore` returns the app shell while `/sw.js`,
-`/manifest.webmanifest`, and `/assets/*` are served directly.
+Two details are load-bearing, and both were learned by deploying rather than
+by reasoning:
+
+- **The destination is `/`, not `/index.html`.** With `cleanUrls` enabled,
+  `/index.html` is not a servable URL — it redirects to `/` — and a rewrite
+  whose target is itself a redirect does not resolve, so every route answers
+  404.
+- **A catch-all is safe because Vercel applies rewrites only after the
+  filesystem check.** `sw.js`, `manifest.webmanifest`, and `/assets/*` are real
+  files, so they are served directly and never shadowed by the shell. An
+  earlier configuration tried to guarantee that with a negative-lookahead
+  pattern instead; Vercel compiles `source` with path-to-regexp rather than as
+  a regular expression, so that pattern matched nothing at all.
+
+`tools/test/vercel-config.test.ts` asserts that `/explore` reaches the shell,
+that the service worker, manifest, and hashed assets resolve from disk first,
+and that an unmatched path 404s rather than silently returning the shell.
 
 ## Caching
 

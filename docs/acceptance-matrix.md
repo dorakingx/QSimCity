@@ -1,9 +1,14 @@
 # Acceptance Matrix
 
-Status values: `PASS`, or `NOT AUTHORIZED` where the specification explicitly
-permits it (external deployment only). Every required row below is `PASS`.
+Status values: `PASS`. Every required row below is `PASS`; the deployment row
+is no longer an authorized exception because the application is deployed.
 
-Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
+Verified on branch `main`. The commit each measurement was taken against is
+recorded inside the evidence itself — every envelope in `release-evidence/`
+carries both the commit and a hash of the source tree it measured, and
+`pnpm goal:check` refuses any envelope whose tree no longer matches. That
+binding, rather than a commit written into this document, is what keeps this
+matrix from drifting away from the code.
 
 ## 24.1 Independence
 
@@ -98,6 +103,12 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | Performance budgets pass | PASS | 122.9 KiB initial JS gzip vs 320 KiB budget |
 | No high/critical dependency vulnerability | PASS | `pnpm audit` 0 high/critical; `pip-audit` 0 across 47 packages (pytest upgraded to 9.0.3 for PYSEC-2026-1845); secret scan 0 hits — `release-evidence/security/security-report.json` |
 | No blocking TODO/FIXME/placeholder | PASS | `pnpm check:todos` |
+| Compiled circuit is what executes | PASS | The pipeline runs `compileResult.compiled`, not the logical circuit: layout, routing, SWAPs, translation, and optimization all reach the result — `packages/ui/test/physical-execution.test.ts` |
+| Three result classes separated | PASS | Logical reference, physical ideal, physical noisy, named in `TraceResults.execution` and labelled in the UI |
+| Physical execution carries device identity | PASS | Every execution event carries `physicalQubits`; the QPU Grid never falls back to logical indices |
+| Python bridge verified, not counted | PASS | `pnpm python:verify` runs uv sync, ruff check, ruff format, pyright, and pytest, recording exact counts from the JUnit report — `release-evidence/python/python-verify.json` |
+| Exactly one main landmark per mode | PASS | Asserted for all six modes in `packages/ui/test/app.test.tsx` |
+| Canonical and social metadata | PASS | Canonical, Open Graph, and card metadata served from this origin only, asserted in `tools/test/vercel-config.test.ts` |
 | Sample traces regenerable | PASS | 12 independent processes agree on `semanticHash`; 5/5 committed samples reproduce the Python manifest from TypeScript — `release-evidence/trace-reproducibility/reproducibility.json` |
 | Fresh-clone reproduction passes | PASS | `pnpm verify:fresh-clone` clones at HEAD and runs 15 steps inside the clone, including the coverage, security, and reproducibility gates and the full browser matrix — `release-evidence/fresh-clone/fresh-clone.json` |
 | `pnpm goal:check` passes | PASS | Every mandatory verdict derived from a content-bound evidence envelope — `release-evidence/goal-check.txt` |
@@ -119,7 +130,7 @@ Last verified: 2026-07-31, commit on `feat/qsimcity-production-v1`.
 | Cache behavior verified | PASS | Immutable hashed assets; must-revalidate HTML and service worker |
 | PWA verified in a Vercel-compatible environment | PASS | Manifest, registration, offline startup, offline run |
 | Production-equivalent local smoke test passes | PASS | `tools/serve-production.ts` + `tools/test/vercel-config.test.ts` |
-| Live deployment smoke test | PASS | Deployed to Vercel production on owner authorization; live checks: `/` 200, `/explore` and deep links return the shell, `sw.js` and `manifest.webmanifest` 200, and every security header present on the real response |
+| Live deployment smoke test | PASS | Live at https://qsimcity.vercel.app: `/` 200, `/explore` and deep links return the shell, `sw.js` and `manifest.webmanifest` 200, every security header present on the real response |
 
 ## 24.8 Documentation
 

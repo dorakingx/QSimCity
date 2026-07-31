@@ -10,7 +10,7 @@ export function HomeView(): ReactElement {
   const webglAvailable = useAppStore((s) => s.webglAvailable);
 
   return (
-    <main className="home-view">
+    <section className="home-view" aria-label="Welcome">
       <div className="home-hero">
         <h1>
           <span className="brand-mark" aria-hidden="true">
@@ -58,6 +58,6 @@ export function HomeView(): ReactElement {
           account, no upload: everything runs in your browser.
         </p>
       </footer>
-    </main>
+    </section>
   );
 }

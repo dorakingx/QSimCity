@@ -3,6 +3,46 @@
 All notable changes to QSimCity are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] — 2026-07-31
+
+Scientific integration. The pipeline now executes the circuit it compiled.
+
+### Fixed
+
+- **Compilation had no effect on any result.** The production pipeline
+  compiled the circuit and then simulated the *logical* one, so device
+  topology, initial layout, routing, inserted SWAPs, basis translation, and
+  optimization changed no number and no execution event — a deliberately bad
+  layout produced output identical to a good one. Execution now runs
+  `compileResult.compiled`.
+- **The QPU Grid lit pylons for logical qubits.** `activityAtTick` fell back to
+  `logicalQubits` whenever an event carried no physical ones, which is a
+  different qubit under any non-trivial layout and a coupling edge that need
+  not exist on the device.
+- **SWAP Storm and Bad Initial Layout stopped at a metric.** Both ran with
+  noise disabled, so inserted SWAPs were counted but never executed. They now
+  run with two-qubit noise and complete only when the routed circuit actually
+  ran and its noisy result differs from its ideal one.
+- **HomeView nested a second `main` landmark** inside the shell's, leaving an
+  ambiguous skip-link target on the home screen.
+
+### Added
+
+- Three separated result classes in the trace and the UI: logical reference
+  (what the program means), physical ideal (whether compilation preserved it),
+  and physical noisy (what the device did to the circuit that ran).
+- Trace schema 1.1.0, by addition only: 1.0.0 documents stay valid and
+  byte-stable, because rewriting their version on load would change the
+  content hash of every committed artifact.
+- `pnpm python:verify`: uv sync, ruff check, ruff format, pyright, and pytest,
+  recording exact counts from pytest's JUnit report. It is mandatory in
+  `verify:release`, in the fresh-clone run, and in `goal:check`. The gate
+  previously counted Python test *definitions* by reading files, which says
+  nothing about whether they ran.
+- A test asserting exactly one `main` landmark in every mode.
+- Canonical, Open Graph, and social-card metadata, served from this origin
+  only — no third-party asset, no external runtime dependency.
+
 ## [1.0.1] — 2026-07-31
 
 Release hardening. The 1.0.0 completion claim was rejected because the

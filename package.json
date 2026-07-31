@@ -1,6 +1,6 @@
 {
   "name": "qsimcity",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "private": true,
   "description": "QSimCity \u2014 an explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.",
   "type": "module",
@@ -26,7 +26,7 @@
     "check:language": "tsx tools/check-language.ts",
     "check:todos": "tsx tools/check-todos.ts",
     "verify": "pnpm typecheck && pnpm lint && pnpm format && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
-    "verify:release": "pnpm verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
+    "verify:release": "pnpm verify && pnpm python:verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
     "goal:check": "tsx tools/check-goal.ts",
     "check:perf": "tsx tools/check-performance.ts",
     "soak": "tsx tools/soak/run-soak.ts",
@@ -35,8 +35,9 @@
     "benchmark:visual": "tsx tools/visual-benchmark/record-benchmark.ts",
     "security:audit": "tsx tools/security/run-security-audit.ts",
     "repro:check": "tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts",
-    "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm verify:fresh-clone && pnpm soak",
-    "verify:fresh-clone": "tsx tools/fresh-clone/run-fresh-clone.ts"
+    "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm python:verify && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm verify:fresh-clone && pnpm soak",
+    "verify:fresh-clone": "tsx tools/fresh-clone/run-fresh-clone.ts",
+    "python:verify": "tsx tools/python/run-python-verify.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

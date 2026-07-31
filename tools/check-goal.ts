@@ -132,6 +132,7 @@ check('Required scripts declared', () => {
     'coverage:check',
     'lighthouse',
     'soak',
+    'python:verify',
     'lint',
     'typecheck',
   ];
@@ -286,6 +287,27 @@ function countTests(): number {
   walk(ROOT);
   return count;
 }
+
+check('Python bridge verification evidence', () => {
+  // The gate used to count Python test *definitions* by reading files, which
+  // says nothing about whether they ran, let alone passed. This consumes the
+  // result of an actual run.
+  const evidence = readEvidence('release-evidence/python/python-verify.json', {
+    requiredMeasurements: ['pytestPassed', 'pytestFailed', 'pyrightErrors', 'ruffCheck'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  if (Number(m['pytestFailed']) > 0) throw new Error(`${m['pytestFailed']} Python test(s) failed`);
+  if (Number(m['pytestPassed']) < 1) throw new Error('no Python tests ran');
+  if (Number(m['pyrightErrors']) !== 0)
+    throw new Error(`pyright reported ${m['pyrightErrors']} error(s)`);
+  if (m['ruffCheck'] !== 'clean') throw new Error('ruff reported lint failures');
+  if (m['ruffFormat'] !== 'clean') throw new Error('ruff reported formatting failures');
+  return (
+    `${m['pytestPassed']} pytest passed, pyright clean, ruff clean, ` +
+    `qiskit ${m['qiskitVersion']}, aer ${m['qiskitAerVersion']}`
+  );
+});
 
 check('Meaningful test count (>= 300)', () => {
   const count = countTests();
@@ -571,7 +593,7 @@ check('Fresh-clone verification evidence', () => {
   const m = evidence.measurements;
   if (Number(m['failedSteps']) > 0)
     throw new Error(`${m['failedSteps']} step(s) failed in the clone`);
-  if (Number(m['stepsPassed']) < 15) {
+  if (Number(m['stepsPassed']) < 16) {
     throw new Error(`only ${m['stepsPassed']} verification steps ran in the clone`);
   }
   return `${m['stepsPassed']} steps passed in a clean clone (${m['totalSeconds']}s)`;
