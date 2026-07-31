@@ -1,12 +1,12 @@
 $ tsx tools/check-goal.ts
-QSimCity completion gate — HEAD 216164f8fa19, source tree 2cc77b584369ec93
+QSimCity completion gate — HEAD 0d608726a450, source tree 53ed15a717fbcfd2
 
 [PASS] Required documents exist: 24 documents present
 [PASS] Required scripts declared: 13 scripts present
 [PASS] Prohibited-name scan: no prohibited project names
 [PASS] Language-policy scan (English only): no unintended non-English text
 [PASS] Blocking TODO/FIXME/placeholder scan: no blocking markers
-[PASS] License-claim policy (no open-source claim without a license): no license file, and no open-source claim is made
+[PASS] License claims match the license file: Apache-2.0, named consistently in 3 document(s)
 [PASS] Meaningful test count (>= 300): 705 tests declared across TypeScript and Python suites
 [PASS] TypeScript strict typecheck: typecheck succeeded
 [PASS] Lint (incl. architecture boundaries): lint succeeded
@@ -16,7 +16,7 @@ QSimCity completion gate — HEAD 216164f8fa19, source tree 2cc77b584369ec93
 [PASS] Per-package coverage evidence: project 96.36%/88.29%; domain 98.49%/95.51%, trace 98.28%/96%, simulator 100%/98.05%, reference-compiler 97.69%/90.4%
 [PASS] Scientific mutation evidence: 96.4% (81/84) across 11 capability areas and 14 files
 [PASS] Lighthouse evidence meets all thresholds: desktop perf 100, mobile perf 84, a11y 100, best-practices 96, SEO 91
-[PASS] Ten-minute soak evidence: 601.4s, 286 cycles, heap growth ratio 1.468, 0 uncaught, final interaction 35ms
+[PASS] Ten-minute soak evidence: 601.5s, 283 cycles, heap growth ratio 1.4031, 0 uncaught, final interaction 32ms
 [PASS] Performance budget evidence: initial JS 123.0 KiB gzip
 [PASS] Security audit evidence: no high/critical advisories, no committed secrets
 [PASS] Trace reproducibility evidence: 12 independent processes agree; 5 samples verified
@@ -28,7 +28,7 @@ QSimCity completion gate — HEAD 216164f8fa19, source tree 2cc77b584369ec93
 [PASS] Production build output present: index.html, service worker, and manifest present
 [PASS] Acceptance matrix has no unmet required rows: every row is PASS or an authorized exception
 [PASS] Project state does not declare an unresolved blocker: no failed or blocked items recorded
-[PASS] Fresh-clone verification evidence: 15 steps passed in a clean clone (72.5s)
+[PASS] Fresh-clone verification evidence: 15 steps passed in a clean clone (68.6s)
 
 28 passed, 0 failed
 GOAL ACHIEVED: QSimCity production v1 is complete.

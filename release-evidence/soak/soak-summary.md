@@ -1,18 +1,18 @@
 # Soak Test Summary
 
-- Commit: `216164f8fa191901e9e2f9967c7eb2b95e44ac97`
-- Generated: 2026-07-31T07:40:48.620Z
-- Duration: **601.4s** (minimum 600s)
-- Workload cycles: **286**
-- Heap samples: 286
-- Post-warm-up baseline minimum heap: 15.4 MiB
-- Trailing minimum heap: 22.5 MiB
-- Trailing-minimum growth ratio: **1.468** (limit 1.5)
+- Commit: `0d608726a450eac6302a8919bfac25eb5b589d0c`
+- Generated: 2026-07-31T08:20:57.570Z
+- Duration: **601.5s** (minimum 600s)
+- Workload cycles: **283**
+- Heap samples: 283
+- Post-warm-up baseline minimum heap: 16.1 MiB
+- Trailing minimum heap: 22.6 MiB
+- Trailing-minimum growth ratio: **1.403** (limit 1.5)
 - Uncaught errors: 0
 - Console errors: 0
 - Failed requests: 0
 - WebGL context loss / restore: 0 / 0
-- Final interaction latency: 35 ms (limit 3000 ms)
+- Final interaction latency: 32 ms (limit 3000 ms)
 - Crashed: false
 
 Result: **PASS**
