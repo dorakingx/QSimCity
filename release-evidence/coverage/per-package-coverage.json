@@ -1,8 +1,8 @@
 {
-  "commitSha": "0d608726a450eac6302a8919bfac25eb5b589d0c",
-  "sourceTreeHash": "53ed15a717fbcfd2",
+  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
+  "sourceTreeHash": "fdf89a31945594bf",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T08:05:48.230Z",
+  "generatedAt": "2026-07-31T09:27:51.886Z",
   "tool": "vitest-v8-coverage",
   "toolVersion": "4.1.10",
   "command": "pnpm coverage:check",
@@ -15,16 +15,16 @@
     "projectBranches": 85
   },
   "measurements": {
-    "project.lines": 96.36,
-    "project.branches": 88.29,
-    "project.functions": 94.84,
-    "project.statements": 95.75,
+    "project.lines": 96.34,
+    "project.branches": 88.28,
+    "project.functions": 94.78,
+    "project.statements": 95.65,
     "domain.lines": 98.49,
     "domain.branches": 95.51,
     "trace.lines": 98.28,
     "trace.branches": 96,
     "simulator.lines": 100,
-    "simulator.branches": 98.05,
+    "simulator.branches": 97.65,
     "reference-compiler.lines": 97.69,
     "reference-compiler.branches": 90.4
   },
@@ -56,9 +56,9 @@
       {
         "package": "packages/simulator",
         "lines": 100,
-        "branches": 98.05,
+        "branches": 97.65,
         "functions": 100,
-        "statements": 99.52,
+        "statements": 99.54,
         "fileCount": 5,
         "uncoveredLines": 0,
         "passed": true,
@@ -77,10 +77,10 @@
       }
     ],
     "project": {
-      "lines": 96.36,
-      "branches": 88.29,
-      "functions": 94.84,
-      "statements": 95.75
+      "lines": 96.34,
+      "branches": 88.28,
+      "functions": 94.78,
+      "statements": 95.65
     },
     "projectFailures": []
   }

@@ -1,27 +1,27 @@
 {
-  "commitSha": "0d608726a450eac6302a8919bfac25eb5b589d0c",
-  "sourceTreeHash": "53ed15a717fbcfd2",
+  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
+  "sourceTreeHash": "fdf89a31945594bf",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T08:08:14.800Z",
+  "generatedAt": "2026-07-31T09:30:23.034Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "091cd472d2bcacfe",
+  "inputHash": "966815077bd1e9d4",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 125987,
-    "totalJsGzipBytes": 304547,
+    "initialJsGzipBytes": 126669,
+    "totalJsGzipBytes": 305294,
     "eagerChunks": 3,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 125987,
-    "totalJsGzipBytes": 304547,
+    "initialJsGzipBytes": 126669,
+    "totalJsGzipBytes": 305294,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
@@ -30,12 +30,12 @@
         "gzipBytes": 135194
       },
       {
-        "name": "pipeline.worker-CHc2qla6.js",
-        "gzipBytes": 33111
+        "name": "pipeline.worker-Bs6_6sSe.js",
+        "gzipBytes": 33177
       },
       {
-        "name": "CityView-noF246dv.js",
-        "gzipBytes": 7996
+        "name": "CityView-BM3-fVoi.js",
+        "gzipBytes": 7995
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -44,8 +44,8 @@
     ],
     "eagerChunks": [
       {
-        "name": "index-B5AQ_31V.js",
-        "gzipBytes": 66658
+        "name": "index-CBtTkRaZ.js",
+        "gzipBytes": 67340
       },
       {
         "name": "react-VZnIVrcg.js",
@@ -57,6 +57,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-07-31T08:08:14.754Z"
+    "generatedAt": "2026-07-31T09:30:22.987Z"
   }
 }

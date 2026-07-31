@@ -1,8 +1,8 @@
 {
-  "commitSha": "0d608726a450eac6302a8919bfac25eb5b589d0c",
-  "sourceTreeHash": "53ed15a717fbcfd2",
+  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
+  "sourceTreeHash": "fdf89a31945594bf",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T08:09:36.188Z",
+  "generatedAt": "2026-07-31T09:31:44.429Z",
   "tool": "lighthouse",
   "toolVersion": "13.4.1",
   "command": "pnpm lighthouse",
@@ -20,19 +20,19 @@
     "home-desktop.performance": 100,
     "home-desktop.accessibility": 100,
     "home-desktop.bestPractices": 96,
-    "home-desktop.seo": 91,
+    "home-desktop.seo": 92,
     "home-mobile.performance": 84,
     "home-mobile.accessibility": 100,
     "home-mobile.bestPractices": 96,
-    "home-mobile.seo": 91,
+    "home-mobile.seo": 92,
     "accessible2d-desktop.performance": 100,
     "accessible2d-desktop.accessibility": 100,
     "accessible2d-desktop.bestPractices": 96,
-    "accessible2d-desktop.seo": 91,
+    "accessible2d-desktop.seo": 92,
     "accessible2d-mobile.performance": 84,
     "accessible2d-mobile.accessibility": 100,
     "accessible2d-mobile.bestPractices": 96,
-    "accessible2d-mobile.seo": 91
+    "accessible2d-mobile.seo": 92
   },
   "passed": true,
   "detail": {
@@ -43,26 +43,26 @@
         "performance": 100,
         "accessibility": 100,
         "best-practices": 96,
-        "seo": 91
+        "seo": 92
       },
       "runs": [
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 92
+        },
+        {
+          "performance": 100,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 92
+        },
         {
           "performance": 99,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
-        },
-        {
-          "performance": 100,
-          "accessibility": 100,
-          "best-practices": 96,
-          "seo": 91
-        },
-        {
-          "performance": 100,
-          "accessibility": 100,
-          "best-practices": 96,
-          "seo": 91
+          "seo": 92
         }
       ],
       "failures": []
@@ -74,26 +74,26 @@
         "performance": 84,
         "accessibility": 100,
         "best-practices": 96,
-        "seo": 91
+        "seo": 92
       },
       "runs": [
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         },
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         },
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         }
       ],
       "failures": []
@@ -105,26 +105,26 @@
         "performance": 100,
         "accessibility": 100,
         "best-practices": 96,
-        "seo": 91
+        "seo": 92
       },
       "runs": [
         {
           "performance": 100,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
+        },
+        {
+          "performance": 99,
+          "accessibility": 100,
+          "best-practices": 96,
+          "seo": 92
         },
         {
           "performance": 100,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
-        },
-        {
-          "performance": 100,
-          "accessibility": 100,
-          "best-practices": 96,
-          "seo": 91
+          "seo": 92
         }
       ],
       "failures": []
@@ -136,26 +136,26 @@
         "performance": 84,
         "accessibility": 100,
         "best-practices": 96,
-        "seo": 91
+        "seo": 92
       },
       "runs": [
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         },
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         },
         {
           "performance": 84,
           "accessibility": 100,
           "best-practices": 96,
-          "seo": 91
+          "seo": 92
         }
       ],
       "failures": []
