@@ -1,8 +1,8 @@
 {
-  "commitSha": "a443bd5008b3586bc232215999fe3c2d3e80c730",
-  "sourceTreeHash": "13ae3c7b6d0fd8af",
+  "commitSha": "896b7b36bd53f5fde4ed8d055d52448a22b61809",
+  "sourceTreeHash": "724100c05a548203",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T01:30:40.078Z",
+  "generatedAt": "2026-07-31T01:37:25.667Z",
   "tool": "qsimcity-fresh-clone",
   "toolVersion": "v22.23.1",
   "command": "git clone <repo> && pnpm install --frozen-lockfile && verify + build + e2e",
@@ -16,45 +16,45 @@
     "stepsRun": 15,
     "stepsPassed": 15,
     "failedSteps": 0,
-    "totalSeconds": 64
+    "totalSeconds": 63.6
   },
   "passed": true,
   "detail": {
-    "commit": "a443bd5008b3586bc232215999fe3c2d3e80c730",
+    "commit": "896b7b36bd53f5fde4ed8d055d52448a22b61809",
     "steps": [
       {
         "id": "install",
         "command": "pnpm install --frozen-lockfile",
         "exitStatus": 0,
-        "durationSeconds": 3.5,
-        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.4s using pnpm v11.14.0"
+        "durationSeconds": 3.4,
+        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.3s using pnpm v11.14.0"
       },
       {
         "id": "typecheck",
         "command": "pnpm typecheck",
         "exitStatus": 0,
-        "durationSeconds": 3.3,
+        "durationSeconds": 3.1,
         "tail": "$ tsc -p tsconfig.typecheck.json"
       },
       {
         "id": "lint",
         "command": "pnpm lint",
         "exitStatus": 0,
-        "durationSeconds": 3.6,
+        "durationSeconds": 3.3,
         "tail": "$ eslint ."
       },
       {
         "id": "format",
         "command": "pnpm format",
         "exitStatus": 0,
-        "durationSeconds": 2.1,
+        "durationSeconds": 1.8,
         "tail": "Checking formatting...\nAll matched files use Prettier code style!\n$ prettier --check ."
       },
       {
         "id": "policy-names",
         "command": "pnpm check:names",
         "exitStatus": 0,
-        "durationSeconds": 1.2,
+        "durationSeconds": 1,
         "tail": "Prohibited-name scan passed.\n$ tsx tools/check-prohibited-names.ts"
       },
       {
@@ -68,21 +68,21 @@
         "id": "policy-todos",
         "command": "pnpm check:todos",
         "exitStatus": 0,
-        "durationSeconds": 0.5,
+        "durationSeconds": 0.4,
         "tail": "Blocking-marker scan passed.\n$ tsx tools/check-todos.ts"
       },
       {
         "id": "unit-tests",
         "command": "pnpm test",
         "exitStatus": 0,
-        "durationSeconds": 4,
-        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  10:29:46\n   Duration  3.00s (transform 4.26s, setup 0ms, import 8.50s, tests 10.57s, environment 1.41s)\n\n$ vitest run"
+        "durationSeconds": 3.4,
+        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  10:36:32\n   Duration  2.41s (transform 2.96s, setup 0ms, import 5.95s, tests 7.98s, environment 987ms)\n\n$ vitest run"
       },
       {
         "id": "coverage",
         "command": "pnpm test:coverage",
         "exitStatus": 0,
-        "durationSeconds": 5.8,
+        "durationSeconds": 7.1,
         "tail": "\n=============================== Coverage summary ===============================\nStatements   : 95.75% ( 3133/3272 )\nBranches     : 88.29% ( 1667/1888 )\nFunctions    : 94.84% ( 625/659 )\nLines        : 96.36% ( 2727/2830 )\n================================================================================\n$ vitest run --coverage"
       },
       {
@@ -103,7 +103,7 @@
         "id": "trace-reproducibility",
         "command": "pnpm repro:check",
         "exitStatus": 0,
-        "durationSeconds": 7,
+        "durationSeconds": 6.9,
         "tail": "  process 9/12 ghz-4 4848e0b76662f420\n  process 10/12 grover-2 b4330f9bbc3b06e3\n  process 11/12 grover-2 b4330f9bbc3b06e3\n  process 12/12 grover-2 b4330f9bbc3b06e3\n  seed sensitivity: the hash tracks the seed\n  committed samples: 5/5 reproduce the Python manifest (5 carry transpiler telemetry)\nTrace reproducibility PASSED\n$ tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts"
       },
       {
@@ -117,15 +117,15 @@
         "id": "perf-budget",
         "command": "pnpm check:perf",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Lazily loaded chunks (gzip):\n  three-bAKDV79k.js                            132.0 KiB\n  pipeline.worker-CHc2qla6.js                  32.3 KiB\n  CityView-noF246dv.js                         7.8 KiB\n  workbox-window.prod.es5-DsELeUxu.js          2.2 KiB\n  TOTAL ALL JS 297.4 KiB (budget 600 KiB)\nPerformance budgets pass.\n$ tsx tools/check-performance.ts"
       },
       {
         "id": "e2e",
         "command": "pnpm test:e2e",
         "exitStatus": 0,
-        "durationSeconds": 26.8,
-        "tail": "  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (441ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (477ms)\n  ✓  78 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.1s)\n  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.8s)\n\n  11 skipped\n  68 passed (26.0s)\n$ playwright test"
+        "durationSeconds": 26.9,
+        "tail": "  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (408ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (416ms)\n  ✓  79 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.0s)\n  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.8s)\n\n  11 skipped\n  68 passed (26.1s)\n$ playwright test"
       }
     ]
   }
