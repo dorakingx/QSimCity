@@ -1,8 +1,8 @@
 {
-  "commitSha": "4f97ca37dedf2ffd5182174a7b362460e32d1e3f",
-  "sourceTreeHash": "d6f5c63a062700f9",
+  "commitSha": "eb42aaa2aa0fc69a4bd0faa4a102ad407c3a5a20",
+  "sourceTreeHash": "ede82e4b9f4f13d2",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T00:56:08.003Z",
+  "generatedAt": "2026-07-31T01:11:45.123Z",
   "tool": "qsimcity-fresh-clone",
   "toolVersion": "v22.23.1",
   "command": "git clone <repo> && pnpm install --frozen-lockfile && verify + build + e2e",
@@ -16,38 +16,38 @@
     "stepsRun": 11,
     "stepsPassed": 11,
     "failedSteps": 0,
-    "totalSeconds": 53.3
+    "totalSeconds": 55
   },
   "passed": true,
   "detail": {
-    "commit": "4f97ca37dedf2ffd5182174a7b362460e32d1e3f",
+    "commit": "eb42aaa2aa0fc69a4bd0faa4a102ad407c3a5a20",
     "steps": [
       {
         "id": "install",
         "command": "pnpm install --frozen-lockfile",
         "exitStatus": 0,
-        "durationSeconds": 3.7,
-        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.6s using pnpm v11.14.0"
+        "durationSeconds": 3.5,
+        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.4s using pnpm v11.14.0"
       },
       {
         "id": "typecheck",
         "command": "pnpm typecheck",
         "exitStatus": 0,
-        "durationSeconds": 3.5,
+        "durationSeconds": 3.6,
         "tail": "$ tsc -p tsconfig.typecheck.json"
       },
       {
         "id": "lint",
         "command": "pnpm lint",
         "exitStatus": 0,
-        "durationSeconds": 3.7,
+        "durationSeconds": 3.6,
         "tail": "$ eslint ."
       },
       {
         "id": "format",
         "command": "pnpm format",
         "exitStatus": 0,
-        "durationSeconds": 1.9,
+        "durationSeconds": 2,
         "tail": "Checking formatting...\nAll matched files use Prettier code style!\n$ prettier --check ."
       },
       {
@@ -61,43 +61,43 @@
         "id": "policy-language",
         "command": "pnpm check:language",
         "exitStatus": 0,
-        "durationSeconds": 0.5,
+        "durationSeconds": 0.4,
         "tail": "Language-policy scan passed.\n$ tsx tools/check-language.ts"
       },
       {
         "id": "policy-todos",
         "command": "pnpm check:todos",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Blocking-marker scan passed.\n$ tsx tools/check-todos.ts"
       },
       {
         "id": "unit-tests",
         "command": "pnpm test",
         "exitStatus": 0,
-        "durationSeconds": 3.7,
-        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  09:55:26\n   Duration  2.68s (transform 3.77s, setup 0ms, import 7.12s, tests 9.09s, environment 1.03s)\n\n$ vitest run"
+        "durationSeconds": 3.6,
+        "tail": "\n\n Test Files  34 passed (34)\n      Tests  720 passed (720)\n   Start at  10:11:00\n   Duration  2.68s (transform 3.06s, setup 0ms, import 6.49s, tests 8.70s, environment 1.15s)\n\n$ vitest run"
       },
       {
         "id": "build",
         "command": "pnpm build",
         "exitStatus": 0,
-        "durationSeconds": 1.6,
+        "durationSeconds": 1.7,
         "tail": "PWA v1.3.0\nmode      generateSW\nprecache  16 entries (1104.74 KiB)\nfiles generated\n  dist/sw.js\n  dist/workbox-2fbc6a65.js\n$ pnpm --filter qsimcity-web build\n$ vite build"
       },
       {
         "id": "perf-budget",
         "command": "pnpm check:perf",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Lazily loaded chunks (gzip):\n  three-bAKDV79k.js                            132.0 KiB\n  pipeline.worker-CHc2qla6.js                  32.3 KiB\n  CityView-noF246dv.js                         7.8 KiB\n  workbox-window.prod.es5-DsELeUxu.js          2.2 KiB\n  TOTAL ALL JS 297.4 KiB (budget 600 KiB)\nPerformance budgets pass.\n$ tsx tools/check-performance.ts"
       },
       {
         "id": "e2e",
         "command": "pnpm test:e2e",
         "exitStatus": 0,
-        "durationSeconds": 32.8,
-        "tail": "  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (517ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (528ms)\n  ✓  77 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.3s)\n  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.8s)\n\n  11 skipped\n  68 passed (31.9s)\n$ playwright test"
+        "durationSeconds": 34.5,
+        "tail": "  ✓  67 [mobile] › tests/e2e/mobile.spec.ts:6:1 › mobile: core workflow works with touch (555ms)\n  ✓  76 [mobile] › tests/e2e/visual.spec.ts:115:3 › mobile surfaces › mobile portrait 2D (514ms)\n  ✓  78 [mobile] › tests/e2e/visual.spec.ts:125:3 › mobile surfaces › mobile landscape city (3.2s)\n  ✓  68 [mobile] › tests/e2e/mobile.spec.ts:20:1 › mobile: 3D city loads and responds to touch drag (3.9s)\n\n  11 skipped\n  68 passed (33.6s)\n$ playwright test"
       }
     ]
   }

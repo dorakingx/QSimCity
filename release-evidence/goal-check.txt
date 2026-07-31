@@ -1,27 +1,34 @@
 $ tsx tools/check-goal.ts
-[PASS] Required documents exist: 22 documents present
-[PASS] Required scripts declared: 10 scripts present
+QSimCity completion gate — HEAD eb42aaa2aa0f, source tree ede82e4b9f4f13d2
+
+[PASS] Required documents exist: 24 documents present
+[PASS] Required scripts declared: 13 scripts present
 [PASS] Prohibited-name scan: no prohibited project names
 [PASS] Language-policy scan (English only): no unintended non-English text
 [PASS] Blocking TODO/FIXME/placeholder scan: no blocking markers
-[PASS] Meaningful test count (>= 300): 644 tests declared across TypeScript and Python suites
+[PASS] License-claim policy (no open-source claim without a license): no license file, and no open-source claim is made
+[PASS] Meaningful test count (>= 300): 703 tests declared across TypeScript and Python suites
 [PASS] TypeScript strict typecheck: typecheck succeeded
 [PASS] Lint (incl. architecture boundaries): lint succeeded
 [PASS] Unit and integration tests: vitest succeeded
-[PASS] Coverage thresholds: coverage succeeded
 [PASS] Production build: build succeeded
 [PASS] End-to-end browser matrix: playwright succeeded
-[PASS] Coverage evidence meets thresholds: lines 96.29%, branches 88.38%
-[PASS] Mutation score evidence (>= 70%): 100.0% (16/16 mutants killed)
+[PASS] Per-package coverage evidence: project 96.36%/88.29%; domain 98.49%/95.51%, trace 98.28%/96%, simulator 100%/98.05%, reference-compiler 97.69%/90.4%
+[PASS] Scientific mutation evidence: 96.4% (81/84) across 11 capability areas and 14 files
+[PASS] Lighthouse evidence meets all thresholds: desktop perf 100, mobile perf 84, a11y 100, best-practices 96, SEO 91
+[PASS] Ten-minute soak evidence: 601.3s, 290 cycles, heap growth ratio 1.3753, 0 uncaught, final interaction 51ms
+[PASS] Performance budget evidence: initial JS 123.0 KiB gzip
+[PASS] Security audit evidence: no high/critical advisories, no committed secrets
+[PASS] Trace reproducibility evidence: 12 independent processes agree; 5 samples verified
+[PASS] Visual benchmark evidence: 18 categories compared, lowest score 4/5
 [PASS] Visual regression snapshots exist: 11 snapshots covering all required surfaces
 [PASS] Sample traces validate and match committed hashes: trace hash verification succeeded
 [PASS] Accessibility evidence recorded: 6 axe scans across major surfaces, WCAG 2.2 AA tags
-[PASS] Performance budget evidence: initial JS 122.9 KiB gzip within 320 KiB budget
 [PASS] Vercel configuration and production-equivalent behavior: Vercel configuration verification succeeded
 [PASS] Production build output present: index.html, service worker, and manifest present
 [PASS] Acceptance matrix has no unmet required rows: every row is PASS or an authorized exception
-[PASS] Release evidence recorded: 5 evidence artifacts
-[PASS] Fresh-clone verification recorded: fresh-clone verification recorded in the final audit
+[PASS] Project state does not declare an unresolved blocker: no failed or blocked items recorded
+[PASS] Fresh-clone verification evidence: 11 steps passed in a clean clone (55s)
 
-23 passed, 0 failed, 0 skipped
+28 passed, 0 failed
 GOAL ACHIEVED: QSimCity production v1 is complete.
