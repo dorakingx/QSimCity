@@ -93,6 +93,10 @@ mutation_results:
 soak_results:
   verdict: all criteria met over a full 600s run
   figures: release-evidence/soak/soak-report.json
+  observed_growth_ratios: [1.375, 1.424, 1.443, 1.571, 1.462]
+  note: >-
+    limit is 1.5; the 1.571 run failed and was refused by the gate, and is kept
+    in release-evidence/soak/recorded-failure/. Threshold unchanged.
 lighthouse_results:
   verdict: all thresholds met on 4 targets, median of 3 runs each
   figures: release-evidence/lighthouse/lighthouse-report.json

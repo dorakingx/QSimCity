@@ -114,8 +114,19 @@ Heap is sampled throughout and every console and page error is recorded.
 | Unrecovered WebGL context losses | 0 |
 | Final interaction latency | < 3000 ms |
 
-Every criterion is met; the measured figures are in the evidence artifacts
-below rather than copied here, for the same host-dependence reason.
+Every criterion is met in the run the release gate accepts; the measured
+figures are in the evidence artifacts below rather than copied here, for the
+same host-dependence reason.
+
+The heap-growth criterion has little headroom. Observed ratios on this host
+were 1.375, 1.424, 1.443, 1.571, and 1.462 against the 1.5 limit — one run
+exceeded it and was refused by the gate. Its trailing third was flat rather
+than climbing, and the host was busy at the time, but the threshold was left
+untouched and the failing run is kept in
+`release-evidence/soak/recorded-failure/`. Treat this number as a live watch
+item: error counts have never been anything but zero, while the heap ratio
+runs close enough to its limit that a real regression would be easy to miss if
+the criterion were ever relaxed.
 
 Artifacts: `release-evidence/soak/soak-report.json`, `heap-samples.csv`,
 `console-events.json`, and `soak-summary.md`.

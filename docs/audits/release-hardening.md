@@ -78,12 +78,26 @@ Criteria: at least 600 s, zero uncaught errors, zero console errors, zero
 unrecovered WebGL context losses, trailing heap growth ratio below 1.5 after a
 60 s warm-up, and a final interaction under 3000 ms.
 
-**Result: every criterion met.** The exact figures — duration, cycle count,
-heap growth ratio, and per-sample heap readings — are in
-`release-evidence/soak/soak-report.json`, `heap-samples.csv`,
-`console-events.json`, and `soak-summary.md`, and they are quoted from the
-evidence rather than restated here because a rerun reproduces the verdict, not
-the same numbers to three decimal places.
+**Result: every criterion met** in the run the gate accepts. The exact figures
+are in `release-evidence/soak/soak-report.json`, `heap-samples.csv`,
+`console-events.json`, and `soak-summary.md` rather than restated here, because
+a rerun reproduces the verdict, not the same numbers to three decimal places.
+
+**The margin is thin, and one run failed.** Across the runs taken on this host
+the trailing heap-growth ratio was 1.375, 1.424, 1.443, 1.571, and 1.462
+against a limit of 1.5. The 1.571 run failed, and the completion gate refused
+it — which is the mechanism working. That run was taken while the same machine
+was driving browser verification of the live deployment and two Vercel
+deployments, so the host was not idle, and its trailing third was a plateau
+rather than a climb: median 36.7 MB then 36.5 MB, with the window minimum
+falling from 25.0 MB to 23.6 MB. That is an explanation, not an excuse. The
+threshold was not adjusted, the failing run's raw samples are kept in
+`release-evidence/soak/recorded-failure/`, and the honest reading is that this
+criterion sits close to the application's steady-state behaviour on this
+hardware. Zero uncaught errors, zero console errors, and zero unrecovered
+context losses held in every run; it is only the heap ratio that runs near its
+limit, and a future regression there would be small enough to deserve
+attention rather than a shrug.
 
 ## 3. Lighthouse (previously asserted, never measured)
 
