@@ -247,12 +247,19 @@ compounding:
   JavaScript regular expression, so the pattern matched nothing and no rewrite
   ever fired. The catch-all `/(.*)` is what Vercel documents, and it is safe
   because rewrites are applied only after the filesystem check.
+- Correcting the pattern was not enough: a destination of `/index.html` still
+  404'd. With `cleanUrls: true` that path is not servable — it redirects to
+  `/` — and a rewrite whose target is itself a redirect does not resolve. The
+  destination is now `/`. This second fault was only visible by deploying
+  again and re-testing the live URL; reasoning about the config would not have
+  found it, and neither would any local test.
 - `tools/serve-production.ts` ended with an unconditional fallback to
   `index.html`. That made the rewrite configuration untestable: the shell was
-  served whether or not any rule matched, so a pattern the real platform could
-  not match still looked healthy locally. The fallback is gone — an unmatched
-  path now 404s — and a test asserts that behaviour with an empty rewrite list,
-  so a broken or missing rewrite fails locally instead of in production.
+  served whether or not any rule matched, so a configuration the real platform
+  could not serve still looked healthy locally. The fallback is gone — an
+  unmatched path now 404s — a test asserts that with an empty rewrite list, and
+  the server resolves a directory destination to its index document the way
+  Vercel does.
 
 This is the clearest case in this work of a test that passed for the wrong
 reason. No amount of rerunning it would have found the bug; only deploying

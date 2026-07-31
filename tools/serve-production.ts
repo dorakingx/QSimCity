@@ -20,6 +20,8 @@ export interface VercelConfig {
   headers: VercelHeaderRule[];
   rewrites: { source: string; destination: string }[];
   outputDirectory: string;
+  cleanUrls: boolean;
+  trailingSlash: boolean;
 }
 
 export const vercelConfig = JSON.parse(
@@ -75,8 +77,14 @@ export function resolveWithConfig(
   // Vercel matches `source` against the pathname including its leading slash.
   for (const rule of config.rewrites) {
     if (matches(rule.source, clean)) {
+      // With `cleanUrls`, `/index.html` is not a servable URL — it redirects to
+      // `/` — so the SPA rewrite targets `/`, which Vercel resolves to the
+      // directory's index document. Resolving a directory destination the same
+      // way keeps this server's answer identical to the platform's.
       const target = join(distDir, rule.destination);
-      if (existsSync(target)) return target;
+      const resolved =
+        existsSync(target) && statSync(target).isDirectory() ? join(target, 'index.html') : target;
+      if (existsSync(resolved) && statSync(resolved).isFile()) return resolved;
     }
   }
   return null;

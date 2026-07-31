@@ -89,21 +89,30 @@ browser matrix before any deployment step.
 `dorakingx/QSimCity`.
 
 The first production deployment immediately exposed a defect that no local run
-had caught: every deep link returned 404. Vercel compiles a rewrite `source`
-with path-to-regexp rather than as a raw regular expression, so the
-negative-lookahead pattern that had been used to protect asset paths matched
-nothing and no rewrite fired. The configuration now uses the documented
-catch-all, which is safe because Vercel applies rewrites only after the
-filesystem check:
+had caught: every deep link returned 404. Two separate mistakes were in the
+way, and only the real platform could distinguish them.
+
+First, Vercel compiles a rewrite `source` with path-to-regexp rather than as a
+raw regular expression, so the negative-lookahead pattern that had been used to
+protect asset paths matched nothing and no rewrite fired. The catch-all is what
+Vercel documents, and it is safe because rewrites are applied only after the
+filesystem check.
+
+Second — and this one survived the first fix — a destination of `/index.html`
+still produced 404s. With `cleanUrls: true`, `/index.html` is not a servable
+URL: it redirects to `/`. A rewrite whose target is itself a redirect does not
+resolve, so the destination must be `/`:
 
 ```json
-"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+"cleanUrls": true,
+"rewrites": [{ "source": "/(.*)", "destination": "/" }]
 ```
 
-The local production-equivalent server had hidden this by falling back to
-`index.html` unconditionally; it now mirrors Vercel's order — filesystem,
-then rewrites, then 404 — so a rewrite the platform cannot match fails locally
-too.
+The local production-equivalent server had hidden all of this by falling back
+to `index.html` unconditionally. It now mirrors the platform's order —
+filesystem, then rewrites, then 404 — and resolves a directory destination to
+its index document exactly as Vercel does, so a configuration the platform
+cannot serve fails locally too.
 
 Verified against the live deployment, not only against the local emulator:
 the root and every deep link return the application shell, `sw.js` and

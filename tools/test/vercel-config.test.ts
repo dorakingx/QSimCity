@@ -153,8 +153,12 @@ describe('vercel.json contract', () => {
     expect(vercelConfig.rewrites).toHaveLength(1);
     const rewrite = vercelConfig.rewrites[0]!;
     expect(rewrite.source).toBe('/(.*)');
-    expect(rewrite.destination).toBe('/index.html');
     expect(rewrite.source).not.toMatch(/\(\?!/);
+    // The destination must be `/`, not `/index.html`: with `cleanUrls` the
+    // latter is a redirect rather than a servable file, and Vercel answered
+    // 404 for every route until this was corrected against the real platform.
+    expect(rewrite.destination).toBe('/');
+    expect(vercelConfig.cleanUrls).toBe(true);
   });
 
   it('serves real files from disk in preference to the rewrite', () => {
