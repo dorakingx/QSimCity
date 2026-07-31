@@ -70,6 +70,10 @@ asserted rather than taken, or a defect that taking it exposed.
 - Vercel configuration tests build into a temporary directory instead of
   depending on a previously built `apps/web/dist`.
 - Hypothesis's local example cache is no longer committed.
+- An unanchored `coverage/` ignore rule matched at every depth, so the coverage
+  generator and its evidence had never been committed; every local run passed
+  because the files existed on the author's machine. Found by running the
+  completion gate inside a real clone.
 
 ## [1.0.0] — 2026-07-31
 

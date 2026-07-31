@@ -1,0 +1,87 @@
+{
+  "commitSha": "eb42aaa2aa0fc69a4bd0faa4a102ad407c3a5a20",
+  "sourceTreeHash": "ede82e4b9f4f13d2",
+  "worktreeDirty": false,
+  "generatedAt": "2026-07-31T01:06:53.397Z",
+  "tool": "vitest-v8-coverage",
+  "toolVersion": "4.1.10",
+  "command": "pnpm coverage:check",
+  "exitStatus": 0,
+  "inputHash": "5e1107f79e224975",
+  "thresholds": {
+    "coreLines": 95,
+    "coreBranches": 90,
+    "projectLines": 90,
+    "projectBranches": 85
+  },
+  "measurements": {
+    "project.lines": 96.36,
+    "project.branches": 88.29,
+    "project.functions": 94.84,
+    "project.statements": 95.75,
+    "domain.lines": 98.49,
+    "domain.branches": 95.51,
+    "trace.lines": 98.28,
+    "trace.branches": 96,
+    "simulator.lines": 100,
+    "simulator.branches": 98.05,
+    "reference-compiler.lines": 97.69,
+    "reference-compiler.branches": 90.4
+  },
+  "passed": true,
+  "detail": {
+    "packages": [
+      {
+        "package": "packages/domain",
+        "lines": 98.49,
+        "branches": 95.51,
+        "functions": 99.1,
+        "statements": 98.42,
+        "fileCount": 8,
+        "uncoveredLines": 11,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "package": "packages/trace",
+        "lines": 98.28,
+        "branches": 96,
+        "functions": 100,
+        "statements": 98.45,
+        "fileCount": 8,
+        "uncoveredLines": 3,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "package": "packages/simulator",
+        "lines": 100,
+        "branches": 98.05,
+        "functions": 100,
+        "statements": 99.52,
+        "fileCount": 5,
+        "uncoveredLines": 0,
+        "passed": true,
+        "failures": []
+      },
+      {
+        "package": "packages/reference-compiler",
+        "lines": 97.69,
+        "branches": 90.4,
+        "functions": 100,
+        "statements": 97.63,
+        "fileCount": 3,
+        "uncoveredLines": 7,
+        "passed": true,
+        "failures": []
+      }
+    ],
+    "project": {
+      "lines": 96.36,
+      "branches": 88.29,
+      "functions": 94.84,
+      "statements": 95.75
+    },
+    "projectFailures": []
+  }
+}

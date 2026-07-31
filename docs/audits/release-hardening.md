@@ -49,10 +49,21 @@ the gate.
 final audit for the words "fresh clone" — the same defect in miniature.
 `pnpm verify:fresh-clone` now clones the repository at HEAD into a temporary
 directory, asserts that no `node_modules`, build output, or coverage leaked in
-from the working tree, and runs install, typecheck, lint, format, the three
-policy scans, the unit suite, the production build, the performance budget, and
-the full end-to-end browser matrix inside that clone, recording each step's
-exit status and duration in an envelope. The gate consumes that envelope.
+from the working tree, and runs fifteen steps inside that clone: install,
+typecheck, lint, format, the three policy scans, the unit suite, coverage and
+its gate, the security audit, the trace-reproducibility harness, the production
+build, the performance budget, and the full end-to-end browser matrix. Each
+step's exit status and duration go into an envelope the gate consumes.
+
+**It immediately found a defect nothing else could.** Running the completion
+gate inside a real clone failed on missing coverage evidence: `.gitignore`
+carried an unanchored `coverage/` rule, which git applies at every depth, so
+`release-evidence/coverage/` and `tools/coverage/check-coverage.ts` — the
+coverage generator itself — had never been committed. Every local run passed
+because those files existed on this machine. The rule is now anchored to the
+repository root, the files are tracked, and the clone runs the coverage gate
+rather than only the tests, so the same class of defect fails loudly next
+time.
 
 ## 2. Ten-minute soak (previously never run)
 

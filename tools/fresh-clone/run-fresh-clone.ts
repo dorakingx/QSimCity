@@ -37,6 +37,13 @@ const STEPS: readonly Step[] = [
   { id: 'policy-language', command: 'pnpm', args: ['check:language'], timeoutMinutes: 5 },
   { id: 'policy-todos', command: 'pnpm', args: ['check:todos'], timeoutMinutes: 5 },
   { id: 'unit-tests', command: 'pnpm', args: ['test'], timeoutMinutes: 30 },
+  // Runs the coverage gate, not just the tests: a generator that is missing
+  // from the clone (ignored by a stray .gitignore rule, say) fails here rather
+  // than passing because the file happens to exist on the author's machine.
+  { id: 'coverage', command: 'pnpm', args: ['test:coverage'], timeoutMinutes: 30 },
+  { id: 'coverage-gate', command: 'pnpm', args: ['coverage:check'], timeoutMinutes: 10 },
+  { id: 'security-audit', command: 'pnpm', args: ['security:audit'], timeoutMinutes: 20 },
+  { id: 'trace-reproducibility', command: 'pnpm', args: ['repro:check'], timeoutMinutes: 30 },
   { id: 'build', command: 'pnpm', args: ['build'], timeoutMinutes: 20 },
   { id: 'perf-budget', command: 'pnpm', args: ['check:perf'], timeoutMinutes: 10 },
   { id: 'e2e', command: 'pnpm', args: ['test:e2e'], timeoutMinutes: 45 },

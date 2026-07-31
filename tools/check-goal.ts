@@ -507,7 +507,7 @@ check('Fresh-clone verification evidence', () => {
   const m = evidence.measurements;
   if (Number(m['failedSteps']) > 0)
     throw new Error(`${m['failedSteps']} step(s) failed in the clone`);
-  if (Number(m['stepsPassed']) < 8) {
+  if (Number(m['stepsPassed']) < 15) {
     throw new Error(`only ${m['stepsPassed']} verification steps ran in the clone`);
   }
   return `${m['stepsPassed']} steps passed in a clean clone (${m['totalSeconds']}s)`;
