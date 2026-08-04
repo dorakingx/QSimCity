@@ -187,6 +187,9 @@ importers:
       '@qsimcity/domain':
         specifier: workspace:*
         version: link:../domain
+      '@qsimcity/reference-compiler':
+        specifier: workspace:*
+        version: link:../reference-compiler
       '@qsimcity/simulator':
         specifier: workspace:*
         version: link:../simulator

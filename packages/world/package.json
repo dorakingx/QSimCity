@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@qsimcity/domain": "workspace:*",
+    "@qsimcity/reference-compiler": "workspace:*",
     "@qsimcity/simulator": "workspace:*"
   }
 }

@@ -53,8 +53,8 @@ export interface CityMeshes {
   readonly objectPicks: Map<THREE.Object3D, PickTarget>;
   readonly buildings: readonly Building[];
   readonly interactiveMeshes: Map<string, THREE.Mesh>;
-  /** District perimeter light strips, keyed by district id. */
-  readonly districtStrips: Map<string, THREE.Mesh>;
+  /** Accent architecture per district; its glow marks stage activity. */
+  readonly districtAccents: Map<string, THREE.Mesh>;
   /** Small props hidden at far zoom (practical LOD tier). */
   readonly farHidden: readonly THREE.Object3D[];
   readonly waterMaterial: THREE.MeshStandardMaterial;
@@ -64,6 +64,11 @@ export interface CityMeshes {
 
 const FLOOR_H = 3.1;
 const BAY_W = 3.2;
+
+/** Ambient glow level of district accent architecture per time of day. */
+export function accentBaseIntensity(time: TimeOfDay): number {
+  return time === 'night' ? 1.1 : time === 'golden' ? 0.7 : 0.45;
+}
 
 const NEUTRAL_BODY = new THREE.Color(0xb6bac2);
 const ROOF_COLOR = new THREE.Color(0x686c73);
@@ -462,9 +467,9 @@ export function buildCity(): CityMeshes {
 
   // --------------------------------------------------------------- water
   const waterMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1d3a52,
-    roughness: 0.14,
-    metalness: 0.72,
+    color: 0x22455e,
+    roughness: 0.22,
+    metalness: 0.55,
     transparent: true,
     opacity: 0.94,
     envMapIntensity: 1.2,
@@ -812,7 +817,9 @@ export function buildCity(): CityMeshes {
     rangedPicks.set(plainMesh, plainPartsBucket.ranges);
     disposables.push(plainMesh.geometry, plainMaterial);
   }
-  const emissiveMeshes: THREE.Mesh[] = [];
+  // District accent architecture doubles as the activity indicator: the
+  // engine raises a district's accent glow while its stage fires.
+  const districtAccents = new Map<string, THREE.Mesh>();
   for (const [districtId, bucket] of emissiveBuckets) {
     const accent = new THREE.Color(getDistrict(districtId as never).accentColor);
     const material = new THREE.MeshStandardMaterial({
@@ -826,41 +833,7 @@ export function buildCity(): CityMeshes {
       mesh.castShadow = true;
       group.add(mesh);
       rangedPicks.set(mesh, bucket.ranges);
-      emissiveMeshes.push(mesh);
-      disposables.push(mesh.geometry, material);
-    }
-  }
-
-  // ------------------------------------------------- district light strips
-  const districtStrips = new Map<string, THREE.Mesh>();
-  for (const district of DISTRICTS) {
-    const b = district.bounds;
-    const accent = new THREE.Color(district.accentColor);
-    const stripBucket = new Bucket();
-    const y = PLAIN_HEIGHT + 0.12;
-    const w = b.width - 2;
-    const d = b.depth - 2;
-    for (const [cx, cz, sx, sz] of [
-      [b.x, b.z - d / 2, w, 0.5],
-      [b.x, b.z + d / 2, w, 0.5],
-      [b.x - w / 2, b.z, 0.5, d],
-      [b.x + w / 2, b.z, 0.5, d],
-    ] as const) {
-      const strip = new THREE.BoxGeometry(sx, 0.24, sz);
-      transform(strip, cx, terrainHeight(cx, cz) + (y - PLAIN_HEIGHT), cz);
-      stripBucket.add(strip);
-    }
-    const material = new THREE.MeshStandardMaterial({
-      color: accent.clone().multiplyScalar(0.3),
-      emissive: accent,
-      emissiveIntensity: 0.08,
-      roughness: 0.5,
-    });
-    const mesh = stripBucket.build(material, `district-strip-${district.id}`);
-    if (mesh) {
-      group.add(mesh);
-      districtStrips.set(district.id, mesh);
-      objectPicks.set(mesh, { kind: 'district', districtId: district.id });
+      districtAccents.set(districtId, mesh);
       disposables.push(mesh.geometry, material);
     }
   }
@@ -1183,13 +1156,8 @@ export function buildCity(): CityMeshes {
     }
     lampHeadMaterial.emissiveIntensity = time === 'night' ? 2.2 : time === 'golden' ? 1.1 : 0;
     lampPoolMaterial.opacity = time === 'night' ? 0.3 : time === 'golden' ? 0.1 : 0;
-    for (const mesh of emissiveMeshes) {
-      (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity =
-        time === 'night' ? 1.1 : time === 'golden' ? 0.7 : 0.45;
-    }
-    for (const strip of districtStrips.values()) {
-      (strip.material as THREE.MeshStandardMaterial).emissiveIntensity =
-        time === 'night' ? 0.3 : 0.1;
+    for (const mesh of districtAccents.values()) {
+      (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = accentBaseIntensity(time);
     }
   };
 
@@ -1199,7 +1167,7 @@ export function buildCity(): CityMeshes {
     objectPicks,
     buildings,
     interactiveMeshes,
-    districtStrips,
+    districtAccents,
     farHidden,
     waterMaterial,
     applyTimeOfDay,

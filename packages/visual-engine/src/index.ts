@@ -1,4 +1,5 @@
 export { CityEngine, type EngineOptions, type DeviceView } from './engine.js';
+export { CityAudio, type AudioCue, type AudioContextFactory } from './audio.js';
 export type { PickTarget } from './city-builder.js';
 export { buildCity, buildQpu, type CityMeshes, type QpuMeshes } from './city-builder.js';
 export { CameraRig, type CameraMode } from './cameras.js';

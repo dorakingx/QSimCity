@@ -1,15 +1,22 @@
 import * as THREE from 'three';
+import type { Trace } from 'qsimcity-trace';
 import {
+  activityAtTick,
+  ambientVehiclesAt,
+  convoyAt,
+  couriersAt,
   DISTRICTS,
-  districtForStage,
   getDistrict,
   INTERACTIVES,
+  pedestriansAt,
   qpuPylonPositions,
   terrainHeight,
   hash01,
+  weatherAt,
   type WorldActivity,
 } from '@qsimcity/world';
 import {
+  accentBaseIntensity,
   buildCity,
   buildQpu,
   type CityMeshes,
@@ -17,6 +24,7 @@ import {
   type QpuMeshes,
 } from './city-builder.js';
 import { buildSky, sunDirection, type SkyRig, type TimeOfDay } from './sky.js';
+import { buildVehicles, type VehicleFleet } from './vehicles.js';
 import { CameraRig, type CameraMode } from './cameras.js';
 
 /**
@@ -60,9 +68,11 @@ export class CityEngine {
   private particles: boolean;
   private labelsEnabled: boolean;
   private noisyConfigured = false;
+  private trace: Trace | null = null;
+  private playbackTick = 0;
+  private animTime = 0;
   private readonly labelSprites: THREE.Sprite[] = [];
-  private readonly jobToken: THREE.Mesh;
-  private jobTokenTarget = new THREE.Vector3(-330, 10, 40);
+  private readonly vehicles: VehicleFleet;
   private readonly rain: THREE.Points;
   private readonly rainBasePositions: Float32Array;
   private readonly pulses: { mesh: THREE.Mesh; born: number }[] = [];
@@ -109,20 +119,10 @@ export class CityEngine {
     this.city = buildCity();
     this.scene.add(this.city.group);
 
-    // The job token: the program traveling through the pipeline. It is a
-    // job/instruction marker, never a quantum state.
-    this.jobToken = new THREE.Mesh(
-      new THREE.OctahedronGeometry(3.2),
-      new THREE.MeshStandardMaterial({
-        color: '#ffffff',
-        emissive: '#66ccff',
-        emissiveIntensity: 1.2,
-        roughness: 0.3,
-      }),
-    );
-    this.jobToken.position.copy(this.jobTokenTarget);
-    this.jobToken.name = 'job-token';
-    this.scene.add(this.jobToken);
+    // Vehicles: the job convoy, classical couriers, ambient traffic, and
+    // pedestrians. States come from pure world derivations.
+    this.vehicles = buildVehicles();
+    this.scene.add(this.vehicles.group);
 
     // Rain over the QPU Grid, driven by noise weather. Deterministic
     // hash-based positions: stable screenshots (W1.10).
@@ -320,22 +320,15 @@ export class CityEngine {
     this.sky.sun.target.position.copy(target);
     this.sky.sun.target.updateMatrixWorld();
 
-    // Move the job token toward the most downstream active district.
-    if (this.activity && this.activity.eventsAtTick.length > 0) {
-      const latest = this.activity.eventsAtTick[this.activity.eventsAtTick.length - 1]!;
-      const district = districtForStage(latest.stage);
-      this.jobTokenTarget.set(
-        district.bounds.x,
-        terrainHeight(district.bounds.x, district.bounds.z) + 9,
-        district.bounds.z - district.bounds.depth / 2 - 8,
-      );
-    }
-    if (this.reducedMotion) {
-      this.jobToken.position.copy(this.jobTokenTarget);
-    } else {
-      this.jobToken.position.lerp(this.jobTokenTarget, Math.min(1, dt * 3));
-      this.jobToken.rotation.y += dt * 1.5;
-    }
+    // Vehicles: ambient traffic and pedestrians animate per frame; the
+    // convoy chases its semantic target smoothly.
+    this.animTime += dt;
+    this.vehicles.update(
+      dt,
+      ambientVehiclesAt(this.animTime, this.reducedMotion),
+      pedestriansAt(this.trace, this.playbackTick, this.animTime, this.reducedMotion),
+      this.reducedMotion,
+    );
 
     // Rain falls while visible.
     const rainMaterial = this.rain.material as THREE.PointsMaterial;
@@ -391,14 +384,30 @@ export class CityEngine {
     }
   }
 
+  /**
+   * The single playback entry point: the engine derives everything it shows
+   * from (trace, tick) with the same pure world functions every other
+   * surface uses.
+   */
+  setPlayback(trace: Trace | null, tick: number, noisyConfigured: boolean): void {
+    this.trace = trace;
+    this.playbackTick = tick;
+    this.setActivity(trace ? activityAtTick(trace, tick) : null, noisyConfigured);
+    this.vehicles.setSemantic(convoyAt(trace, tick), trace ? couriersAt(trace, tick) : []);
+    const weather = weatherAt(trace, tick);
+    const rainMaterial = this.rain.material as THREE.PointsMaterial;
+    rainMaterial.opacity = this.particles ? weather.rain * 0.85 + weather.cover * 0.1 : 0;
+    this.sky.setCloudCover(weather.cover);
+  }
+
   /** Applies a new activity snapshot (called when the playback tick changes). */
   setActivity(activity: WorldActivity | null, noisyConfigured: boolean): void {
     this.activity = activity;
     this.noisyConfigured = noisyConfigured;
-    // Reset district strip glow to its ambient level.
-    const ambient = this.timeOfDay === 'night' ? 0.3 : 0.1;
-    for (const strip of this.city.districtStrips.values()) {
-      (strip.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient;
+    // Reset district accent glow to its ambient level.
+    const ambient = accentBaseIntensity(this.timeOfDay);
+    for (const accent of this.city.districtAccents.values()) {
+      (accent.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient;
     }
     if (!activity) {
       (this.rain.material as THREE.PointsMaterial).opacity = 0;
@@ -406,9 +415,9 @@ export class CityEngine {
       return;
     }
     for (const da of activity.districts) {
-      const strip = this.city.districtStrips.get(da.districtId);
-      if (strip) {
-        (strip.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient + 0.75;
+      const accentMesh = this.city.districtAccents.get(da.districtId);
+      if (accentMesh) {
+        (accentMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient + 1.2;
         if (this.particles && !this.reducedMotion && this.pulses.length < 24) {
           const district = getDistrict(da.districtId);
           const ring = new THREE.Mesh(
@@ -447,12 +456,6 @@ export class CityEngine {
         material.emissiveIntensity = active ? 1.8 : 0.12;
       }
     }
-    // Noise weather: rain and cloud cover over the QPU Grid.
-    const noiseNow = activity.eventsAtTick.some((e) => e.eventType === 'noise.applied');
-    const rainMaterial = this.rain.material as THREE.PointsMaterial;
-    rainMaterial.opacity =
-      this.particles && (noiseNow || noisyConfigured) ? (noiseNow ? 0.85 : 0.28) : 0;
-    this.sky.setCloudCover(noisyConfigured ? (noiseNow ? 1 : 0.5) : 0);
   }
 
   setDevice(view: DeviceView | null): void {
@@ -507,6 +510,7 @@ export class CityEngine {
     const preset = this.sky.applyPreset(time);
     this.sunDir.copy(sunDirection(preset));
     this.city.applyTimeOfDay(time);
+    this.vehicles.applyTimeOfDay(time);
     this.scene.fog = new THREE.Fog(preset.fogColor, preset.fogNear, preset.fogFar);
     this.renderer.toneMappingExposure = preset.exposure;
     this.refreshEnvironment();
@@ -592,8 +596,7 @@ export class CityEngine {
     this.pmrem?.dispose();
     this.rain.geometry.dispose();
     (this.rain.material as THREE.Material).dispose();
-    this.jobToken.geometry.dispose();
-    (this.jobToken.material as THREE.Material).dispose();
+    this.vehicles.dispose();
     for (const sprite of this.labelSprites) {
       sprite.material.map?.dispose();
       sprite.material.dispose();

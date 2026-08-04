@@ -18,14 +18,28 @@ export {
 } from './buildings.js';
 export {
   activityAtTick,
+  countsAtTick,
   eventsAt,
   eventsUpTo,
   maxTickOf,
+  swapExchangesAt,
   tickDurationMs,
   BASE_TICK_MS,
   type WorldActivity,
   type DistrictActivity,
 } from './playback.js';
+export { logicalToPhysicalAt, physicalToLogicalAt } from './mapping.js';
+export { weatherAt, type WeatherState } from './weather.js';
+export {
+  ambientVehiclesAt,
+  convoyAt,
+  couriersAt,
+  districtActivityAt,
+  pedestriansAt,
+  COURIER_JOURNEY_TICKS,
+  type PedestrianState,
+  type VehicleState,
+} from './agents.js';
 export {
   INTERACTIVES,
   interactivesInDistrict,

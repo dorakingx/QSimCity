@@ -1,6 +1,6 @@
 /**
  * Deterministic hashing helpers shared by every world module. All procedural
- * variety in the city derives from these — never from Math.random — so the
+ * variety in the city derives from these — never from runtime randomness — so the
  * same source always produces the same city (spec W1.10).
  */
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { getDevice } from '@qsimcity/domain';
-import { activityAtTick, INTERACTIVES } from '@qsimcity/world';
-import { CityEngine, type CameraMode } from '@qsimcity/visual-engine';
+import { activityAtTick, INTERACTIVES, weatherAt } from '@qsimcity/world';
+import { CityAudio, CityEngine, type CameraMode } from '@qsimcity/visual-engine';
 import { useAppStore } from '../store/appStore.js';
 
 /**
@@ -12,6 +12,7 @@ import { useAppStore } from '../store/appStore.js';
 export default function CityView(): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<CityEngine | null>(null);
+  const audioRef = useRef<CityAudio | null>(null);
   const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
   const [nearbyPrompt, setNearbyPrompt] = useState<string | null>(null);
   const settings = useAppStore((s) => s.settings);
@@ -63,6 +64,13 @@ export default function CityView(): ReactElement {
       (globalThis as Record<string, unknown>)['__qsimcityEngine'] = engine;
     }
 
+    // Procedural audio: created eagerly (silent), context only on gesture.
+    const audio = new CityAudio();
+    audioRef.current = audio;
+    const onGesture = (): void => audio.userGesture();
+    window.addEventListener('pointerdown', onGesture);
+    window.addEventListener('keydown', onGesture);
+
     const resize = (): void => {
       const rect = canvas.parentElement?.getBoundingClientRect();
       if (rect) engine.resize(rect.width, rect.height);
@@ -111,7 +119,11 @@ export default function CityView(): ReactElement {
       clearInterval(promptTimer);
       window.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('keyup', onKeyUp);
+      window.removeEventListener('pointerdown', onGesture);
+      window.removeEventListener('keydown', onGesture);
       observer.disconnect();
+      audio.dispose();
+      audioRef.current = null;
       engine.dispose();
       engineRef.current = null;
     };
@@ -126,6 +138,12 @@ export default function CityView(): ReactElement {
     engine.setReducedMotion(settings.reducedMotion);
     engine.setParticles(settings.particles);
     engine.setLabels(settings.labels);
+    const audio = audioRef.current;
+    if (audio) {
+      audio.setEnabled(settings.audioEnabled);
+      audio.setVolume(settings.audioVolume);
+      audio.setTimeOfDay(settings.timeOfDay);
+    }
   }, [settings]);
 
   // Device topology for the QPU Grid.
@@ -145,7 +163,21 @@ export default function CityView(): ReactElement {
   useEffect(() => {
     const engine = engineRef.current;
     if (!engine) return;
-    engine.setActivity(trace ? activityAtTick(trace, tick) : null, Boolean(trace?.noise));
+    const activity = trace ? activityAtTick(trace, tick) : null;
+    engine.setPlayback(trace, tick, Boolean(trace?.noise));
+    // Semantic audio cues follow the same events every surface renders.
+    const audio = audioRef.current;
+    if (audio) audio.setRain(weatherAt(trace, tick).rain);
+    if (audio && activity) {
+      if (activity.eventsAtTick.some((e) => e.eventType === 'measurement.sampled')) {
+        audio.cue('measurement');
+      } else if (activity.eventsAtTick.some((e) => e.eventType === 'gate.executed')) {
+        audio.cue('gate');
+      }
+      if (activity.eventsAtTick.some((e) => e.eventType === 'classical.condition_evaluated')) {
+        audio.cue('courier');
+      }
+    }
   }, [trace, tick]);
 
   // Camera follows district selection (tour + inspector focus).
