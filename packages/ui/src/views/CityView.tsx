@@ -27,7 +27,7 @@ export default function CityView(): ReactElement {
     const engine = new CityEngine({
       canvas,
       quality: useAppStore.getState().settings.quality,
-      night: useAppStore.getState().settings.dayNight === 'night',
+      timeOfDay: useAppStore.getState().settings.timeOfDay,
       reducedMotion: useAppStore.getState().settings.reducedMotion,
       particles: useAppStore.getState().settings.particles,
       labels: useAppStore.getState().settings.labels,
@@ -55,6 +55,13 @@ export default function CityView(): ReactElement {
       },
     });
     engineRef.current = engine;
+    // Stable read-only diagnostics hook for performance measurement tools
+    // (never mutates scientific state); the full engine is exposed only in
+    // dev builds for debugging.
+    (globalThis as Record<string, unknown>)['__qsimcityStats'] = () => engine.renderStats();
+    if (import.meta.env.DEV) {
+      (globalThis as Record<string, unknown>)['__qsimcityEngine'] = engine;
+    }
 
     const resize = (): void => {
       const rect = canvas.parentElement?.getBoundingClientRect();
@@ -114,7 +121,7 @@ export default function CityView(): ReactElement {
   useEffect(() => {
     const engine = engineRef.current;
     if (!engine) return;
-    engine.setNight(settings.dayNight === 'night');
+    engine.setTimeOfDay(settings.timeOfDay);
     engine.setQuality(settings.quality);
     engine.setReducedMotion(settings.reducedMotion);
     engine.setParticles(settings.particles);

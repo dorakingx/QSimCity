@@ -2,9 +2,22 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "qsimcity-dev",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "NVM_NODE=\"$HOME/.nvm/versions/node/v$(cat ../../.nvmrc)/bin\"; [ -d \"$NVM_NODE\" ] && PATH=\"$NVM_NODE:$PATH\"; exec ../../node_modules/.bin/vite --port 5173 --strictPort"
+      ],
+      "cwd": "apps/web",
+      "port": 5173
+    },
+    {
       "name": "qsimcity-preview",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/vite/bin/vite.js", "preview", "--port", "4173", "--strictPort"],
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "NVM_NODE=\"$HOME/.nvm/versions/node/v$(cat ../../.nvmrc)/bin\"; [ -d \"$NVM_NODE\" ] && PATH=\"$NVM_NODE:$PATH\"; exec ../../node_modules/.bin/vite preview --port 4173 --strictPort"
+      ],
       "cwd": "apps/web",
       "port": 4173
     }

@@ -1,4 +1,4 @@
-import type { DistrictId } from './districts.js';
+import { CITY_SCALE, type DistrictId } from './districts.js';
 
 /**
  * In-world interactive equipment (spec §7.4): consoles the user can walk to
@@ -33,7 +33,7 @@ export interface Interactive {
   readonly action: InteractiveAction;
 }
 
-export const INTERACTIVES: readonly Interactive[] = [
+const RAW_INTERACTIVES: readonly Interactive[] = [
   {
     id: 'port-intake-desk',
     districtId: 'program-port',
@@ -163,6 +163,12 @@ export const INTERACTIVES: readonly Interactive[] = [
     action: { kind: 'open-observatory' },
   },
 ];
+
+/** Console positions are authored on the compact grid and scaled with it. */
+export const INTERACTIVES: readonly Interactive[] = RAW_INTERACTIVES.map((i) => ({
+  ...i,
+  position: [i.position[0] * CITY_SCALE, i.position[1] * CITY_SCALE],
+}));
 
 export function interactivesInDistrict(districtId: DistrictId): Interactive[] {
   return INTERACTIVES.filter((i) => i.districtId === districtId);

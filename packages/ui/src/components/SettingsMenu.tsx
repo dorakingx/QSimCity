@@ -54,11 +54,14 @@ export function SettingsMenu(): ReactElement {
             <label htmlFor="set-daynight">Time of day</label>
             <select
               id="set-daynight"
-              value={settings.dayNight}
-              onChange={(e) => updateSettings({ dayNight: e.target.value as 'day' | 'night' })}
+              value={settings.timeOfDay}
+              onChange={(e) =>
+                updateSettings({ timeOfDay: e.target.value as 'day' | 'golden' | 'night' })
+              }
             >
-              <option value="night">Night</option>
               <option value="day">Day</option>
+              <option value="golden">Golden hour</option>
+              <option value="night">Night</option>
             </select>
           </div>
           <div className="field-row field-row-checkbox">

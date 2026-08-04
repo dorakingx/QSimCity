@@ -25,12 +25,14 @@ export interface RunConfig {
   optimize: boolean;
 }
 
+export type TimeOfDaySetting = 'day' | 'golden' | 'night';
+
 export interface Settings {
   quality: 'high' | 'balanced' | 'low';
   audioEnabled: boolean;
   audioVolume: number;
   reducedMotion: boolean;
-  dayNight: 'day' | 'night';
+  timeOfDay: TimeOfDaySetting;
   particles: boolean;
   labels: boolean;
 }
@@ -66,7 +68,7 @@ export const DEFAULT_SETTINGS: Settings = {
   audioEnabled: false,
   audioVolume: 0.5,
   reducedMotion: false,
-  dayNight: 'night',
+  timeOfDay: 'day',
   particles: true,
   labels: true,
 };
@@ -134,8 +136,21 @@ export function loadSettings(): Settings {
   try {
     const raw = globalThis.localStorage?.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
-    const parsed = JSON.parse(raw) as Partial<Settings>;
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    const parsed = JSON.parse(raw) as Partial<Settings> & { dayNight?: 'day' | 'night' };
+    // Migrate the old two-state day/night setting to the three lighting
+    // presets; a stored preference keeps its meaning.
+    const migrated: Partial<Settings> = { ...parsed };
+    if (parsed.timeOfDay === undefined && parsed.dayNight !== undefined) {
+      migrated.timeOfDay = parsed.dayNight === 'night' ? 'night' : 'day';
+    }
+    if (
+      migrated.timeOfDay !== undefined &&
+      !['day', 'golden', 'night'].includes(migrated.timeOfDay)
+    ) {
+      delete migrated.timeOfDay;
+    }
+    delete (migrated as { dayNight?: unknown }).dayNight;
+    return { ...DEFAULT_SETTINGS, ...migrated };
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

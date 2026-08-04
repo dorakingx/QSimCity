@@ -47,7 +47,15 @@ export interface District {
   readonly description: string;
 }
 
-export const DISTRICTS: readonly District[] = [
+/**
+ * City scale factor. District zones, road spacing, coasts, and anchors are
+ * authored on the original compact grid and scaled up so each district holds
+ * several real city blocks. Building and road widths stay in true meters —
+ * only the spacing between things grows.
+ */
+export const CITY_SCALE = 1.8;
+
+const RAW_DISTRICTS: readonly District[] = [
   {
     id: 'program-port',
     name: 'Program Port',
@@ -182,6 +190,16 @@ export const DISTRICTS: readonly District[] = [
   },
 ];
 
+export const DISTRICTS: readonly District[] = RAW_DISTRICTS.map((d) => ({
+  ...d,
+  bounds: {
+    x: d.bounds.x * CITY_SCALE,
+    z: d.bounds.z * CITY_SCALE,
+    width: d.bounds.width * CITY_SCALE,
+    depth: d.bounds.depth * CITY_SCALE,
+  },
+}));
+
 export function getDistrict(id: DistrictId): District {
   const d = DISTRICTS.find((x) => x.id === id);
   if (!d) throw new Error(`Unknown district: ${id}`);
@@ -195,7 +213,12 @@ export function districtForStage(stage: Stage): District {
 }
 
 /** World-space bounds of the whole city including margins. */
-export const CITY_BOUNDS = { minX: -230, maxX: 260, minZ: -100, maxZ: 180 } as const;
+export const CITY_BOUNDS = {
+  minX: -230 * CITY_SCALE,
+  maxX: 260 * CITY_SCALE,
+  minZ: -100 * CITY_SCALE,
+  maxZ: 180 * CITY_SCALE,
+} as const;
 
 /** The west-to-east processing boulevard road spine (polyline x,z). */
 export const BOULEVARD: readonly (readonly [number, number])[] = [
@@ -207,4 +230,4 @@ export const BOULEVARD: readonly (readonly [number, number])[] = [
   [70, 20],
   [125, 20],
   [195, 20],
-];
+].map(([x, z]) => [x! * CITY_SCALE, z! * CITY_SCALE] as const);

@@ -80,13 +80,14 @@ function PaletteContent(): ReactElement {
         run: () => s.setHelpOpen(true),
       },
       {
-        id: 'toggle-day-night',
-        title: 'Toggle day / night',
+        id: 'cycle-time-of-day',
+        title: 'Cycle time of day (day / golden hour / night)',
         group: 'Actions',
-        run: () =>
-          s.updateSettings({
-            dayNight: useAppStore.getState().settings.dayNight === 'day' ? 'night' : 'day',
-          }),
+        run: () => {
+          const current = useAppStore.getState().settings.timeOfDay;
+          const next = current === 'day' ? 'golden' : current === 'golden' ? 'night' : 'day';
+          s.updateSettings({ timeOfDay: next });
+        },
       },
     ];
   }, []);

@@ -104,6 +104,8 @@ const REQUIRED_FILES = [
   'docs/deployment-vercel.md',
   'docs/visual-quality-rubric.md',
   'docs/acceptance-matrix.md',
+  'docs/WISER_REAL_CITY_SPEC.md',
+  'docs/wiser-acceptance-matrix.md',
   'docs/audits/current-state.md',
   'docs/audits/final-release-audit.md',
   'docs/audits/visual-benchmark-final.md',
@@ -555,14 +557,29 @@ check('Production build output present', () => {
 // -------------------------------------------------------------- matrix
 
 check('Acceptance matrix has no unmet required rows', () => {
-  const matrix = readFileSync(join(ROOT, 'docs', 'acceptance-matrix.md'), 'utf8');
-  const unmetStatuses = ['FAIL', 'BLOCKED', 'UNVERIFIED', 'NOT RUN', 'PARTIAL', 'PLACE' + 'HOLDER'];
+  // PENDING is an unmet status too: the WISER matrix starts every row as
+  // PENDING and flips to PASS only when the cited evidence exists, so the
+  // gate fails until the real-city work is genuinely complete.
+  const unmetStatuses = [
+    'FAIL',
+    'BLOCKED',
+    'UNVERIFIED',
+    'NOT RUN',
+    'PARTIAL',
+    'PENDING',
+    'PLACE' + 'HOLDER',
+  ];
   const unmetPattern = new RegExp(`\\|\\s*(${unmetStatuses.join('|')})\\s*\\|`);
-  const unmet = matrix.split('\n').filter((line) => unmetPattern.test(line));
-  if (unmet.length > 0) {
-    throw new Error(`${unmet.length} unmet row(s), first: ${unmet[0]!.trim().slice(0, 90)}`);
+  for (const file of ['docs/acceptance-matrix.md', 'docs/wiser-acceptance-matrix.md']) {
+    const matrix = readFileSync(join(ROOT, file), 'utf8');
+    const unmet = matrix.split('\n').filter((line) => unmetPattern.test(line));
+    if (unmet.length > 0) {
+      throw new Error(
+        `${file}: ${unmet.length} unmet row(s), first: ${unmet[0]!.trim().slice(0, 90)}`,
+      );
+    }
   }
-  return 'every row is PASS or an authorized exception';
+  return 'every row in both matrices is PASS or an authorized exception';
 });
 
 check('Project state does not declare an unresolved blocker', () => {

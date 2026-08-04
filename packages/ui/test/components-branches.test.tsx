@@ -413,9 +413,9 @@ describe('overlay branch coverage', () => {
     cleanup();
     useAppStore.setState({ paletteOpen: true });
     render(<CommandPalette />);
-    await userEvent.type(screen.getByRole('combobox'), 'Toggle day');
+    await userEvent.type(screen.getByRole('combobox'), 'Cycle time');
     await userEvent.click(screen.getAllByRole('option')[0]!);
-    expect(useAppStore.getState().settings.dayNight).toBe('day');
+    expect(useAppStore.getState().settings.timeOfDay).toBe('golden');
   });
 
   it('SettingsMenu closes when clicking outside and shows the volume slider', async () => {

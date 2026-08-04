@@ -1,17 +1,26 @@
 import * as THREE from 'three';
-import { CITY_BOUNDS, type Building } from '@qsimcity/world';
+import {
+  CITY_BOUNDS,
+  EAST_COAST_X,
+  WEST_COAST_X,
+  terrainHeight,
+  type Building,
+} from '@qsimcity/world';
 
 /**
- * Camera controllers: orbit, top-down, fly, first-person walk. All input
- * (mouse, keyboard, touch, trackpad) funnels through one handler set.
- * First-person and fly collide against building AABBs and the city bounds.
+ * Camera controllers: orbit, top-down, fly, first-person walk (spec §6).
+ * All input (mouse, keyboard, touch, trackpad) funnels through one handler
+ * set. Orbit and top-down are damped; walking collides against building
+ * AABBs, the quay edges, and the city bounds, at a human 1.7 m eye height.
  */
 
 export type CameraMode = 'orbit' | 'top' | 'fly' | 'first-person';
 
 const EYE_HEIGHT = 1.7;
-const WALK_SPEED = 18; // units/second
-const FLY_SPEED = 40;
+const WALK_SPEED = 7; // brisk human pace, units/second
+const FLY_SPEED = 62;
+/** How quickly damped values approach their target (per second). */
+const DAMPING = 7;
 
 interface Aabb {
   minX: number;
@@ -24,17 +33,17 @@ interface Aabb {
 export class CameraRig {
   readonly camera: THREE.PerspectiveCamera;
   mode: CameraMode = 'orbit';
-  /** Orbit state. */
-  // Framed on the city centroid at a distance that fits the full 490-unit
-  // east-west span, so no district is cut off on first load.
-  private target = new THREE.Vector3(20, 0, 28);
-  private distance = 330;
-  // Camera starts south of the city looking north so the pipeline reads
-  // west-to-east, left-to-right — the same direction the data flows.
+  /** Damped orbit state: current values chase the target values. */
+  private target = new THREE.Vector3(30, 0, 62);
+  private targetGoal = this.target.clone();
+  private distance = 640;
+  private distanceGoal = 640;
   private azimuth = Math.PI / 2;
+  private azimuthGoal = Math.PI / 2;
   private polar = 0.72;
+  private polarGoal = 0.72;
   /** First-person / fly state. */
-  private fpPosition = new THREE.Vector3(-190, EYE_HEIGHT, 40);
+  private fpPosition = new THREE.Vector3(-330, EYE_HEIGHT, 70);
   private yaw = 0;
   private pitch = 0;
   private keys = new Set<string>();
@@ -42,6 +51,8 @@ export class CameraRig {
   private lastPointer = { x: 0, y: 0 };
   private pinchDistance = 0;
   private readonly aabbs: Aabb[];
+  /** External movement input in [-1,1], e.g. from touch joysticks. */
+  moveAxis = { forward: 0, strafe: 0, lift: 0 };
   private tween: {
     fromTarget: THREE.Vector3;
     toTarget: THREE.Vector3;
@@ -53,13 +64,13 @@ export class CameraRig {
   reducedMotion = false;
 
   constructor(aspect: number, buildings: readonly Building[]) {
-    this.camera = new THREE.PerspectiveCamera(55, aspect, 0.5, 1500);
+    this.camera = new THREE.PerspectiveCamera(55, aspect, 0.5, 4000);
     this.aabbs = buildings.map((b) => ({
       minX: b.position[0] - b.collisionHalfExtents[0],
       maxX: b.position[0] + b.collisionHalfExtents[0],
       minZ: b.position[1] - b.collisionHalfExtents[1],
       maxZ: b.position[1] + b.collisionHalfExtents[1],
-      height: b.collisionHeight,
+      height: b.collisionHeight + terrainHeight(b.position[0], b.position[1]),
     }));
     this.updateCamera();
   }
@@ -69,10 +80,8 @@ export class CameraRig {
     this.mode = mode;
     if (mode === 'first-person') {
       if (previous === 'orbit' || previous === 'top') {
-        // Step onto the street a short distance from the viewed district, on
-        // the side facing the city centre, and look back toward it. Offsetting
-        // blindly southward would strand the viewer outside the city whenever
-        // a peripheral district was being viewed.
+        // Step onto the street a short distance from the viewed spot, on the
+        // side facing the city centre, and look back toward it.
         const centreX = (CITY_BOUNDS.minX + CITY_BOUNDS.maxX) / 2;
         const centreZ = (CITY_BOUNDS.minZ + CITY_BOUNDS.maxZ) / 2;
         let dx = centreX - this.target.x;
@@ -85,42 +94,41 @@ export class CameraRig {
           dx /= length;
           dz /= length;
         }
-        const standoff = 42;
-        this.fpPosition.set(
-          this.target.x + dx * standoff,
-          EYE_HEIGHT,
-          this.target.z + dz * standoff,
-        );
-        // Face back toward the district that was being viewed.
+        const standoff = 46;
+        this.fpPosition.set(this.target.x + dx * standoff, 0, this.target.z + dz * standoff);
         this.yaw = Math.atan2(-dx, -dz);
-        this.pitch = 0.06;
-      } else {
-        this.fpPosition.y = EYE_HEIGHT;
+        this.pitch = 0.04;
       }
+      this.fpPosition.y = terrainHeight(this.fpPosition.x, this.fpPosition.z) + EYE_HEIGHT;
       this.resolveCollision(this.fpPosition);
     } else if (mode === 'fly') {
       if (previous === 'orbit' || previous === 'top') {
-        this.fpPosition.set(this.target.x, 55, this.target.z + 110);
+        this.fpPosition.set(this.target.x, 90, this.target.z + 170);
         this.yaw = Math.PI;
-        this.pitch = -0.35;
+        this.pitch = -0.4;
       } else {
-        this.fpPosition.y = Math.max(12, this.fpPosition.y);
+        this.fpPosition.y = Math.max(16, this.fpPosition.y);
       }
     }
     this.updateCamera();
   }
 
   /** Smoothly move the orbit target (tour and inspector focus). */
-  flyTo(x: number, z: number, distance = 90): void {
+  flyTo(x: number, z: number, distance = 220): void {
     if (this.mode === 'first-person' || this.mode === 'fly') {
-      this.fpPosition.set(x, this.mode === 'first-person' ? EYE_HEIGHT : 40, z + 40);
+      this.fpPosition.set(x, this.mode === 'first-person' ? 0 : 70, z + 60);
+      if (this.mode === 'first-person') {
+        this.fpPosition.y = terrainHeight(x, z + 60) + EYE_HEIGHT;
+      }
       this.yaw = Math.PI;
       this.updateCamera();
       return;
     }
     if (this.reducedMotion) {
       this.target.set(x, 0, z);
+      this.targetGoal.copy(this.target);
       this.distance = distance;
+      this.distanceGoal = distance;
       this.updateCamera();
       return;
     }
@@ -157,24 +165,33 @@ export class CameraRig {
     const dy = y - this.lastPointer.y;
     this.lastPointer = { x, y };
     if (this.mode === 'orbit' || this.mode === 'top') {
-      this.azimuth -= dx * 0.005;
+      this.azimuthGoal -= dx * 0.005;
       if (this.mode === 'orbit') {
-        this.polar = THREE.MathUtils.clamp(this.polar - dy * 0.005, 0.15, 1.45);
+        this.polarGoal = THREE.MathUtils.clamp(this.polarGoal - dy * 0.005, 0.12, 1.45);
+      }
+      if (this.reducedMotion) {
+        this.azimuth = this.azimuthGoal;
+        this.polar = this.polarGoal;
+        this.updateCamera();
       }
     } else {
       this.yaw -= dx * 0.0035;
       this.pitch = THREE.MathUtils.clamp(this.pitch - dy * 0.0035, -1.4, 1.4);
+      this.updateCamera();
     }
-    this.updateCamera();
   }
 
   onWheel(deltaY: number): void {
     if (this.mode === 'orbit' || this.mode === 'top') {
-      this.distance = THREE.MathUtils.clamp(this.distance * (1 + deltaY * 0.001), 25, 900);
+      this.distanceGoal = THREE.MathUtils.clamp(this.distanceGoal * (1 + deltaY * 0.001), 30, 1500);
+      if (this.reducedMotion) {
+        this.distance = this.distanceGoal;
+        this.updateCamera();
+      }
     } else if (this.mode === 'fly') {
-      this.fpPosition.y = THREE.MathUtils.clamp(this.fpPosition.y + deltaY * 0.05, 6, 300);
+      this.fpPosition.y = THREE.MathUtils.clamp(this.fpPosition.y + deltaY * 0.05, 8, 500);
+      this.updateCamera();
     }
-    this.updateCamera();
   }
 
   onTouchStart(touches: { x: number; y: number }[]): void {
@@ -205,58 +222,86 @@ export class CameraRig {
       const t = Math.min(1, (performance.now() - this.tween.start) / this.tween.duration);
       const ease = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
       this.target.lerpVectors(this.tween.fromTarget, this.tween.toTarget, ease);
+      this.targetGoal.copy(this.target);
       this.distance = THREE.MathUtils.lerp(this.tween.fromDistance, this.tween.toDistance, ease);
+      this.distanceGoal = this.distance;
       if (t >= 1) this.tween = null;
       this.updateCamera();
     }
+
+    // Damped approach for orbit values.
+    if (this.mode === 'orbit' || this.mode === 'top') {
+      const k = this.reducedMotion ? 1 : Math.min(1, dt * DAMPING);
+      const changed =
+        Math.abs(this.azimuth - this.azimuthGoal) > 1e-5 ||
+        Math.abs(this.polar - this.polarGoal) > 1e-5 ||
+        Math.abs(this.distance - this.distanceGoal) > 1e-3 ||
+        this.target.distanceToSquared(this.targetGoal) > 1e-6;
+      if (changed) {
+        this.azimuth += (this.azimuthGoal - this.azimuth) * k;
+        this.polar += (this.polarGoal - this.polar) * k;
+        this.distance += (this.distanceGoal - this.distance) * k;
+        this.target.lerp(this.targetGoal, k);
+        this.updateCamera();
+      }
+    }
+
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
     let move: THREE.Vector3;
     const speed = this.mode === 'first-person' ? WALK_SPEED : FLY_SPEED;
-    const up = this.keys.has('KeyE') ? 1 : this.keys.has('KeyQ') ? -1 : 0;
-    const fwd =
+    const keyUp = this.keys.has('KeyE') ? 1 : this.keys.has('KeyQ') ? -1 : 0;
+    const keyFwd =
       this.keys.has('KeyW') || this.keys.has('ArrowUp')
         ? 1
         : this.keys.has('KeyS') || this.keys.has('ArrowDown')
           ? -1
           : 0;
-    const strafe =
+    const keyStrafe =
       this.keys.has('KeyD') || this.keys.has('ArrowRight')
         ? 1
         : this.keys.has('KeyA') || this.keys.has('ArrowLeft')
           ? -1
           : 0;
-    if (fwd === 0 && strafe === 0 && up === 0) return;
+    const fwd = THREE.MathUtils.clamp(keyFwd + this.moveAxis.forward, -1, 1);
+    const strafe = THREE.MathUtils.clamp(keyStrafe + this.moveAxis.strafe, -1, 1);
+    const lift = THREE.MathUtils.clamp(keyUp + this.moveAxis.lift, -1, 1);
+    if (fwd === 0 && strafe === 0 && lift === 0) return;
 
     if (this.mode === 'orbit' || this.mode === 'top') {
       // Pan the target in view space.
       forward.set(Math.cos(this.azimuth), 0, Math.sin(this.azimuth));
       right.set(-forward.z, 0, forward.x);
+      const panSpeed = Math.max(40, this.distance * 0.4);
       move = forward
-        .multiplyScalar(-fwd * speed * dt)
-        .add(right.multiplyScalar(strafe * speed * dt));
-      this.target.add(move);
-      this.clampToCity(this.target);
+        .multiplyScalar(-fwd * panSpeed * dt)
+        .add(right.multiplyScalar(strafe * panSpeed * dt));
+      this.targetGoal.add(move);
+      this.clampToCity(this.targetGoal);
+      // Panning tracks within the same tick so input feels immediate.
+      this.target.lerp(this.targetGoal, this.reducedMotion ? 1 : Math.min(1, dt * DAMPING * 2));
       this.updateCamera();
       return;
     }
     forward.set(Math.sin(this.yaw), 0, Math.cos(this.yaw));
     right.set(forward.z, 0, -forward.x);
     move = forward.multiplyScalar(fwd * speed * dt).add(right.multiplyScalar(strafe * speed * dt));
-    if (this.mode === 'fly') move.y = up * speed * dt;
+    if (this.mode === 'fly') move.y = lift * speed * dt;
     const next = this.fpPosition.clone().add(move);
     if (this.mode === 'first-person') {
-      next.y = EYE_HEIGHT;
+      // Keep walkers on land: the quay edge is a hard rail.
+      next.x = THREE.MathUtils.clamp(next.x, WEST_COAST_X + 2.5, EAST_COAST_X - 2.5);
+      next.y = terrainHeight(next.x, next.z) + EYE_HEIGHT;
       this.resolveCollision(next);
     } else {
-      next.y = THREE.MathUtils.clamp(next.y, 6, 300);
+      next.y = THREE.MathUtils.clamp(next.y, 8, 500);
     }
     this.clampToCity(next);
     this.fpPosition.copy(next);
     this.updateCamera();
   }
 
-  /** Push a walking position out of any building footprint (spec §14). */
+  /** Push a walking position out of any building footprint. */
   private resolveCollision(position: THREE.Vector3): void {
     for (const box of this.aabbs) {
       if (position.y > box.height) continue;
@@ -282,8 +327,8 @@ export class CameraRig {
   }
 
   private clampToCity(v: THREE.Vector3): void {
-    v.x = THREE.MathUtils.clamp(v.x, CITY_BOUNDS.minX - 40, CITY_BOUNDS.maxX + 40);
-    v.z = THREE.MathUtils.clamp(v.z, CITY_BOUNDS.minZ - 40, CITY_BOUNDS.maxZ + 40);
+    v.x = THREE.MathUtils.clamp(v.x, CITY_BOUNDS.minX - 80, CITY_BOUNDS.maxX + 80);
+    v.z = THREE.MathUtils.clamp(v.z, CITY_BOUNDS.minZ - 80, CITY_BOUNDS.maxZ + 80);
   }
 
   private updateCamera(): void {
@@ -292,7 +337,7 @@ export class CameraRig {
         const sinP = Math.sin(this.polar);
         this.camera.position.set(
           this.target.x + this.distance * sinP * Math.cos(this.azimuth),
-          this.distance * Math.cos(this.polar) + 4,
+          this.distance * Math.cos(this.polar) + 6,
           this.target.z + this.distance * sinP * Math.sin(this.azimuth),
         );
         this.camera.lookAt(this.target);
@@ -319,5 +364,10 @@ export class CameraRig {
 
   get position(): THREE.Vector3 {
     return this.camera.position;
+  }
+
+  /** Orbit target (for shadow-frustum tracking). */
+  get orbitTarget(): THREE.Vector3 {
+    return this.target;
   }
 }

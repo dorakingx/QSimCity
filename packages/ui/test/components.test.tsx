@@ -485,8 +485,8 @@ describe('overlays and menus', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Settings' }));
     await userEvent.selectOptions(screen.getByLabelText('Visual quality'), 'low');
     expect(useAppStore.getState().settings.quality).toBe('low');
-    await userEvent.selectOptions(screen.getByLabelText('Time of day'), 'day');
-    expect(useAppStore.getState().settings.dayNight).toBe('day');
+    await userEvent.selectOptions(screen.getByLabelText('Time of day'), 'golden');
+    expect(useAppStore.getState().settings.timeOfDay).toBe('golden');
     await userEvent.click(screen.getByLabelText(/Reduce motion/));
     expect(useAppStore.getState().settings.reducedMotion).toBe(true);
     await userEvent.click(screen.getByLabelText(/Sound/));
