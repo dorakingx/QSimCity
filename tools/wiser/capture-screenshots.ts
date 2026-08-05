@@ -41,6 +41,32 @@ function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex');
 }
 
+/** Close the transient offline-ready toast if it is showing. */
+async function dismissToast(page: Page): Promise<void> {
+  const dismiss = page.getByRole('button', { name: /Dismiss/i });
+  try {
+    if (await dismiss.isVisible({ timeout: 500 })) await dismiss.click();
+  } catch {
+    // No toast on screen; nothing to dismiss.
+  }
+}
+
+function record(
+  shots: Shot[],
+  file: string,
+  viewport: string,
+  timeOfDay: string,
+  view: string,
+): void {
+  shots.push({
+    file: file.slice(ROOT.length).replace(/^\//, ''),
+    viewport,
+    timeOfDay,
+    view,
+    sha256: sha256(file),
+  });
+}
+
 async function captureForViewport(
   context: BrowserContext,
   serverUrl: string,
@@ -54,22 +80,30 @@ async function captureForViewport(
         'qsimcity.settings.v1',
         JSON.stringify({ timeOfDay, quality: 'high', labels: true }),
       );
+      localStorage.setItem('qsimcity.progress.v1', JSON.stringify({ onboardingSeen: true }));
     }, time);
-    await page.goto(`${serverUrl}/?view=explore`);
-    await waitForCity(page);
+    // Run the Bell sample first so the semantic layer is alive in every
+    // capture: convoy on the boulevard, district glow, pedestrian density,
+    // banners over pylons, containers at the harbor.
+    await page.goto(`${serverUrl}/?view=lab&sample=bell`);
+    await page.getByRole('img', { name: /3D quantum city/ }).waitFor({ timeout: 30000 });
+    await page.getByRole('button', { name: 'Run', exact: true }).click();
+    await page.getByRole('toolbar', { name: 'Replay timeline' }).waitFor({ timeout: 30000 });
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
+    // Mid-replay moment: the pipeline is visibly working.
+    await settle(page, 3500);
+    await dismissToast(page);
+    await settle(page, 400);
 
     const overviewFile = join(OUT_DIR, `${viewportName}-${time}-overview.png`);
     await page.screenshot({ path: overviewFile });
-    shots.push({
-      file: overviewFile.slice(ROOT.length).replace(/^\//, ''),
-      viewport: viewportName,
-      timeOfDay: time,
-      view: 'overview',
-      sha256: sha256(overviewFile),
-    });
+    record(shots, overviewFile, viewportName, time, 'overview');
 
-    // Street level: walk mode, a few steps forward so the camera stands in
-    // a street rather than at the mode-switch point.
+    // Street level: walk mode spawns in the nearest driving lane; a few
+    // steps forward stand the camera mid-street.
     await page.keyboard.press('Digit4');
     await settle(page, 600);
     await page.keyboard.down('KeyW');
@@ -78,15 +112,49 @@ async function captureForViewport(
     await settle(page, 700);
     const streetFile = join(OUT_DIR, `${viewportName}-${time}-street.png`);
     await page.screenshot({ path: streetFile });
-    shots.push({
-      file: streetFile.slice(ROOT.length).replace(/^\//, ''),
-      viewport: viewportName,
-      timeOfDay: time,
-      view: 'street',
-      sha256: sha256(streetFile),
-    });
+    record(shots, streetFile, viewportName, time, 'street');
     await page.close();
   }
+}
+
+/**
+ * Two honesty exhibits beyond the twelve required views: the City Legend
+ * open over the city, and the Lab results with their certainty labels.
+ */
+async function captureHonestyShots(
+  context: BrowserContext,
+  serverUrl: string,
+  shots: Shot[],
+): Promise<void> {
+  const page = await context.newPage();
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      'qsimcity.settings.v1',
+      JSON.stringify({ timeOfDay: 'day', quality: 'high', labels: true }),
+    );
+    localStorage.setItem('qsimcity.progress.v1', JSON.stringify({ onboardingSeen: true }));
+  });
+  await page.goto(`${serverUrl}/?view=lab&sample=bell`);
+  await page.getByRole('img', { name: /3D quantum city/ }).waitFor({ timeout: 30000 });
+  await page.getByRole('button', { name: 'Run', exact: true }).click();
+  await page.getByRole('toolbar', { name: 'Replay timeline' }).waitFor({ timeout: 30000 });
+  await settle(page, 2500);
+  await dismissToast(page);
+  const labFile = join(OUT_DIR, 'desktop-day-lab-results.png');
+  await page.screenshot({ path: labFile });
+  record(shots, labFile, 'desktop', 'day', 'lab-results');
+
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Explore' })
+    .click();
+  await settle(page, 1200);
+  await page.getByRole('button', { name: 'Legend' }).click();
+  await page.getByRole('dialog', { name: /City legend/ }).waitFor({ timeout: 10000 });
+  const legendFile = join(OUT_DIR, 'desktop-day-legend.png');
+  await page.screenshot({ path: legendFile });
+  record(shots, legendFile, 'desktop', 'day', 'legend');
+  await page.close();
 }
 
 async function main(): Promise<void> {
@@ -107,6 +175,7 @@ async function main(): Promise<void> {
       bypassCSP: true,
     });
     await captureForViewport(desktop, baseUrl, 'desktop', shots);
+    await captureHonestyShots(desktop, baseUrl, shots);
     await desktop.close();
 
     const mobile = await browser.newContext({

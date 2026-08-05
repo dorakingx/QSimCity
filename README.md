@@ -16,10 +16,15 @@ computation trace, and every number on screen tells you how certain it is.
 
 **Live: <https://qsimcity.vercel.app>**
 
+![The quantum city by day](tests/e2e/visual.spec.ts-snapshots/city-day-chromium-darwin.png)
+
+*A real coastal city whose geography is the pipeline: the twelve districts
+along the Processing Boulevard, west to east, from the Program Port docks to
+the Measurement Harbor cranes, with the Observatory on the southern hill.*
+
 ![The quantum city at night](tests/e2e/visual.spec.ts-snapshots/city-night-chromium-darwin.png)
 
-*The twelve districts along the processing boulevard, west to east: Program
-Port through QPU Grid, with the Observatory on the southern hill.*
+*The same city at night: lit windows, street lamps, and district accents.*
 
 ![Accessible 2D Mode](tests/e2e/visual.spec.ts-snapshots/accessible-2d-chromium-darwin.png)
 
@@ -44,11 +49,12 @@ pnpm build && pnpm --filter qsimcity-web preview
 
 | Mode | What it is for |
 | --- | --- |
+| **Missions** | Seven guided learning missions with a drag-and-drop circuit builder, picture-first onboarding, and machine-checked completion — a first-timer finishes mission 1 from on-screen guidance alone |
 | **Guided Tour** | 16 chapters walking the whole pipeline, each stating exactly how exact its claims are |
-| **Explore** | Free navigation of the city; select districts, buildings, qubits, and consoles |
-| **Quantum Lab** | Author or paste OpenQASM, configure shots/seed/device/noise, replay the run |
+| **Explore** | Free navigation of the city; select districts, buildings, qubits, and consoles; the City Legend explains everything that moves |
+| **Quantum Lab** | Author circuits as code or blocks, configure shots/seed/device/noise, replay the run |
 | **Compare** | Ideal vs noisy distributions, and pre- vs post-compilation circuits and metrics |
-| **Accessible 2D** | The complete product with no 3D rendering at all |
+| **Accessible 2D** | The complete product with no 3D rendering at all, missions included |
 
 Twelve scenarios ship with deterministic seeds: Bell State, GHZ State, Quantum
 Teleportation, Grover Search, Quantum Fourier Transform, SWAP Storm, Bad

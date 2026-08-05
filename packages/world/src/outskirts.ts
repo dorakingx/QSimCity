@@ -110,11 +110,11 @@ export function outskirtParcels(): readonly OutskirtParcel[] {
         const fringe = Math.min(1, nearest / 90);
         const roll = hash01(`${id}:usage`);
         const usage: OutskirtUsage =
-          roll < 0.5 - fringe * 0.25
+          roll < 0.6 - fringe * 0.3
             ? 'housing'
-            : roll < 0.62 - fringe * 0.1
+            : roll < 0.72 - fringe * 0.12
               ? 'grove'
-              : roll < 0.6 + fringe * 0.34
+              : roll < 0.68 + fringe * 0.28
                 ? 'field'
                 : 'open';
         parcels.push({ id, rect, usage });

@@ -102,11 +102,20 @@ model of instruction duration.
 
 ## Rendering strategy
 
-The entire building stock renders as three `InstancedMesh` objects (boxes,
-cylinders, spheres), so draw calls stay flat regardless of city size. District
-plates, road segments, interactive kiosks, one window-light point cloud, one
-starfield, and the QPU pylons/bridges account for the rest. Level of detail is
-handled by fog and distance culling; the quality preset controls pixel ratio.
+The city plan (terrain, roads, blocks, parcels, buildings, props) is pure
+data in `@qsimcity/world`; the visual engine compiles it once into a bounded
+set of draws. Building walls merge into one mesh per procedural facade style
+(deterministic `DataTexture` atlases with meter-true UVs and night-emissive
+windows); roofs, plinths, wedges, tanks, and interiors merge into a
+vertex-colored mesh; district accent architecture merges per district so
+stage activity can glow. Everything repeated — lamps, trees, benches,
+containers, parked cars, fence posts, vehicles, pedestrians — is instanced.
+Sky, sun shadows (a camera-following ortho frustum), fog, and a
+PMREM-generated environment map from the procedural dome drive three
+lighting presets (day, golden hour, night). Picking maps merged-mesh face
+ranges back to buildings and districts. A far tier hides curb-level props
+at distance; the quality preset controls pixel ratio and shadow
+resolution. The whole city renders in roughly a hundred draw calls.
 
 three.js is code-split into its own chunk and loaded only when a 3D mode is
 opened, so 2D-only users never download it (123 KiB gzip initial load vs

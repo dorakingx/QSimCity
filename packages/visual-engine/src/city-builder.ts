@@ -71,7 +71,7 @@ const BAY_W = 3.2;
 
 /** Ambient glow level of district accent architecture per time of day. */
 export function accentBaseIntensity(time: TimeOfDay): number {
-  return time === 'night' ? 1.1 : time === 'golden' ? 0.7 : 0.45;
+  return time === 'night' ? 1.1 : time === 'golden' ? 0.45 : 0.12;
 }
 
 const NEUTRAL_BODY = new THREE.Color(0xb6bac2);
@@ -399,13 +399,13 @@ export function buildCity(): CityMeshes {
   const farHidden: THREE.Object3D[] = [];
 
   // ------------------------------------------------------------- terrain
-  const terrainMinX = WEST_COAST_X - 700;
-  const terrainMaxX = EAST_COAST_X + 700;
-  const terrainMinZ = CITY_BOUNDS.minZ - 700;
-  const terrainMaxZ = CITY_BOUNDS.maxZ + 700;
+  const terrainMinX = WEST_COAST_X - 2300;
+  const terrainMaxX = EAST_COAST_X + 2300;
+  const terrainMinZ = CITY_BOUNDS.minZ - 2300;
+  const terrainMaxZ = CITY_BOUNDS.maxZ + 2300;
   const terrainW = terrainMaxX - terrainMinX;
   const terrainD = terrainMaxZ - terrainMinZ;
-  const terrainGeometry = new THREE.PlaneGeometry(terrainW, terrainD, 200, 140);
+  const terrainGeometry = new THREE.PlaneGeometry(terrainW, terrainD, 300, 240);
   terrainGeometry.rotateX(-Math.PI / 2);
   terrainGeometry.translate((terrainMinX + terrainMaxX) / 2, 0, (terrainMinZ + terrainMaxZ) / 2);
   {
@@ -621,9 +621,15 @@ export function buildCity(): CityMeshes {
   const plazaColor = new THREE.Color(0x8f9089);
   const yardColor = new THREE.Color(0x6f6a5f);
   const groundBucket = new Bucket();
+  const campusLawn = new THREE.Color(0x5f7c48);
+  const campusApron = new THREE.Color(0x999e97);
   for (const parcel of plan.parcels) {
-    const color =
+    let color =
       parcel.usage === 'park' ? parkColor : parcel.usage === 'plaza' ? plazaColor : yardColor;
+    // The fenced QPU campus reads as kept grounds: lawns and pale aprons.
+    if (parcel.districtId === 'qpu-grid') {
+      color = parcel.usage === 'park' ? campusLawn : campusApron;
+    }
     const geometry = groundPatch(
       parcel.rect.minX,
       parcel.rect.maxX,
@@ -1030,12 +1036,12 @@ export function buildCity(): CityMeshes {
     'lamp-poles',
   );
   const lampHeadMaterial = new THREE.MeshStandardMaterial({
-    color: 0xd8dce0,
+    color: 0x565c63,
     emissive: 0xffd9a0,
     emissiveIntensity: 0,
   });
   const lampHead = makeInstanced(
-    new THREE.SphereGeometry(0.32, 8, 6),
+    new THREE.SphereGeometry(0.22, 8, 6),
     lampHeadMaterial,
     lamps.map((p) => ({ x: p.position.x, y: propY(p) + 5.35, z: p.position.z })),
     'lamp-heads',
@@ -1085,9 +1091,9 @@ export function buildCity(): CityMeshes {
       z: p.position.z,
       rotationY: p.rotationY,
       scale: [
-        0.85 + p.variant * 0.7,
-        0.95 + p.variant * 0.8,
-        0.85 + ((p.variant * 7) % 1) * 0.6,
+        0.75 + p.variant * 0.5,
+        0.85 + p.variant * 0.6,
+        0.75 + ((p.variant * 7) % 1) * 0.45,
       ] as [number, number, number],
       color: TREE_COLORS[Math.floor(p.variant * TREE_COLORS.length) % TREE_COLORS.length]!,
     })),

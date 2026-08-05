@@ -62,6 +62,34 @@ function outskirtProps(
 ): Prop[] {
   const props: Prop[] = [];
   for (const parcel of outskirtParcels()) {
+    if (parcel.usage === 'field') {
+      const along = hash01(`${parcel.id}:hedge`) < 0.5;
+      const count = Math.max(
+        2,
+        Math.round(
+          ((along ? parcel.rect.maxX - parcel.rect.minX : parcel.rect.maxZ - parcel.rect.minZ) -
+            4) /
+            9,
+        ),
+      );
+      for (let i = 0; i < count; i++) {
+        const t = (i + 0.5) / count;
+        const x = along
+          ? parcel.rect.minX + 2 + t * (parcel.rect.maxX - parcel.rect.minX - 4)
+          : parcel.rect.minX + 1.5;
+        const z = along
+          ? parcel.rect.minZ + 1.5
+          : parcel.rect.minZ + 2 + t * (parcel.rect.maxZ - parcel.rect.minZ - 4);
+        if (exclusions.some((b) => x > b.minX && x < b.maxX && z > b.minZ && z < b.maxZ)) continue;
+        props.push({
+          kind: 'tree',
+          position: { x, z },
+          rotationY: hash01(`${parcel.id}:h${i}:r`) * Math.PI * 2,
+          variant: 0.05 + 0.2 * hash01(`${parcel.id}:h${i}:v`),
+        });
+      }
+      continue;
+    }
     if (parcel.usage !== 'grove' && parcel.usage !== 'housing') continue;
     const area = (parcel.rect.maxX - parcel.rect.minX) * (parcel.rect.maxZ - parcel.rect.minZ);
     const count =

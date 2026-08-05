@@ -222,10 +222,10 @@ describe('ambient traffic (W3.3)', () => {
     expect(ambientVehiclesAt(12, true)).toEqual([]);
   });
 
-  it('keeps about 14 cars inside arterial road corridors at all times', () => {
+  it('keeps about 20 cars inside arterial road corridors at all times', () => {
     for (const time of [0, 3.7, 42, 999.5]) {
       const cars = ambientVehiclesAt(time, false);
-      expect(cars).toHaveLength(14);
+      expect(cars).toHaveLength(20);
       for (const car of cars) {
         expect(car.kind).toBe('ambient-car');
         expect(withinSomeCorridor(car.position), `car ${car.id} at t=${time}`).toBe(true);

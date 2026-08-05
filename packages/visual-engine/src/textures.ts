@@ -68,7 +68,7 @@ const SPECS: Record<Exclude<FacadeStyle, 'plain'>, FacadeSpec> = {
     glassDay: rgb(0x9ab2c2),
     glassNight: rgb(0xffd98c),
     window: [0.06, 0.08, 0.94, 0.92],
-    litChance: 0.55,
+    litChance: 0.4,
     roughness: 0.3,
     metalness: 0.22,
   },
@@ -140,9 +140,22 @@ export function facadePixels(style: Exclude<FacadeStyle, 'plain'>): FacadePixels
   const emissive = new Uint8Array(size * size * 4);
   const [wx0, wy0, wx1, wy1] = spec.window;
   // A 2x2 grid of window bays per tile gives per-window lighting variety
-  // while keeping the repeat subtle.
+  // while keeping the repeat subtle. The lit pattern is precomputed with a
+  // guarantee that at least one bay glows, so a night city never renders a
+  // fully dark facade family by hash accident.
   const bays = 2;
   const bayPx = size / bays;
+  const litBays: boolean[][] = [];
+  let anyLit = false;
+  for (let by = 0; by < bays; by++) {
+    litBays.push([]);
+    for (let bx = 0; bx < bays; bx++) {
+      const lit = noise2(`${style}:lit`, bx, by) < spec.litChance;
+      litBays[by]!.push(lit);
+      anyLit ||= lit;
+    }
+  }
+  if (!anyLit && spec.litChance > 0) litBays[0]![1] = true;
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const i = (y * size + x) * 4;
@@ -166,8 +179,7 @@ export function facadePixels(style: Exclude<FacadeStyle, 'plain'>): FacadePixels
         } else {
           // Vertical glass gradient reads as sky reflection by day.
           color = mix(spec.glassDay, rgb(0xdfe9f2), (1 - fy) * 0.35 + grain * 0.5);
-          const lit = noise2(`${style}:lit`, bayX, bayY) < spec.litChance;
-          if (lit) glow = 0.82 + noise2(`${style}:glow`, bayX, bayY) * 0.18;
+          if (litBays[bayY]![bayX]!) glow = 0.82 + noise2(`${style}:glow`, bayX, bayY) * 0.18;
         }
       } else {
         color = mix(spec.wall, rgb(0x000000), Math.max(0, -grain));

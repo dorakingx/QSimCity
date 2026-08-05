@@ -181,7 +181,7 @@ interface LoopLeg {
 const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLeg[] }[] = [
   {
     id: 'west',
-    carCount: 5,
+    carCount: 7,
     legs: [
       { segmentId: 'col-north', from: [-132, -26], to: [-69, -26] },
       { segmentId: 'ave-foundry', from: [-69, -26], to: [-69, 95] },
@@ -191,7 +191,7 @@ const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLe
   },
   {
     id: 'center',
-    carCount: 5,
+    carCount: 7,
     legs: [
       { segmentId: 'col-north', from: [44, -26], to: [97, -26] },
       { segmentId: 'ave-works', from: [97, -26], to: [97, 95] },
@@ -201,7 +201,7 @@ const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLe
   },
   {
     id: 'harbor',
-    carCount: 4,
+    carCount: 6,
     legs: [
       { segmentId: 'col-north', from: [150, -26], to: [232, -26] },
       { segmentId: 'quay-east', from: [232, -26], to: [232, 95] },

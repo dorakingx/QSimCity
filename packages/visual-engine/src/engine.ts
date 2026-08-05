@@ -215,7 +215,7 @@ export class CityEngine {
         .filter((b) => b.districtId === d.id)
         .reduce((max, b) => Math.max(max, b.collisionHeight), 20);
       sprite.position.set(d.bounds.x, tallest + 26, d.bounds.z);
-      sprite.scale.set(64, 12, 1);
+      sprite.scale.set(52, 9.75, 1);
       sprite.visible = this.labelsEnabled;
       this.scene.add(sprite);
       this.labelSprites.push(sprite);
@@ -682,7 +682,7 @@ export class CityEngine {
       this.envTarget = this.pmrem.fromScene(skyScene, 0.04);
       this.scene.environment = this.envTarget.texture;
       this.scene.environmentIntensity =
-        this.timeOfDay === 'night' ? 0.35 : this.timeOfDay === 'golden' ? 0.5 : 0.62;
+        this.timeOfDay === 'night' ? 0.35 : this.timeOfDay === 'golden' ? 0.55 : 0.7;
       previous?.dispose();
     } catch {
       // Environment maps are an enhancement; rendering continues without

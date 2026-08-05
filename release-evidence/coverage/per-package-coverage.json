@@ -1,8 +1,8 @@
 {
-  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
-  "sourceTreeHash": "fdf89a31945594bf",
-  "worktreeDirty": false,
-  "generatedAt": "2026-07-31T09:27:51.886Z",
+  "commitSha": "3bfd5d1c425551ab6d1405647ae9cc17825703c3",
+  "sourceTreeHash": "6c57ba3ba60a5b80",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-05T04:07:54.937Z",
   "tool": "vitest-v8-coverage",
   "toolVersion": "4.1.10",
   "command": "pnpm coverage:check",
@@ -15,10 +15,10 @@
     "projectBranches": 85
   },
   "measurements": {
-    "project.lines": 96.34,
-    "project.branches": 88.28,
-    "project.functions": 94.78,
-    "project.statements": 95.65,
+    "project.lines": 96.1,
+    "project.branches": 85.5,
+    "project.functions": 93.07,
+    "project.statements": 94.95,
     "domain.lines": 98.49,
     "domain.branches": 95.51,
     "trace.lines": 98.28,
@@ -77,10 +77,10 @@
       }
     ],
     "project": {
-      "lines": 96.34,
-      "branches": 88.28,
-      "functions": 94.78,
-      "statements": 95.65
+      "lines": 96.1,
+      "branches": 85.5,
+      "functions": 93.07,
+      "statements": 94.95
     },
     "projectFailures": []
   }

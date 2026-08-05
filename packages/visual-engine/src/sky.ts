@@ -37,10 +37,10 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     sunAzimuth: -0.7,
     sunElevation: 0.95,
     sunColor: 0xfff3e0,
-    sunIntensity: 3.1,
-    hemiSky: 0xbdd6f0,
-    hemiGround: 0x8a8574,
-    hemiIntensity: 0.72,
+    sunIntensity: 2.7,
+    hemiSky: 0xc7ddf5,
+    hemiGround: 0x8f8a7a,
+    hemiIntensity: 0.95,
     fogColor: 0xbcd7ec,
     fogNear: 470,
     fogFar: 1450,
@@ -58,12 +58,12 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     sunColor: 0xffb066,
     sunIntensity: 2.6,
     hemiSky: 0xc79f7e,
-    hemiGround: 0x5c5348,
-    hemiIntensity: 0.56,
-    fogColor: 0xe09a62,
+    hemiGround: 0x6a6053,
+    hemiIntensity: 0.72,
+    fogColor: 0xf2a35c,
     fogNear: 440,
     fogFar: 1380,
-    exposure: 1.14,
+    exposure: 1.24,
     starOpacity: 0,
     cloudColor: 0xffc9a0,
     cloudOpacity: 0.75,
@@ -79,7 +79,7 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     hemiSky: 0x41527e,
     hemiGround: 0x1c202b,
     hemiIntensity: 0.95,
-    fogColor: 0x0a1020,
+    fogColor: 0x1c2a4a,
     fogNear: 420,
     fogFar: 1300,
     exposure: 1.12,
@@ -237,10 +237,10 @@ export function buildSky(): SkyRig {
     const spread = 1500;
     sprite.position.set(
       ((hashString(`cloudpos:${i}:x`) & 0xffff) / 0xffff - 0.5) * spread * 2,
-      330 + ((hashString(`cloudpos:${i}:y`) & 0xffff) / 0xffff) * 160,
+      470 + ((hashString(`cloudpos:${i}:y`) & 0xffff) / 0xffff) * 220,
       ((hashString(`cloudpos:${i}:z`) & 0xffff) / 0xffff - 0.5) * spread * 1.4,
     );
-    const scale = 260 + ((hashString(`cloudscale:${i}`) & 0xffff) / 0xffff) * 320;
+    const scale = 380 + ((hashString(`cloudscale:${i}`) & 0xffff) / 0xffff) * 420;
     sprite.scale.set(scale, scale * 0.38, 1);
     group.add(sprite);
     clouds.push(sprite);

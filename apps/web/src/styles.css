@@ -1625,3 +1625,19 @@ figure {
 .legend-trigger {
   color: var(--text-dim);
 }
+
+/* Narrow screens: the Legend button drops below the camera controls so it
+   can never overlap them, and district labels leave the header room. */
+@media (max-width: 760px) {
+  /* The scenario dock sits at the bottom on phones, so the top-right
+     corner is free for the Legend; camera chips wrap below the header. */
+  .legend-toggle {
+    top: 0.8rem;
+    right: 0.8rem;
+  }
+
+  .camera-controls {
+    flex-wrap: wrap;
+    max-width: calc(100% - 7rem);
+  }
+}
