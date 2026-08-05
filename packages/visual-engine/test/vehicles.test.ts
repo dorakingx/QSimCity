@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 import type { PedestrianState, VehicleState } from '@qsimcity/world';
 import { buildVehicles } from '../src/vehicles.js';
 

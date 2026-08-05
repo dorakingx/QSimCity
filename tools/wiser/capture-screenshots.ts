@@ -32,11 +32,6 @@ async function settle(page: Page, ms: number): Promise<void> {
   await page.waitForTimeout(ms);
 }
 
-async function waitForCity(page: Page): Promise<void> {
-  await page.getByRole('img', { name: /3D quantum city/ }).waitFor({ timeout: 30000 });
-  await settle(page, 3000);
-}
-
 function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex');
 }

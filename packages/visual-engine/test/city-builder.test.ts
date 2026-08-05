@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import * as THREE from 'three';
+import type * as THREE from 'three';
 import { DISTRICTS, INTERACTIVES, qpuPylonPositions } from '@qsimcity/world';
 import { accentBaseIntensity, buildCity, buildQpu } from '../src/city-builder.js';
 
