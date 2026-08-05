@@ -119,6 +119,12 @@ function BlocksIllustration(): ReactElement {
   );
 }
 
+const LEVEL_CHOICES = [
+  ['child', 'Kids'],
+  ['beginner', 'Beginners'],
+  ['expert', 'Experts'],
+] as const;
+
 export function Onboarding(): ReactElement | null {
   const seen = useAppStore((s) => s.progress.onboardingSeen);
   const reducedMotion = useAppStore((s) => s.settings.reducedMotion);
@@ -162,20 +168,32 @@ export function Onboarding(): ReactElement | null {
           aria-label="How should we explain things?"
         >
           <span className="onboarding-level-label">Words for:</span>
-          {(
-            [
-              ['child', 'Kids'],
-              ['beginner', 'Beginners'],
-              ['expert', 'Experts'],
-            ] as const
-          ).map(([value, label]) => (
+          {LEVEL_CHOICES.map(([value, label], index) => (
             <button
               key={value}
               type="button"
               role="radio"
               aria-checked={level === value}
+              // ARIA radio pattern: one tab stop, arrows move selection.
+              tabIndex={level === value ? 0 : -1}
               className={`onboarding-level-choice${level === value ? ' active' : ''}`}
               onClick={() => useAppStore.getState().updateSettings({ explanationLevel: value })}
+              onKeyDown={(e) => {
+                const delta =
+                  e.key === 'ArrowRight' || e.key === 'ArrowDown'
+                    ? 1
+                    : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+                      ? -1
+                      : 0;
+                if (delta === 0) return;
+                e.preventDefault();
+                const next =
+                  LEVEL_CHOICES[(index + delta + LEVEL_CHOICES.length) % LEVEL_CHOICES.length]!;
+                useAppStore.getState().updateSettings({ explanationLevel: next[0] });
+                const parent = e.currentTarget.parentElement;
+                const target = parent?.querySelectorAll<HTMLButtonElement>('[role="radio"]');
+                target?.[(index + delta + LEVEL_CHOICES.length) % LEVEL_CHOICES.length]?.focus();
+              }}
             >
               {label}
             </button>

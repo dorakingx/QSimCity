@@ -39,7 +39,9 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
     0.0001,
     ...shownKeys.flatMap((k) => series.map((s, i) => (s.counts[k] ?? 0) / totals[i]!)),
   );
-  const barGroupW = 34;
+  // Few outcomes get wide bar groups so a two-bar Bell histogram fills its
+  // panel instead of stranding two slivers at the left edge (art review).
+  const barGroupW = shownKeys.length <= 4 ? 96 : shownKeys.length <= 8 ? 56 : 34;
   const chartW = 60 + shownKeys.length * barGroupW;
   const chartH = 170;
   const plotH = 120;

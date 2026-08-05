@@ -921,22 +921,24 @@ export function buildCity(): CityMeshes {
       const pz = cz + piece.offset[1];
       transform(geometry, px, baseY + 0.3 + piece.size[1] / 2, pz, piece.rotationY);
       if (piece.kind === 'screen') {
-        // Presentation screens are always-lit displays with a simple bar
-        // chart, not accent architecture — a blank accent slab reads as an
-        // untextured wall by day (art review).
+        // Presentation screens are always-lit displays showing a readable
+        // bar chart: a dark glass panel inside the shell bezel, with a
+        // dense row of slim glowing columns. Six huge bright slabs read as
+        // blank posters (art review) — a chart needs density and contrast.
         screenShellBucket.add(paint(geometry, new THREE.Color(0x232a33)), target);
         const roomward = Math.sign(cz - pz) || 1;
         const faceZ = pz + roomward * (piece.size[2] / 2 + 0.02);
-        const panel = new THREE.BoxGeometry(piece.size[0] * 0.94, piece.size[1] * 0.8, 0.02);
+        const panel = new THREE.BoxGeometry(piece.size[0] * 0.9, piece.size[1] * 0.72, 0.02);
         transform(panel, px, baseY + 0.3 + piece.size[1] * 0.52, faceZ);
         screenGlowBucket.add(panel, target);
-        const barBase = baseY + 0.3 + piece.size[1] * 0.18;
-        const bars = 6;
+        const chartBase = baseY + 0.3 + piece.size[1] * 0.22;
+        const bars = 14;
+        const barWidth = (piece.size[0] * 0.78) / (bars * 1.7);
         for (let b = 0; b < bars; b++) {
-          const barH = piece.size[1] * (0.18 + 0.42 * hash01(`${interiorId}:bar:${b}`));
-          const bx = px + (b - (bars - 1) / 2) * piece.size[0] * 0.13;
-          const bar = new THREE.BoxGeometry(piece.size[0] * 0.07, barH, 0.02);
-          transform(bar, bx, barBase + barH / 2, faceZ + roomward * 0.02);
+          const barH = piece.size[1] * (0.08 + 0.42 * hash01(`${interiorId}:bar:${b}`));
+          const bx = px + (b - (bars - 1) / 2) * barWidth * 1.7;
+          const bar = new THREE.BoxGeometry(barWidth, barH, 0.02);
+          transform(bar, bx, chartBase + barH / 2, faceZ + roomward * 0.02);
           screenBarBucket.add(bar, target);
         }
       } else {
@@ -1071,10 +1073,12 @@ export function buildCity(): CityMeshes {
     ],
     [
       screenGlowBucket,
+      // Dark glass with a faint cool glow: the chart columns must contrast
+      // against it, so the panel stays far dimmer than the bars.
       new THREE.MeshStandardMaterial({
-        color: 0x1a2027,
-        emissive: 0xffdf9e,
-        emissiveIntensity: 0.55,
+        color: 0x121820,
+        emissive: 0x24405c,
+        emissiveIntensity: 0.35,
         roughness: 0.4,
       }),
       'interior-screen-glow',
@@ -1083,8 +1087,8 @@ export function buildCity(): CityMeshes {
       screenBarBucket,
       new THREE.MeshStandardMaterial({
         color: 0x10151b,
-        emissive: 0xfff6de,
-        emissiveIntensity: 1.4,
+        emissive: 0x7fe0c0,
+        emissiveIntensity: 0.9,
         roughness: 0.35,
       }),
       'interior-screen-bars',

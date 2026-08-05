@@ -760,6 +760,43 @@ figure {
     left: 12px;
     bottom: 232px;
   }
+
+  /* Compact chrome: on a phone the header stack was eating 40% of the
+     viewport before any city appeared (child-UX, art, and performance
+     reviews). Two rows: brand + tools, then one horizontally scrollable
+     mode strip. Touch targets stay >= 40px tall. */
+  .app-header {
+    gap: 0.3rem 0.6rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .brand {
+    font-size: 1.05rem;
+    order: 1;
+  }
+
+  .header-tools {
+    order: 2;
+  }
+
+  .app-header nav {
+    order: 3;
+    width: 100%;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .app-header nav button {
+    flex: 0 0 auto;
+  }
+
+  .app-header nav button,
+  .header-tools button {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.88rem;
+  }
 }
 
 .lab-drawer {
