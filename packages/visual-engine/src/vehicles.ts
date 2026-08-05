@@ -21,6 +21,11 @@ const PEDESTRIAN_COLORS = [0x8a6f5c, 0x5c748a, 0x6f8a5c, 0x8a5c74, 0x707a85].map
   (c) => new THREE.Color(c),
 );
 
+// Shared scratch matrix: setInstance runs for every instance every frame,
+// and allocating a Matrix4 per call is measurable GC churn on low-end
+// devices (performance review finding).
+const SCRATCH_MATRIX = new THREE.Matrix4();
+
 function setInstance(
   mesh: THREE.InstancedMesh,
   index: number,
@@ -30,10 +35,9 @@ function setInstance(
   rotationY: number,
   color?: THREE.Color,
 ): void {
-  const matrix = new THREE.Matrix4();
-  matrix.makeRotationY(rotationY);
-  matrix.setPosition(x, y, z);
-  mesh.setMatrixAt(index, matrix);
+  SCRATCH_MATRIX.makeRotationY(rotationY);
+  SCRATCH_MATRIX.setPosition(x, y, z);
+  mesh.setMatrixAt(index, SCRATCH_MATRIX);
   if (color) mesh.setColorAt(index, color);
 }
 

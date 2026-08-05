@@ -25,7 +25,7 @@ import {
   type Prop,
   type RoadSegment,
 } from '@qsimcity/world';
-import { crosswalkTexture, facadeTextures, roadTexture } from './textures.js';
+import { crosswalkTexture, facadeTextures, roadTexture, waterNormalTexture } from './textures.js';
 import type { TimeOfDay } from './sky.js';
 
 /**
@@ -69,9 +69,11 @@ export interface CityMeshes {
 const FLOOR_H = 3.1;
 const BAY_W = 3.2;
 
-/** Ambient glow level of district accent architecture per time of day. */
+/** Ambient glow level of district accent architecture per time of day.
+ * Golden hour stays low: a visibly self-lit accent under a warm sunset key
+ * reads as an unlit material rather than signage. */
 export function accentBaseIntensity(time: TimeOfDay): number {
-  return time === 'night' ? 1.1 : time === 'golden' ? 0.45 : 0.12;
+  return time === 'night' ? 1.1 : time === 'golden' ? 0.2 : 0.12;
 }
 
 const NEUTRAL_BODY = new THREE.Color(0xb6bac2);
@@ -379,7 +381,9 @@ function makeInstanced(
   return { mesh };
 }
 
-const CAR_COLORS = [0x8c96a5, 0x5f6d7d, 0x9d8f7a, 0x7a8577, 0x596273, 0x8a7f8f].map(
+// Kept above mid-grey: in building shade the tone-mapped result loses about
+// half its value, and anything darker reads as an untextured black box.
+const CAR_COLORS = [0x8c96a5, 0x707e8e, 0x9d8f7a, 0x828d7f, 0x6d7787, 0x8a7f8f].map(
   (c) => new THREE.Color(c),
 );
 const CONTAINER_COLORS = [0xa8574b, 0x4b7ba8, 0x67a04f, 0xb0913f, 0x777f8a, 0x8a5d9e].map(
@@ -480,13 +484,17 @@ export function buildCity(): CityMeshes {
   disposables.push(terrainGeometry, terrainMaterial);
 
   // --------------------------------------------------------------- water
+  const waterNormals = waterNormalTexture();
+  waterNormals.repeat.set(64, 52);
   const waterMaterial = new THREE.MeshStandardMaterial({
     color: 0x22455e,
-    roughness: 0.22,
+    roughness: 0.18,
     metalness: 0.55,
     transparent: true,
     opacity: 0.94,
     envMapIntensity: 1.2,
+    normalMap: waterNormals,
+    normalScale: new THREE.Vector2(0.35, 0.35),
   });
   const waterGeometry = new THREE.PlaneGeometry(terrainW, terrainD);
   waterGeometry.rotateX(-Math.PI / 2);
@@ -677,6 +685,10 @@ export function buildCity(): CityMeshes {
   // ------------------------------------------------------------ buildings
   const facadeBuckets = new Map<Exclude<FacadeStyle, 'plain'>, Bucket>();
   const plainPartsBucket = new Bucket();
+  // Interior shells get their own bucket: a touch of uniform self-glow
+  // stands in for bounced room light, since point lights alone leave the
+  // faces pointing away from them crushed to black (no GI).
+  const interiorPartsBucket = new Bucket();
   const emissiveBuckets = new Map<string, Bucket>();
   const facadeMaterials: THREE.MeshStandardMaterial[] = [];
 
@@ -704,7 +716,9 @@ export function buildCity(): CityMeshes {
       districtId: building.districtId,
     };
     const accent = new THREE.Color(getDistrict(building.districtId).accentColor);
-    const toneColor = part.tone === 0 ? NEUTRAL_BODY : accent.clone().lerp(NEUTRAL_BODY, 0.45);
+    // Accent-tinted bodies lean well toward neutral: a strongly saturated
+    // painted mass ignores the time-of-day grade and reads as unlit plastic.
+    const toneColor = part.tone === 0 ? NEUTRAL_BODY : accent.clone().lerp(NEUTRAL_BODY, 0.62);
     const [ox, oy, oz] = part.offset;
     const [sx, sy, sz] = part.size;
     // Rotate the offset by the building rotation.
@@ -823,7 +837,7 @@ export function buildCity(): CityMeshes {
         baseY + interior.height / 2,
         (box.minZ + box.maxZ) / 2,
       );
-      plainPartsBucket.add(paint(wall, wallColor), target);
+      interiorPartsBucket.add(paint(wall, wallColor), target);
     }
     const t = 1.2;
     const floor = new THREE.BoxGeometry(
@@ -832,14 +846,14 @@ export function buildCity(): CityMeshes {
       interior.halfD * 2 + t * 2,
     );
     transform(floor, cx, baseY + 0.15, cz);
-    plainPartsBucket.add(paint(floor, floorColor), target);
+    interiorPartsBucket.add(paint(floor, floorColor), target);
     const ceiling = new THREE.BoxGeometry(
       interior.halfW * 2 + t * 2,
       0.4,
       interior.halfD * 2 + t * 2,
     );
     transform(ceiling, cx, baseY + interior.height + 0.2, cz);
-    plainPartsBucket.add(paint(ceiling, wallColor), target);
+    interiorPartsBucket.add(paint(ceiling, wallColor), target);
     // Warm light panel under the ceiling so the room reads lit.
     const lightPanel = new THREE.BoxGeometry(interior.halfW * 1.2, 0.12, interior.halfD * 1.2);
     transform(lightPanel, cx, baseY + interior.height - 0.12, cz);
@@ -847,19 +861,20 @@ export function buildCity(): CityMeshes {
     // A real point light under the panel: walls and ceiling occlude the sun
     // and most of the hemisphere light, so without it the room reads unlit.
     const roomDoor = doorPosition(interior);
-    const roomLight = new THREE.PointLight(
-      0xffe3b8,
-      420,
-      Math.hypot(interior.halfW, interior.halfD) * 3.2,
-      1.8,
-    );
-    // Biased toward the doorway so the faces a visitor sees are the lit ones.
-    roomLight.position.set(
+    // Two ceiling lights — one biased toward the doorway, one toward the
+    // far wall — so no furniture face inside the room falls to black (the
+    // sun is fully shadowed indoors and hemisphere fill alone is too dim).
+    const lightHeight = baseY + interior.height - 1.2;
+    const lightRange = Math.hypot(interior.halfW, interior.halfD) * 3.2;
+    const doorLight = new THREE.PointLight(0xffe3b8, 420, lightRange, 1.6);
+    doorLight.position.set(
       cx + (roomDoor.x - cx) * 0.55,
-      baseY + interior.height - 1.2,
+      lightHeight,
       cz + (roomDoor.z - cz) * 0.55,
     );
-    group.add(roomLight);
+    const backLight = new THREE.PointLight(0xffe8c4, 300, lightRange, 1.6);
+    backLight.position.set(cx - (roomDoor.x - cx) * 0.5, lightHeight, cz - (roomDoor.z - cz) * 0.5);
+    group.add(doorLight, backLight);
     // Band from the room ceiling up to the original ground-part height.
     const bandHeight = Math.max(0, groundPart.size[1] - interior.height - 0.4);
     if (bandHeight > 0.05) {
@@ -871,28 +886,63 @@ export function buildCity(): CityMeshes {
         building.position[1] + groundPart.offset[2],
         building.rotationY + groundPart.rotationY,
       );
-      plainPartsBucket.add(paint(band, wallColor), target);
+      interiorPartsBucket.add(paint(band, wallColor), target);
     }
-    // Furniture.
+    // Carpet inlay and wall trim so the shell reads architectural, not
+    // greybox: a darker warm floor field inside the walls and a waist-high
+    // accent band around them.
+    const carpet = new THREE.BoxGeometry(interior.halfW * 2 - 1.6, 0.04, interior.halfD * 2 - 1.6);
+    transform(carpet, cx, baseY + 0.32, cz);
+    interiorPartsBucket.add(paint(carpet, new THREE.Color(0x7a6f5c)), target);
+    const trimColor = accent.clone().lerp(new THREE.Color(0x8f8878), 0.7);
+    for (const side of [-1, 1]) {
+      const trimX = new THREE.BoxGeometry(interior.halfW * 2 - 0.2, 0.28, 0.08);
+      transform(trimX, cx, baseY + 1.1, cz + side * (interior.halfD - 0.12));
+      interiorPartsBucket.add(paint(trimX, trimColor), target);
+      const trimZ = new THREE.BoxGeometry(0.08, 0.28, interior.halfD * 2 - 0.2);
+      transform(trimZ, cx + side * (interior.halfW - 0.12), baseY + 1.1, cz);
+      interiorPartsBucket.add(paint(trimZ, trimColor), target);
+    }
+    // Furniture. Desks get a monitor, keyboard, and chair so the room reads
+    // occupied and purposeful rather than as bare slabs.
     for (const piece of interior.furniture) {
       const geometry = new THREE.BoxGeometry(piece.size[0], piece.size[1], piece.size[2]);
-      transform(
-        geometry,
-        cx + piece.offset[0],
-        baseY + 0.3 + piece.size[1] / 2,
-        cz + piece.offset[1],
-        piece.rotationY,
-      );
+      const px = cx + piece.offset[0];
+      const pz = cz + piece.offset[1];
+      transform(geometry, px, baseY + 0.3 + piece.size[1] / 2, pz, piece.rotationY);
       if (piece.kind === 'screen') {
         emissiveBucketFor(building.districtId).add(geometry, target);
       } else {
         const color =
           piece.kind === 'desk' || piece.kind === 'table'
-            ? new THREE.Color(0x71614c)
+            ? new THREE.Color(0x8a7a5f)
             : piece.kind === 'shelf'
-              ? new THREE.Color(0x5c5648)
-              : accent.clone().lerp(new THREE.Color(0x888888), 0.5);
-        plainPartsBucket.add(paint(geometry, color), target);
+              ? new THREE.Color(0x6d6655)
+              : accent.clone().lerp(new THREE.Color(0x999691), 0.55);
+        interiorPartsBucket.add(paint(geometry, color), target);
+      }
+      if (piece.kind === 'desk') {
+        const deskTop = baseY + 0.3 + piece.size[1];
+        // Toward-door side of the desk gets the chair; the monitor faces it.
+        const doorward = Math.sign(roomDoor.z - cz) || 1;
+        const monitor = new THREE.BoxGeometry(piece.size[0] * 0.36, 0.5, 0.06);
+        transform(monitor, px, deskTop + 0.28, pz - doorward * 0.35);
+        interiorPartsBucket.add(paint(monitor, new THREE.Color(0x2f3743)), target);
+        const monitorGlow = new THREE.BoxGeometry(piece.size[0] * 0.32, 0.42, 0.02);
+        transform(monitorGlow, px, deskTop + 0.28, pz - doorward * 0.31);
+        emissiveBucketFor(building.districtId).add(monitorGlow, target);
+        const keyboard = new THREE.BoxGeometry(piece.size[0] * 0.28, 0.03, 0.32);
+        transform(keyboard, px, deskTop + 0.02, pz + doorward * 0.12);
+        interiorPartsBucket.add(paint(keyboard, new THREE.Color(0xa9a294)), target);
+        const seat = new THREE.BoxGeometry(0.85, 0.12, 0.85);
+        transform(seat, px, baseY + 0.85, pz + doorward * 1.5);
+        interiorPartsBucket.add(paint(seat, new THREE.Color(0x4f5763)), target);
+        const back = new THREE.BoxGeometry(0.85, 0.95, 0.12);
+        transform(back, px, baseY + 1.35, pz + doorward * 1.92);
+        interiorPartsBucket.add(paint(back, new THREE.Color(0x4f5763)), target);
+        const legs = new THREE.BoxGeometry(0.16, 0.55, 0.16);
+        transform(legs, px, baseY + 0.55, pz + doorward * 1.5);
+        interiorPartsBucket.add(paint(legs, new THREE.Color(0x33373d)), target);
       }
     }
     // Door frame jambs and lintel mark the entrance.
@@ -908,7 +958,7 @@ export function buildCity(): CityMeshes {
         doorY + 2.1,
         door.z + (alongX ? 0 : side * (interior.doorWidth / 2 + 0.3)),
       );
-      plainPartsBucket.add(paint(jamb, frameColor), target);
+      interiorPartsBucket.add(paint(jamb, frameColor), target);
     }
     const lintel = new THREE.BoxGeometry(
       alongX ? interior.doorWidth + 1.2 : 1.6,
@@ -916,7 +966,7 @@ export function buildCity(): CityMeshes {
       alongX ? 1.6 : interior.doorWidth + 1.2,
     );
     transform(lintel, door.x, doorY + 4.45, door.z);
-    plainPartsBucket.add(paint(lintel, frameColor), target);
+    interiorPartsBucket.add(paint(lintel, frameColor), target);
   };
 
   for (const building of buildings) {
@@ -972,6 +1022,19 @@ export function buildCity(): CityMeshes {
     group.add(plainMesh);
     rangedPicks.set(plainMesh, plainPartsBucket.ranges);
     disposables.push(plainMesh.geometry, plainMaterial);
+  }
+  const interiorMaterial = new THREE.MeshStandardMaterial({
+    vertexColors: true,
+    roughness: 0.85,
+    emissive: 0x8a8072,
+    emissiveIntensity: 0.24,
+  });
+  const interiorMesh = interiorPartsBucket.build(interiorMaterial, 'interior-parts');
+  if (interiorMesh) {
+    interiorMesh.receiveShadow = true;
+    group.add(interiorMesh);
+    rangedPicks.set(interiorMesh, interiorPartsBucket.ranges);
+    disposables.push(interiorMesh.geometry, interiorMaterial);
   }
   // District accent architecture doubles as the activity indicator: the
   // engine raises a district's accent glow while its stage fires.
@@ -1184,9 +1247,9 @@ export function buildCity(): CityMeshes {
     'parked-car-bodies',
   );
   const carTopMaterial = new THREE.MeshStandardMaterial({
-    color: 0x2c3138,
-    roughness: 0.2,
-    metalness: 0.4,
+    color: 0x4a5560,
+    roughness: 0.3,
+    metalness: 0.35,
   });
   const parkedTop = makeInstanced(
     new THREE.BoxGeometry(2.1, 0.75, 1.6),
@@ -1282,6 +1345,10 @@ export function buildCity(): CityMeshes {
       color: 0x4a515c,
       roughness: 0.65,
       metalness: 0.15,
+      // Faint self-glow so console shells stay legible from their unlit
+      // side, indoors and at night — they are interactive objects.
+      emissive: 0x3a4048,
+      emissiveIntensity: 0.3,
     });
     const kiosk = new THREE.Mesh(kioskGeometry, kioskMaterial);
     kiosk.position.set(interactive.position[0], y + 1.2, interactive.position[1]);

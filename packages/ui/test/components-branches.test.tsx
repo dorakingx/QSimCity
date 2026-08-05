@@ -251,7 +251,7 @@ describe('trace-driven branches', () => {
     });
     render(<Inspector />);
     expect(screen.getByRole('heading', { name: 'Physical qubit 0' })).toBeTruthy();
-    expect(screen.getByText(/L0 \(initial layout\)|Unassigned/)).toBeTruthy();
+    expect(screen.getByText(/L0 \(at tick \d+\)|Unassigned/)).toBeTruthy();
   });
 
   it('EventLog narrates a dynamic circuit with conditions', () => {

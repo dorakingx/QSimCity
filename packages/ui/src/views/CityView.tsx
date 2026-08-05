@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import { getDevice } from '@qsimcity/domain';
 import { activityAtTick, INTERACTIVES, weatherAt } from '@qsimcity/world';
-import { CityAudio, CityEngine, type CameraMode } from '@qsimcity/visual-engine';
+import {
+  CityAudio,
+  CityEngine,
+  type CameraMode,
+  type EngineOptions,
+  type PickTarget,
+} from '@qsimcity/visual-engine';
 import { useAppStore } from '../store/appStore.js';
 import { CityLegend } from '../components/CityLegend.js';
 
@@ -27,14 +33,14 @@ export default function CityView(): ReactElement {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const engine = new CityEngine({
+    const engineOptions: EngineOptions = {
       canvas,
       quality: useAppStore.getState().settings.quality,
       timeOfDay: useAppStore.getState().settings.timeOfDay,
       reducedMotion: useAppStore.getState().settings.reducedMotion,
       particles: useAppStore.getState().settings.particles,
       labels: useAppStore.getState().settings.labels,
-      onPick: (target) => {
+      onPick: (target: PickTarget) => {
         const s = useAppStore.getState();
         if (target.kind === 'district' && target.districtId) {
           s.select({ kind: 'district', districtId: target.districtId });
@@ -56,7 +62,17 @@ export default function CityView(): ReactElement {
           .getState()
           .showToast('3D rendering was interrupted; switched to Accessible 2D Mode.');
       },
-    });
+    };
+    let engine: CityEngine;
+    try {
+      engine = new CityEngine(engineOptions);
+    } catch {
+      // Context creation can fail at runtime even when the upfront WebGL
+      // probe passed (context-count exhaustion, GPU resets). Fall back to
+      // the complete 2D experience instead of crashing the view.
+      engineOptions.onContextLost();
+      return;
+    }
     engineRef.current = engine;
     // Stable read-only diagnostics hook for performance measurement tools
     // (never mutates scientific state); the full engine is exposed only in
@@ -319,12 +335,10 @@ function TouchJoystick({
       className="touch-joystick"
       style={{
         position: 'absolute',
-        left: 18,
-        bottom: 86,
         display: 'flex',
         alignItems: 'flex-end',
         gap: 10,
-        zIndex: 5,
+        zIndex: 6,
       }}
     >
       <div

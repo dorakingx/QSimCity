@@ -2,6 +2,7 @@ import { DISTRICTS, type District, type DistrictId } from './districts.js';
 import { districtPlans, type Parcel } from './blocks.js';
 import { hash01, hashPick, hashRange } from './util.js';
 import { LANDMARK_SITES } from './landmarks.js';
+import { QPU_CAMPUS } from './props.js';
 
 /**
  * Deterministic procedural architecture (spec §2.3). Buildings are generated
@@ -215,7 +216,9 @@ function tankFarm(seed: string, w: number, d: number): Massing {
       part('dome', [gx * w * 0.24, h, gz * d * 0.24], [radius * 2, radius * 0.5, radius * 2], 0),
     );
   }
-  parts.push(part('bridge', [0, 4.2, 0], [w * 0.7, 0.5, 0.9], 2));
+  // The pipe rack stays neutral: a filler tank farm must respond to scene
+  // light, not glow the district accent (accent glow belongs to landmarks).
+  parts.push(part('bridge', [0, 4.2, 0], [w * 0.7, 0.5, 0.9], 0));
   return { parts, extent: [w / 2, d / 2], height: maxH + 2, name: 'tank farm' };
 }
 
@@ -250,7 +253,7 @@ function dataHall(seed: string, w: number, d: number): Massing {
       ),
     );
   }
-  parts.push(part('bridge', [0, h * 0.75, -d / 2 - 1.2], [w * 0.5, 0.7, 1.1], 2));
+  parts.push(part('bridge', [0, h * 0.75, -d / 2 - 1.2], [w * 0.5, 0.7, 1.1], 0));
   return { parts, extent: [w / 2, d / 2 + 1.2], height: h + 1.6, name: 'data hall' };
 }
 
@@ -551,11 +554,23 @@ export function generateBuildings(): Building[] {
       collisionHalfExtents: landmark.extent,
       collisionHeight: landmark.height,
     });
-    // The QPU campus keeps its grounds open for the pylon field.
-    if (district.id === 'qpu-grid') continue;
     let index = 0;
     for (const parcel of buildingParcels) {
       if (parcel.blockId === landmarkBlockId) continue;
+      // The fenced QPU campus keeps its grounds open for the pylon field,
+      // but parcels outside the fence take low service structures so the
+      // district does not read as empty dead blocks from overview.
+      if (district.id === 'qpu-grid') {
+        const px = (parcel.rect.minX + parcel.rect.maxX) / 2;
+        const pz = (parcel.rect.minZ + parcel.rect.maxZ) / 2;
+        const pad = 3;
+        const insideCampus =
+          px > QPU_CAMPUS.minX - pad &&
+          px < QPU_CAMPUS.maxX + pad &&
+          pz > QPU_CAMPUS.minZ - pad &&
+          pz < QPU_CAMPUS.maxZ + pad;
+        if (insideCampus) continue;
+      }
       // Skip parcels whose building envelope could touch the landmark.
       const cx = (parcel.rect.minX + parcel.rect.maxX) / 2;
       const cz = (parcel.rect.minZ + parcel.rect.maxZ) / 2;

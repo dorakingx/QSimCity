@@ -305,6 +305,50 @@ export function crosswalkTexture(): THREE.DataTexture {
   return texture;
 }
 
+/**
+ * Deterministic tiling ripple normal map for the sea. Summed sine waves —
+ * no randomness — so the committed screenshots stay byte-stable. The
+ * gentle normal variation is what lets the flat water plane pick up sun
+ * glints and sky gradient instead of rendering as one dead color.
+ */
+export function waterNormalPixels(): { size: number; data: Uint8Array } {
+  const size = 128;
+  const data = new Uint8Array(size * size * 4);
+  const tau = Math.PI * 2;
+  const height = (x: number, y: number): number =>
+    Math.sin((x / size) * tau * 3 + Math.sin((y / size) * tau) * 1.2) * 0.5 +
+    Math.sin((y / size) * tau * 4 + Math.sin((x / size) * tau * 2) * 0.8) * 0.35 +
+    Math.sin(((x + y) / size) * tau * 7) * 0.18;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const i = (y * size + x) * 4;
+      // Central differences over the (tiling) height field.
+      const dx = height((x + 1) % size, y) - height((x - 1 + size) % size, y);
+      const dy = height(x, (y + 1) % size) - height(x, (y - 1 + size) % size);
+      data[i] = Math.round(128 + dx * 60);
+      data[i + 1] = Math.round(128 + dy * 60);
+      data[i + 2] = 255;
+      data[i + 3] = 255;
+    }
+  }
+  return { size, data };
+}
+
+export function waterNormalTexture(): THREE.DataTexture {
+  const cached = roadCache.get('water-normal');
+  if (cached) return cached;
+  const pixels = waterNormalPixels();
+  const texture = new THREE.DataTexture(pixels.data, pixels.size, pixels.size);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.needsUpdate = true;
+  roadCache.set('water-normal', texture);
+  return texture;
+}
+
 /** Dispose all cached textures (test hygiene). */
 export function disposeTextureCaches(): void {
   for (const t of textureCache.values()) {

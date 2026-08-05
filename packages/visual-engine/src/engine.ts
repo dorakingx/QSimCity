@@ -7,6 +7,8 @@ import {
   countsAtTick,
   couriersAt,
   DISTRICTS,
+  doorPosition,
+  INTERIORS,
   getDistrict,
   INTERACTIVES,
   LANDMARK_SITES,
@@ -77,6 +79,7 @@ export class CityEngine {
   private playbackTick = 0;
   private animTime = 0;
   private readonly labelSprites: THREE.Sprite[] = [];
+  private readonly interiorSigns: THREE.Sprite[] = [];
   private readonly vehicles: VehicleFleet;
   /** Logical-qubit banners keyed by logical index; they fly between pylons
    * when SWAPs exchange the mapping (W4.2, W4.3). */
@@ -206,35 +209,69 @@ export class CityEngine {
     loop();
   }
 
+  /** Text sprite canvas: bold stroked text over a soft dark backing plate
+   * so labels survive bright rooftops and busy skylines. */
+  private makeTextSprite(text: string, depthTest: boolean): THREE.Sprite {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 104;
+    const ctx = canvas.getContext('2d')!;
+    // Fit long names: shrink the font until the text fits the canvas.
+    let fontSize = 46;
+    ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
+    while (fontSize > 24 && ctx.measureText(text).width > 448) {
+      fontSize -= 2;
+      ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
+    }
+    ctx.textAlign = 'center';
+    const width = Math.min(492, ctx.measureText(text).width + 44);
+    ctx.fillStyle = 'rgba(10, 14, 22, 0.62)';
+    ctx.beginPath();
+    ctx.roundRect(256 - width / 2, 14, width, 76, 18);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+    ctx.lineWidth = 8;
+    ctx.strokeText(text, 256, 66);
+    ctx.fillText(text, 256, 66);
+    return new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(canvas),
+        transparent: true,
+        depthTest,
+      }),
+    );
+  }
+
   private buildLabels(): void {
     for (const d of DISTRICTS) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 96;
-      const ctx = canvas.getContext('2d')!;
-      ctx.font = '600 44px system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = 'rgba(0,0,0,0.85)';
-      ctx.lineWidth = 8;
-      ctx.strokeText(d.name, 256, 60);
-      ctx.fillText(d.name, 256, 60);
-      const sprite = new THREE.Sprite(
-        new THREE.SpriteMaterial({
-          map: new THREE.CanvasTexture(canvas),
-          transparent: true,
-          depthTest: false,
-        }),
-      );
+      const sprite = this.makeTextSprite(d.name, false);
       // Labels float above the tallest structure in each district.
       const tallest = this.city.buildings
         .filter((b) => b.districtId === d.id)
         .reduce((max, b) => Math.max(max, b.collisionHeight), 20);
       sprite.position.set(d.bounds.x, tallest + 26, d.bounds.z);
-      sprite.scale.set(52, 9.75, 1);
+      sprite.scale.set(58, 11.8, 1);
       sprite.visible = this.labelsEnabled;
       this.scene.add(sprite);
       this.labelSprites.push(sprite);
+    }
+    // Room name boards inside enterable interiors: placed toward the wall
+    // opposite the door so a visitor reads them on entry. Depth-tested so
+    // they never bleed through walls, and independent of the label toggle
+    // because they are signage, not overlay.
+    for (const room of INTERIORS) {
+      const sign = this.makeTextSprite(room.name, true);
+      const door = doorPosition(room);
+      const [cx, cz] = room.center;
+      sign.position.set(
+        cx + (cx - door.x) * 0.82,
+        terrainHeight(cx, cz) + room.height - 2.6,
+        cz + (cz - door.z) * 0.82,
+      );
+      sign.scale.set(9, 1.83, 1);
+      this.scene.add(sign);
+      this.interiorSigns.push(sign);
     }
   }
 
@@ -487,7 +524,10 @@ export class CityEngine {
   setPlayback(trace: Trace | null, tick: number, noisyConfigured: boolean): void {
     this.trace = trace;
     this.playbackTick = tick;
-    this.setActivity(trace ? activityAtTick(trace, tick) : null, noisyConfigured);
+    // One activity derivation per tick change, shared by every consumer
+    // below (the set pieces used to recompute it).
+    const activity = trace ? activityAtTick(trace, tick) : null;
+    this.setActivity(activity, noisyConfigured);
     this.vehicles.setSemantic(convoyAt(trace, tick), trace ? couriersAt(trace, tick) : []);
     const weather = weatherAt(trace, tick);
     const rainMaterial = this.rain.material as THREE.PointsMaterial;
@@ -495,7 +535,7 @@ export class CityEngine {
     this.sky.setCloudCover(weather.cover);
     this.updateLogicalBanners();
     this.updateCountStacks();
-    this.updateStageSetPieces(trace, tick);
+    this.updateStageSetPieces(trace, tick, activity);
   }
 
   /**
@@ -505,7 +545,11 @@ export class CityEngine {
    * sweeps its beacon, and the observatory raises a light beam when
    * results arrive. Presentation only; scrubbing reproduces each state.
    */
-  private updateStageSetPieces(trace: Trace | null, tick: number): void {
+  private updateStageSetPieces(
+    trace: Trace | null,
+    tick: number,
+    activity: WorldActivity | null,
+  ): void {
     const stagesReached = new Set<string>();
     let latestStage = '';
     if (trace) {
@@ -516,7 +560,11 @@ export class CityEngine {
       }
     }
     // Program ship: offshore before the run, docked once parsing started.
-    this.arrivalTarget = !trace ? 0 : stagesReached.has('parse') || stagesReached.has('input') ? 1 : 0;
+    this.arrivalTarget = !trace
+      ? 0
+      : stagesReached.has('parse') || stagesReached.has('input')
+        ? 1
+        : 0;
     if (!this.arrivalShip) {
       const hullMaterial = new THREE.MeshStandardMaterial({ color: 0x4e6b86, roughness: 0.6 });
       const castleMaterial = new THREE.MeshStandardMaterial({ color: 0xe8e9ec, roughness: 0.5 });
@@ -540,7 +588,7 @@ export class CityEngine {
     }
 
     // Refinery steam during translation ticks; beacon during scheduling.
-    const eventsNow = trace ? activityAtTick(trace, tick).eventsAtTick : [];
+    const eventsNow = activity?.eventsAtTick ?? [];
     this.steamActive = eventsNow.some((e) => e.stage === 'translation');
     if (!this.steam) {
       const site = LANDMARK_SITES['translation-refinery'];
@@ -977,12 +1025,20 @@ export class CityEngine {
       (this.countStacks.material as THREE.Material).dispose();
       this.countStacks.dispose();
     }
-    for (const sprite of this.labelSprites) {
+    for (const sprite of [...this.labelSprites, ...this.interiorSigns]) {
       sprite.material.map?.dispose();
       sprite.material.dispose();
     }
+    for (const pulse of this.pulses) {
+      pulse.mesh.geometry.dispose();
+      (pulse.mesh.material as THREE.Material).dispose();
+    }
     this.renderer.dispose();
-    this.renderer.forceContextLoss();
+    // Deliberately NOT forceContextLoss(): React StrictMode remounts reuse
+    // the same canvas, and a force-lost context cannot be recreated on it.
+    // Aborting the input listeners above already breaks the retention edge
+    // (canvas -> listener closure -> engine) that leaked disposed engines;
+    // the browser reclaims the context itself once the canvas is dropped.
   }
 }
 

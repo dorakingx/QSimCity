@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Trace } from 'qsimcity-trace';
+import { maxTickOf } from '@qsimcity/world';
 import {
   MISSIONS,
   getMission,
@@ -137,7 +138,11 @@ describe('mission 1 guided steps fire in order', () => {
     await useAppStore.getState().run();
     expect(mission.steps[1]!.isDone(snapshotOf())).toBe(true);
 
-    // Step 3: the produced trace satisfies the mission condition.
+    // Step 3 is an observation step: it must NOT complete the instant the
+    // run returns — only once the replay has actually reached the end.
+    expect(mission.steps[2]!.isDone(snapshotOf())).toBe(false);
+    const trace = useAppStore.getState().trace!;
+    useAppStore.setState({ playbackTick: maxTickOf(trace) });
     expect(mission.steps[2]!.isDone(snapshotOf())).toBe(true);
     expect(currentStepIndex(mission, snapshotOf())).toBe(mission.steps.length);
     expect(mission.isComplete(useAppStore.getState().trace!, useAppStore.getState().progress)).toBe(

@@ -40,6 +40,9 @@ export class CameraRig {
   /** Damped orbit state: current values chase the target values. */
   private target = new THREE.Vector3(30, 0, 62);
   private targetGoal = this.target.clone();
+  private readonly scratchForward = new THREE.Vector3();
+  private readonly scratchRight = new THREE.Vector3();
+  private readonly scratchNext = new THREE.Vector3();
   private distance = 640;
   private distanceGoal = 640;
   private azimuth = Math.PI / 2;
@@ -299,8 +302,10 @@ export class CameraRig {
       }
     }
 
-    const forward = new THREE.Vector3();
-    const right = new THREE.Vector3();
+    // Scratch vectors are class-level: update() runs every frame and
+    // per-frame Vector3 churn is avoidable GC pressure.
+    const forward = this.scratchForward;
+    const right = this.scratchRight;
     let move: THREE.Vector3;
     const speed = this.mode === 'first-person' ? WALK_SPEED : FLY_SPEED;
     const keyUp = this.keys.has('KeyE') ? 1 : this.keys.has('KeyQ') ? -1 : 0;
@@ -340,7 +345,7 @@ export class CameraRig {
     right.set(forward.z, 0, -forward.x);
     move = forward.multiplyScalar(fwd * speed * dt).add(right.multiplyScalar(strafe * speed * dt));
     if (this.mode === 'fly') move.y = lift * speed * dt;
-    const next = this.fpPosition.clone().add(move);
+    const next = this.scratchNext.copy(this.fpPosition).add(move);
     if (this.mode === 'first-person') {
       // Keep walkers on land: the quay edge is a hard rail.
       next.x = THREE.MathUtils.clamp(next.x, WEST_COAST_X + 2.5, EAST_COAST_X - 2.5);

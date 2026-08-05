@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { activityAtTick } from '@qsimcity/world';
+import { activityAtTick, logicalToPhysicalAt } from '@qsimcity/world';
 import { useAppStore } from '../store/appStore.js';
 import { LabControls } from '../components/LabControls.js';
 import { CircuitDiagram } from '../components/CircuitDiagram.js';
@@ -23,6 +23,14 @@ export function Accessible2DView(): ReactElement {
   const selection = useAppStore((s) => s.selection);
   const { select } = useAppStore.getState();
   const activity = trace ? activityAtTick(trace, tick) : null;
+  // Tick-aware logical residency: the same derivation the 3D banners use,
+  // so the coupling map can never disagree with the city about where a
+  // logical qubit lives mid-replay (SWAPs move it).
+  const layoutAtTick = (() => {
+    if (!trace?.initialLayout) return trace?.initialLayout ?? null;
+    const map = logicalToPhysicalAt(trace, tick);
+    return trace.initialLayout.map((fallback, logical) => map.get(logical) ?? fallback);
+  })();
   const currentInstructionId =
     activity?.eventsAtTick.find((e) => e.instructionId !== null)?.instructionId ?? null;
 
@@ -69,7 +77,8 @@ export function Accessible2DView(): ReactElement {
             {trace.deviceId && (
               <CouplingMap
                 deviceId={trace.deviceId}
-                layout={trace.initialLayout}
+                layout={layoutAtTick}
+                layoutMoment={`at tick ${tick}`}
                 activeQubits={activity?.activeQubits ?? []}
                 activeCouplings={activity?.activeCouplings ?? []}
                 selectedQubit={selection?.kind === 'qubit' ? selection.qubit : null}

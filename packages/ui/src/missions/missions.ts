@@ -1,4 +1,5 @@
 import { getSampleCircuit } from '@qsimcity/domain';
+import { maxTickOf } from '@qsimcity/world';
 import type { Trace, TraceCircuit } from 'qsimcity-trace';
 import { DEFAULT_NOISE, type RunConfig } from '../store/appStore.js';
 import type { LearningProgress } from '../store/progress.js';
@@ -142,7 +143,10 @@ export const MISSIONS: readonly Mission[] = [
         'bell-pair',
         'watch',
         'timeline-play',
-        (s) => s.trace !== null && bellPairComplete(s.trace),
+        // Watching means the replay actually reached the end: the checkmark
+        // must not fire the instant Run returns, before anything played.
+        (s) =>
+          s.trace !== null && bellPairComplete(s.trace) && s.playbackTick >= maxTickOf(s.trace),
       ),
     ],
     isComplete: (trace) => bellPairComplete(trace),

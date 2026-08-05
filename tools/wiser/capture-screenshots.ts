@@ -135,6 +135,17 @@ async function captureHonestyShots(
   await page.getByRole('toolbar', { name: 'Replay timeline' }).waitFor({ timeout: 30000 });
   await settle(page, 2500);
   await dismissToast(page);
+  // The exhibit must show actual results with their certainty badges, not
+  // the input form (adversarial review finding). The labeled measurement
+  // histograms live in Accessible 2D Mode, so capture them there.
+  await page
+    .getByRole('navigation', { name: 'Modes' })
+    .getByRole('button', { name: 'Accessible 2D' })
+    .click();
+  const results = page.getByRole('region', { name: 'Measurement results' });
+  await results.waitFor({ timeout: 15000 });
+  await results.scrollIntoViewIfNeeded();
+  await settle(page, 600);
   const labFile = join(OUT_DIR, 'desktop-day-lab-results.png');
   await page.screenshot({ path: labFile });
   record(shots, labFile, 'desktop', 'day', 'lab-results');
@@ -154,9 +165,7 @@ async function captureHonestyShots(
   // the doorway, seeing the furnished room and the Layout Desk console.
   await page.getByRole('button', { name: 'Close legend' }).click();
   await settle(page, 400);
-  await page.evaluate(
-    'window.__qsimcityWalkTo && window.__qsimcityWalkTo(-73.5, 80.5, 0.12)',
-  );
+  await page.evaluate('window.__qsimcityWalkTo && window.__qsimcityWalkTo(-78.5, 79.2, 0.55)');
   await settle(page, 900);
   const interiorFile = join(OUT_DIR, 'desktop-day-interior.png');
   await page.screenshot({ path: interiorFile });

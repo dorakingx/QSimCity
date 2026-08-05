@@ -53,6 +53,16 @@ kbd {
   padding: 0 0.35em;
 }
 
+/* Keyboard hints are reading noise on touch-first devices: hide the keycap
+   chips (camera-mode digits, Ctrl K) where there is no keyboard-first
+   pointer. The Help overlay keeps its full keyboard map for hybrids. */
+@media (pointer: coarse) {
+  .camera-controls kbd,
+  .header-tools kbd {
+    display: none;
+  }
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -737,6 +747,21 @@ figure {
   z-index: 5;
 }
 
+/* Walk/fly movement pad. Sits beside the centered desktop playback strip;
+   on phones the dock is full-width and tall, so the pad moves up above it
+   to stay fully visible and reachable (child-UX review finding). */
+.touch-joystick {
+  left: 18px;
+  bottom: 86px;
+}
+
+@media (max-width: 760px) {
+  .touch-joystick {
+    left: 12px;
+    bottom: 232px;
+  }
+}
+
 .lab-drawer {
   position: absolute;
   top: 0.8rem;
@@ -1140,12 +1165,26 @@ figure {
   overflow-x: auto;
 }
 
+.builder-cell-slot {
+  position: relative;
+  display: block;
+}
+
+.builder-cell-slot .builder-tile-remove {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  z-index: 1;
+}
+
 .builder-cell {
   border: 1px dashed var(--border);
   border-radius: 6px;
   background: var(--bg-raised);
   color: var(--text-dim);
   min-height: 2.6rem;
+  width: 100%;
+  height: 100%;
   padding: 0;
   position: relative;
 }

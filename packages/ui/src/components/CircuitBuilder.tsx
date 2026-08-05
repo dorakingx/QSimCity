@@ -203,7 +203,8 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
   };
 
   const handleCellKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, cell: CellRef): void => {
-    const grid = e.currentTarget.parentElement;
+    // Cells sit inside per-cell slot wrappers, so navigate from the grid.
+    const grid = e.currentTarget.closest('.builder-grid');
     const focusCell = (column: number, qubit: number): void => {
       const target = grid?.querySelector<HTMLButtonElement>(`[data-cell="${column}-${qubit}"]`);
       target?.focus();
@@ -449,59 +450,57 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
             const cellLabel = placed
               ? `Column ${column + 1}, qubit ${qubit}: ${paletteGate(placed.gate).label}`
               : `Column ${column + 1}, qubit ${qubit}: empty`;
+            // The remove control is a SIBLING of the cell button, never a
+            // descendant: interactive children inside a <button> are invalid
+            // ARIA and confuse screen readers.
             return (
-              <button
+              <span
                 key={`${column}-${qubit}`}
-                type="button"
-                data-cell={`${column}-${qubit}`}
-                className={`builder-cell${placed ? ' filled' : ''}${
-                  isPendingOrigin ? ' pending-origin' : isPendingColumn ? ' pending-column' : ''
-                }`}
+                className="builder-cell-slot"
                 style={{ gridColumn: column + 1, gridRow: qubit + 1 }}
-                aria-label={cellLabel}
-                onClick={() => handleCellActivate({ column, qubit })}
-                onKeyDown={(e) => handleCellKeyDown(e, { column, qubit })}
-                {...(placed
-                  ? {
-                      onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) =>
-                        onTilePointerDown(e, placed),
-                    }
-                  : {})}
               >
-                {placed ? (
-                  <span className="builder-tile">
-                    <span aria-hidden="true">{tileGlyph(placed, qubit)}</span>
-                    {occupiedLanes(placed)[0] === qubit && (
-                      <span
-                        role="button"
-                        tabIndex={0}
-                        className="builder-tile-remove"
-                        aria-label={`Remove ${paletteGate(placed.gate).label} from column ${column + 1}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          builder.remove(placed.id);
-                          setStatus(`${paletteGate(placed.gate).label} removed.`);
-                        }}
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            builder.remove(placed.id);
-                            setStatus(`${paletteGate(placed.gate).label} removed.`);
-                          }
-                        }}
-                      >
-                        ×
-                      </span>
-                    )}
-                  </span>
-                ) : (
-                  <span aria-hidden="true" className="builder-cell-dot">
-                    ·
-                  </span>
+                <button
+                  type="button"
+                  data-cell={`${column}-${qubit}`}
+                  className={`builder-cell${placed ? ' filled' : ''}${
+                    isPendingOrigin ? ' pending-origin' : isPendingColumn ? ' pending-column' : ''
+                  }`}
+                  aria-label={cellLabel}
+                  onClick={() => handleCellActivate({ column, qubit })}
+                  onKeyDown={(e) => handleCellKeyDown(e, { column, qubit })}
+                  {...(placed
+                    ? {
+                        onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) =>
+                          onTilePointerDown(e, placed),
+                      }
+                    : {})}
+                >
+                  {placed ? (
+                    <span className="builder-tile">
+                      <span aria-hidden="true">{tileGlyph(placed, qubit)}</span>
+                    </span>
+                  ) : (
+                    <span aria-hidden="true" className="builder-cell-dot">
+                      ·
+                    </span>
+                  )}
+                </button>
+                {placed && occupiedLanes(placed)[0] === qubit && (
+                  <button
+                    type="button"
+                    className="builder-tile-remove"
+                    aria-label={`Remove ${paletteGate(placed.gate).label} from column ${column + 1}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      builder.remove(placed.id);
+                      setStatus(`${paletteGate(placed.gate).label} removed.`);
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                  >
+                    ×
+                  </button>
                 )}
-              </button>
+              </span>
             );
           }),
         )}

@@ -1,8 +1,8 @@
 {
-  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
-  "sourceTreeHash": "fdf89a31945594bf",
-  "worktreeDirty": false,
-  "generatedAt": "2026-07-31T09:31:44.429Z",
+  "commitSha": "1145d2d719887644b3c0488b5a405fab70e6413c",
+  "sourceTreeHash": "9f153fccd9904ebb",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-05T08:32:54.443Z",
   "tool": "lighthouse",
   "toolVersion": "13.4.1",
   "command": "pnpm lighthouse",
@@ -17,19 +17,19 @@
     "runsPerTarget": 3
   },
   "measurements": {
-    "home-desktop.performance": 100,
+    "home-desktop.performance": 99,
     "home-desktop.accessibility": 100,
     "home-desktop.bestPractices": 96,
     "home-desktop.seo": 92,
-    "home-mobile.performance": 84,
+    "home-mobile.performance": 79,
     "home-mobile.accessibility": 100,
     "home-mobile.bestPractices": 96,
     "home-mobile.seo": 92,
-    "accessible2d-desktop.performance": 100,
+    "accessible2d-desktop.performance": 99,
     "accessible2d-desktop.accessibility": 100,
     "accessible2d-desktop.bestPractices": 96,
     "accessible2d-desktop.seo": 92,
-    "accessible2d-mobile.performance": 84,
+    "accessible2d-mobile.performance": 78,
     "accessible2d-mobile.accessibility": 100,
     "accessible2d-mobile.bestPractices": 96,
     "accessible2d-mobile.seo": 92
@@ -40,20 +40,20 @@
       "label": "Main entry (desktop)",
       "formFactor": "desktop",
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
       },
       "runs": [
         {
-          "performance": 100,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 100,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -71,26 +71,26 @@
       "label": "Main entry (mobile)",
       "formFactor": "mobile",
       "scores": {
-        "performance": 84,
+        "performance": 79,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
       },
       "runs": [
         {
-          "performance": 84,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 84,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 84,
+          "performance": 80,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -102,14 +102,14 @@
       "label": "Accessible 2D Mode (desktop)",
       "formFactor": "desktop",
       "scores": {
-        "performance": 100,
+        "performance": 99,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
       },
       "runs": [
         {
-          "performance": 100,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -121,7 +121,7 @@
           "seo": 92
         },
         {
-          "performance": 100,
+          "performance": 99,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -133,26 +133,26 @@
       "label": "Accessible 2D Mode (mobile)",
       "formFactor": "mobile",
       "scores": {
-        "performance": 84,
+        "performance": 78,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
       },
       "runs": [
         {
-          "performance": 84,
+          "performance": 78,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 84,
+          "performance": 78,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 84,
+          "performance": 78,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92

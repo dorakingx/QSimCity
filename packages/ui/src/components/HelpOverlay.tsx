@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 import { DISTRICTS } from '@qsimcity/world';
+import { useFocusTrap } from '../hooks/useFocusTrap.js';
 
 /** Help overlay: keyboard map, controls, and the semantic legend. */
 
@@ -24,6 +25,8 @@ export function HelpOverlay(): ReactElement | null {
   const open = useAppStore((s) => s.helpOpen);
   const { setHelpOpen } = useAppStore.getState();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => closeRef.current?.focus());
@@ -38,6 +41,7 @@ export function HelpOverlay(): ReactElement | null {
       }}
     >
       <div
+        ref={dialogRef}
         className="help-overlay"
         role="dialog"
         aria-modal="true"

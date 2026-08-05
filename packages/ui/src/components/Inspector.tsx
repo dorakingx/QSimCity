@@ -1,5 +1,11 @@
 import type { ReactElement } from 'react';
-import { DISTRICTS, INTERACTIVES, generateBuildings, activityAtTick } from '@qsimcity/world';
+import {
+  DISTRICTS,
+  INTERACTIVES,
+  generateBuildings,
+  activityAtTick,
+  physicalToLogicalAt,
+} from '@qsimcity/world';
 import type { Trace, TraceCircuitInstruction } from 'qsimcity-trace';
 import { useAppStore, type SelectionTarget } from '../store/appStore.js';
 import { CertaintyBadge, SOURCE_DESCRIPTIONS } from './CertaintyBadge.js';
@@ -94,7 +100,9 @@ function InspectorBody({
     }
     case 'qubit': {
       const q = selection.qubit;
-      const logical = trace?.initialLayout ? trace.initialLayout.indexOf(q) : -1;
+      // Tick-aware residency: SWAPs move logical qubits between pylons, so
+      // this must match the 3D banners (same derivation) at every tick.
+      const logical = trace ? (physicalToLogicalAt(trace, tick).get(q) ?? -1) : -1;
       const active = activity?.activeQubits.includes(q) ?? false;
       const measured = activity ? [...activity.measuredBits.entries()] : [];
       return (
@@ -103,9 +111,7 @@ function InspectorBody({
           <p className="inspector-role">QPU Grid pylon</p>
           <dl>
             <dt>Holds logical qubit</dt>
-            <dd>
-              {logical !== null && logical >= 0 ? `L${logical} (initial layout)` : 'Unassigned'}
-            </dd>
+            <dd>{logical >= 0 ? `L${logical} (at tick ${tick})` : 'Unassigned'}</dd>
             <dt>Active at tick {tick}</dt>
             <dd>{active ? 'Yes — an instruction touches this qubit now' : 'No'}</dd>
             <dt>Representative measured bits so far</dt>

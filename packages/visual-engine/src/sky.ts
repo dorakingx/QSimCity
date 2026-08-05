@@ -130,11 +130,12 @@ void main() {
 function cloudPixels(seed: number): { size: number; data: Uint8Array } {
   const size = 64;
   const data = new Uint8Array(size * size * 4);
-  // Three overlapping deterministic lobes make each cloud unique.
-  const lobes = [0, 1, 2].map((i) => ({
-    x: 0.3 + ((hashString(`cloud:${seed}:${i}:x`) & 0xff) / 0xff) * 0.4,
-    y: 0.4 + ((hashString(`cloud:${seed}:${i}:y`) & 0xff) / 0xff) * 0.2,
-    r: 0.18 + ((hashString(`cloud:${seed}:${i}:r`) & 0xff) / 0xff) * 0.16,
+  // Five overlapping deterministic lobes make a puffy cumulus silhouette
+  // (three lobes under heavy horizontal sprite squash read as a smear).
+  const lobes = [0, 1, 2, 3, 4].map((i) => ({
+    x: 0.22 + ((hashString(`cloud:${seed}:${i}:x`) & 0xff) / 0xff) * 0.56,
+    y: 0.36 + ((hashString(`cloud:${seed}:${i}:y`) & 0xff) / 0xff) * 0.3,
+    r: 0.14 + ((hashString(`cloud:${seed}:${i}:r`) & 0xff) / 0xff) * 0.18,
   }));
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -142,14 +143,14 @@ function cloudPixels(seed: number): { size: number; data: Uint8Array } {
       const fy = y / size;
       let a = 0;
       for (const lobe of lobes) {
-        const d = Math.hypot(fx - lobe.x, (fy - lobe.y) * 1.6);
+        const d = Math.hypot(fx - lobe.x, (fy - lobe.y) * 1.3);
         a = Math.max(a, Math.max(0, 1 - d / lobe.r));
       }
       const i = (y * size + x) * 4;
       data[i] = 255;
       data[i + 1] = 255;
       data[i + 2] = 255;
-      data[i + 3] = Math.round(Math.min(1, a * a * 1.4) * 255);
+      data[i + 3] = Math.round(Math.min(1, a ** 1.6 * 1.25) * 255);
     }
   }
   return { size, data };
@@ -240,8 +241,8 @@ export function buildSky(): SkyRig {
       470 + ((hashString(`cloudpos:${i}:y`) & 0xffff) / 0xffff) * 220,
       ((hashString(`cloudpos:${i}:z`) & 0xffff) / 0xffff - 0.5) * spread * 1.4,
     );
-    const scale = 380 + ((hashString(`cloudscale:${i}`) & 0xffff) / 0xffff) * 420;
-    sprite.scale.set(scale, scale * 0.38, 1);
+    const scale = 340 + ((hashString(`cloudscale:${i}`) & 0xffff) / 0xffff) * 360;
+    sprite.scale.set(scale, scale * 0.52, 1);
     group.add(sprite);
     clouds.push(sprite);
   }

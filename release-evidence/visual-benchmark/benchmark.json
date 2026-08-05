@@ -1,8 +1,8 @@
 {
-  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
-  "sourceTreeHash": "fdf89a31945594bf",
-  "worktreeDirty": false,
-  "generatedAt": "2026-07-31T09:31:48.187Z",
+  "commitSha": "1145d2d719887644b3c0488b5a405fab70e6413c",
+  "sourceTreeHash": "9f153fccd9904ebb",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-05T08:32:22.002Z",
   "tool": "qsimcity-visual-benchmark",
   "toolVersion": "1.0.0",
   "command": "pnpm benchmark:visual",
@@ -16,8 +16,8 @@
     "categoriesCompared": 18,
     "minimumScore": 4,
     "categoriesAhead": 8,
-    "categoriesLevel": 9,
-    "categoriesBehind": 1,
+    "categoriesLevel": 10,
+    "categoriesBehind": 0,
     "viewportWidth": 1280,
     "viewportHeight": 800
   },
@@ -28,91 +28,91 @@
         "name": "Initial visual impression",
         "qsimcity": 4,
         "reference": 4,
-        "note": "The reference has denser massing and terrain with water. QSimCity is interactive in about a second where the reference showed roughly 60 seconds of staged loading, and shows all twelve districts in one frame."
+        "note": "QSimCity now opens on a daylight coastal city with a connected street grid, varied massing, harbor cranes, and farmland fringe; the reference retains denser interiors. QSimCity is interactive in about a second versus roughly a minute of staged loading."
       },
       {
         "name": "Skyline originality",
         "qsimcity": 5,
         "reference": 4,
-        "note": "Entirely procedural geometry with no third-party assets; each district kit produces a distinct silhouette."
+        "note": "Entirely procedural geometry and textures with no third-party assets; the downtown cluster, refinery columns, cranes, and hilltop dome give each district a distinct silhouette."
       },
       {
         "name": "District differentiation",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Twelve accent-coloured plates with different part vocabularies and named landmarks; the reference uses roughly eight larger zones with denser interiors."
+        "note": "Twelve districts built from distinct architectural kits on real blocks (wharf sheds, sawtooth halls, tank farms, podium towers, data halls); the reference uses roughly eight larger zones with denser interiors."
       },
       {
         "name": "Long-distance readability",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Every district is legible in one frame with labels floating above the silhouette."
+        "note": "The whole pipeline reads in one frame; architecture carries district identity with labels as reinforcement, hidden entirely at street level."
       },
       {
         "name": "Medium-distance data-flow clarity",
         "qsimcity": 5,
         "reference": 4,
-        "note": "Geography is the pipeline: west-to-east ordering matches processing order and the boulevard physically connects the stages."
+        "note": "Geography is the pipeline: the Processing Boulevard physically connects the stages west to east, and the convoy, banners, couriers, and container stacks make the flow visible mid-run."
       },
       {
         "name": "First-person detail",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Buildings loom at eye height and consoles are approachable; the reference has more street-level clutter."
+        "note": "Lane markings, crosswalks, lamps, street trees, parked cars, console kiosks, and three furnished enterable interiors at 1.7 m eye height; the reference still has more incidental street clutter."
       },
       {
         "name": "Orbit camera",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Drag-rotate, wheel zoom, clamped to city bounds."
+        "note": "Damped drag-rotate and wheel zoom, clamped to the city bounds."
       },
       {
         "name": "Top-down camera",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Plan view showing the whole pipeline layout."
+        "note": "Plan view showing the whole pipeline layout and street network."
       },
       {
         "name": "Fly camera",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Altitude control with bounds clamping."
+        "note": "Altitude control with bounds clamping and touch lift buttons."
       },
       {
         "name": "Walking camera",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Eye height 1.7 with AABB collision; entry always steps toward the built-up centre so the viewer is never stranded outside the city."
+        "note": "Eye height 1.7 m with AABB and doorway collision; entering walk mode snaps to the nearest driving lane facing along the road, so the walker always starts in a street with a clear view."
       },
       {
         "name": "Day mode",
         "qsimcity": 4,
-        "reference": 5,
-        "note": "QSimCity now has an atmospheric horizon, but the reference still has richer terrain including water."
+        "reference": 4,
+        "note": "Sun shadows, sky dome with clouds, coastal water with sky reflection, and a fog-closed horizon; parity with the reference terrain, which keeps an edge in interior density."
       },
       {
         "name": "Night mode",
         "qsimcity": 5,
         "reference": 3,
-        "note": "Window lights, starfield, and emissive district glow; the reference night mode is a dimmer variant of its day scene."
+        "note": "Hash-varied lit windows, street lamps with light pools, vehicle headlights, stars, and district glow; the reference night mode is a dimmer variant of its day scene."
       },
       {
         "name": "Touch and mobile presentation",
         "qsimcity": 4,
         "reference": 3,
-        "note": "Touch is verified in an automated mobile profile; the reference documents emulation-only testing."
+        "note": "Touch orbit/pinch, an on-screen movement pad for walk and fly, and a touch-only mission path verified in the automated mobile profile; the reference documents emulation-only testing."
       },
       {
         "name": "Inspector integration",
         "qsimcity": 5,
         "reference": 4,
-        "note": "Selection shows role, live state, provenance, certainty, and jump-to-timeline actions."
+        "note": "Selection shows role, live state, provenance, certainty, and jump-to-timeline actions; the City Legend classifies every animated entity."
       },
       {
         "name": "Semantic animation",
         "qsimcity": 5,
         "reference": 4,
-        "note": "Every motion is trace-driven; nothing decorative moves and no amplitude is animated as transported cargo."
+        "note": "Convoy, couriers, logical banners, container stacks, weather, and stage set pieces all derive from the trace; ambient life is explicitly ILLUSTRATIVE and no amplitude is animated as cargo."
       },
       {
         "name": "Loading presentation",
@@ -124,19 +124,20 @@
         "name": "Visual accessibility",
         "qsimcity": 5,
         "reference": 2,
-        "note": "A complete non-WebGL mode, axe-clean WCAG 2.2 AA, and never colour alone; the reference requires WebGL2."
+        "note": "A complete non-WebGL mode including missions and the builder, axe-clean WCAG 2.2 AA, and never colour alone; the reference requires WebGL2."
       },
       {
         "name": "Overall polish",
         "qsimcity": 4,
         "reference": 4,
-        "note": "Consistent design system, clean console across four browsers, no clipped or overlapping text."
+        "note": "Consistent design system, clean console across four browsers, no overlapping controls after the adversarial art-direction pass."
       }
     ],
     "reference": {
       "identifiedIn": "docs/reference-benchmark.md",
       "state": "live deployment of its main branch, 220 commits",
       "observedAt": "2026-07-31",
+      "qsimcityObservedAt": "2026-08-05",
       "viewport": "1280x800"
     }
   }

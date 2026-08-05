@@ -263,19 +263,29 @@ function sampleLoop(loop: AmbientLoop, s: number): { position: Vec2; heading: nu
  * only on animTimeSeconds and per-car seeds (ILLUSTRATIVE city life).
  * Returns an empty array when reducedMotion is true.
  */
+// Per-car constants precomputed once: hashing template strings for every
+// car on every animation frame was measurable churn (performance review).
+const AMBIENT_CAR_PARAMS = AMBIENT_LOOPS.map((loop) =>
+  Array.from({ length: loop.carCount }, (_, i) => {
+    const seed = `ambient:${loop.id}:${i}`;
+    return {
+      id: seed,
+      // Speed varies per car in roughly 9..13 m/s.
+      speed: 9 + 4 * hash01(`${seed}:speed`),
+      offset: hash01(`${seed}:phase`) * loop.total,
+    };
+  }),
+);
+
 export function ambientVehiclesAt(animTimeSeconds: number, reducedMotion: boolean): VehicleState[] {
   if (reducedMotion) return [];
   const cars: VehicleState[] = [];
-  for (const loop of AMBIENT_LOOPS) {
-    for (let i = 0; i < loop.carCount; i++) {
-      const seed = `ambient:${loop.id}:${i}`;
-      // Speed varies per car in roughly 9..13 m/s.
-      const speed = 9 + 4 * hash01(`${seed}:speed`);
-      const offset = hash01(`${seed}:phase`) * loop.total;
-      const { position, heading } = sampleLoop(loop, offset + speed * animTimeSeconds);
-      cars.push({ kind: 'ambient-car', id: seed, position, heading });
+  AMBIENT_LOOPS.forEach((loop, loopIndex) => {
+    for (const car of AMBIENT_CAR_PARAMS[loopIndex]!) {
+      const { position, heading } = sampleLoop(loop, car.offset + car.speed * animTimeSeconds);
+      cars.push({ kind: 'ambient-car', id: car.id, position, heading });
     }
-  }
+  });
   return cars;
 }
 
@@ -284,7 +294,29 @@ export function ambientVehiclesAt(animTimeSeconds: number, reducedMotion: boolea
 // ---------------------------------------------------------------------------
 
 /** Activity level per district at the tick in [0,1] (for pedestrian density and tests). */
+// districtActivityAt is called every animation frame (pedestrian density),
+// but its inputs only change when the playback tick does. A single-entry
+// memo turns the per-frame O(trace.events) scan into a map lookup; purity
+// is preserved because the result is derived only from (trace, tick).
+let activityMemoTrace: Trace | null = null;
+let activityMemoTick = -1;
+let activityMemo: ReadonlyMap<DistrictId, number> | null = null;
+
 export function districtActivityAt(
+  trace: Trace | null,
+  tick: number,
+): ReadonlyMap<DistrictId, number> {
+  if (activityMemo && activityMemoTrace === trace && activityMemoTick === tick) {
+    return activityMemo;
+  }
+  const result = computeDistrictActivity(trace, tick);
+  activityMemoTrace = trace;
+  activityMemoTick = tick;
+  activityMemo = result;
+  return result;
+}
+
+function computeDistrictActivity(
   trace: Trace | null,
   tick: number,
 ): ReadonlyMap<DistrictId, number> {
@@ -363,12 +395,31 @@ export function pedestriansAt(
     const halfD = site.clearHalfD + 3;
     const perimeter = 4 * (halfW + halfD);
     for (let i = 0; i < count; i++) {
-      const seed = `ped:${district.id}:${i}`;
-      const speed = 1.1 + 0.5 * hash01(`${seed}:speed`);
-      const s = hash01(`${seed}:phase`) * perimeter + speed * animTimeSeconds;
+      const params = pedestrianParams(district.id, i);
+      const s = params.phase * perimeter + params.speed * animTimeSeconds;
       const { position, heading } = rectangleWalk(site.anchor, halfW, halfD, s);
-      pedestrians.push({ id: seed, position, heading });
+      pedestrians.push({ id: params.id, position, heading });
     }
   }
   return pedestrians;
+}
+
+// Per-walker constants, hashed once instead of on every animation frame.
+const pedestrianParamCache = new Map<string, { id: string; speed: number; phase: number }>();
+
+function pedestrianParams(
+  districtId: DistrictId,
+  index: number,
+): { id: string; speed: number; phase: number } {
+  const seed = `ped:${districtId}:${index}`;
+  let params = pedestrianParamCache.get(seed);
+  if (!params) {
+    params = {
+      id: seed,
+      speed: 1.1 + 0.5 * hash01(`${seed}:speed`),
+      phase: hash01(`${seed}:phase`),
+    };
+    pedestrianParamCache.set(seed, params);
+  }
+  return params;
 }

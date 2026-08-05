@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
+import { useFocusTrap } from '../hooks/useFocusTrap.js';
 
 /**
  * First-run onboarding (spec section 7.1): a near-zero-reading welcome with
@@ -122,6 +123,8 @@ export function Onboarding(): ReactElement | null {
   const seen = useAppStore((s) => s.progress.onboardingSeen);
   const reducedMotion = useAppStore((s) => s.settings.reducedMotion);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, !seen);
 
   useEffect(() => {
     if (!seen) requestAnimationFrame(() => headingRef.current?.focus());
@@ -137,6 +140,7 @@ export function Onboarding(): ReactElement | null {
   return (
     <div className="modal-backdrop onboarding-backdrop">
       <div
+        ref={dialogRef}
         className="onboarding"
         role="dialog"
         aria-modal="true"

@@ -35,6 +35,15 @@ test('mobile: circuit builder works by touch alone (W6.2)', async ({ page, brows
     .tap();
   const mission = page.getByRole('region', { name: /Mission: Light Up the Twin Towers/ });
   await expect(mission).toBeVisible();
+  // Place a gate with taps alone first: arm a palette tile, tap a grid
+  // cell, and confirm the tile landed (W6.2 is tap-to-place, not just the
+  // template shortcut).
+  await mission.getByRole('button', { name: /^Hadamard/ }).tap();
+  await mission.locator('[data-cell="0-0"]').tap();
+  await expect(mission.locator('.builder-cell.filled')).toHaveCount(1);
+  // Remove it by tapping its remove control, still touch-only.
+  await mission.getByRole('button', { name: /Remove Hadamard/ }).tap();
+  await expect(mission.locator('.builder-cell.filled')).toHaveCount(0);
   // Tap the one-tap template, then Run — the whole mission by touch.
   await mission.getByRole('button', { name: 'Bell pair' }).tap();
   await mission.getByRole('button', { name: 'Run', exact: true }).tap();

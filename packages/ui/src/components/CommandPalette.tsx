@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { SAMPLE_CIRCUITS } from '@qsimcity/domain';
 import { DISTRICTS } from '@qsimcity/world';
 import { useAppStore, type AppMode } from '../store/appStore.js';
+import { useFocusTrap } from '../hooks/useFocusTrap.js';
 
 /**
  * Command palette (Ctrl/Cmd-K or /): search across commands, modes,
@@ -28,6 +29,8 @@ function PaletteContent(): ReactElement {
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef);
 
   const commands = useMemo<Command[]>(() => {
     const s = useAppStore.getState();
@@ -118,6 +121,7 @@ function PaletteContent(): ReactElement {
       }}
     >
       <div
+        ref={dialogRef}
         className="command-palette"
         role="dialog"
         aria-modal="true"

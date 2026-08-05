@@ -1,7 +1,8 @@
-import type { ReactElement } from 'react';
+import { useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 import { CertaintyBadge } from './CertaintyBadge.js';
 import { instructionDescription } from './CircuitDiagram.js';
+import { useFocusTrap } from '../hooks/useFocusTrap.js';
 
 /**
  * Instruction schedule (Scheduling Tower data): model start times and
@@ -12,6 +13,8 @@ export function SchedulePanel(): ReactElement | null {
   const open = useAppStore((s) => s.scheduleOpen);
   const trace = useAppStore((s) => s.trace);
   const { setScheduleOpen } = useAppStore.getState();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   if (!open) return null;
   const scheduled = trace
@@ -26,6 +29,7 @@ export function SchedulePanel(): ReactElement | null {
       }}
     >
       <div
+        ref={dialogRef}
         className="schedule-panel"
         role="dialog"
         aria-modal="true"

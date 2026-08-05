@@ -82,7 +82,14 @@ export function MissionPanel(): ReactElement {
   );
   const stepIndex = mission ? currentStepIndex(mission, snapshot) : 0;
   const entry = mission ? progress.missions[mission.id] : undefined;
-  const liveComplete = mission !== null && trace !== null && mission.isComplete(trace, progress);
+  // Completion requires every guided step, not just the trace condition —
+  // an observation step ("watch the replay") must actually happen before
+  // the celebration fires.
+  const liveComplete =
+    mission !== null &&
+    trace !== null &&
+    mission.isComplete(trace, progress) &&
+    stepIndex >= mission.steps.length;
   const completed = (entry?.completed ?? false) || liveComplete;
   const completedCount = MISSIONS.filter((m) => progress.missions[m.id]?.completed).length;
 

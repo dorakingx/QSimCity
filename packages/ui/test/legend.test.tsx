@@ -21,6 +21,7 @@ describe('city legend content', () => {
       'harbor-stacks',
       'district-glow',
       'noise-weather',
+      'noise-rain',
       'ambient-car',
       'pedestrian',
       'district-pulse',
@@ -42,6 +43,30 @@ describe('city legend content', () => {
         entry.certainty,
       );
     }
+  });
+
+  it('carries a readable child register for every entry', () => {
+    for (const entry of LEGEND_ENTRIES) {
+      expect(entry.childRepresents.length, entry.id).toBeGreaterThan(20);
+      expect(entry.childTrigger.length, entry.id).toBeGreaterThan(10);
+      // Child prose stays free of the adult jargon a young reader cannot use.
+      for (const term of ['derivation', 'histogram', 'trajectory', 'presentational']) {
+        expect(entry.childRepresents.toLowerCase(), `${entry.id}: ${term}`).not.toContain(term);
+        expect(entry.childTrigger.toLowerCase(), `${entry.id}: ${term}`).not.toContain(term);
+      }
+    }
+  });
+
+  it('splits noise provenance honestly: estimated clouds, sampled rain, noisy-phase gate lights', () => {
+    const clouds = LEGEND_ENTRIES.find((e) => e.id === 'noise-weather')!;
+    expect(clouds.source).toBe('estimated');
+    expect(clouds.certainty).toBe('ESTIMATED');
+    const rain = LEGEND_ENTRIES.find((e) => e.id === 'noise-rain')!;
+    expect(rain.source).toBe('sampled_simulation');
+    expect(rain.certainty).toBe('SAMPLED');
+    const lights = LEGEND_ENTRIES.find((e) => e.id === 'qpu-lights')!;
+    expect(lights.certainty).toBe('EXACT');
+    expect(lights.noisyCertainty).toBe('SAMPLED');
   });
 
   it('never describes vehicles or people as quantum states', () => {
