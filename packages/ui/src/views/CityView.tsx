@@ -21,6 +21,14 @@ export default function CityView(): ReactElement {
   const engineRef = useRef<CityEngine | null>(null);
   const audioRef = useRef<CityAudio | null>(null);
   const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
+  // The on-screen movement pad is a touch affordance: on mouse/keyboard
+  // desktops it reads as an ambiguous control (art review), so it only
+  // renders when a coarse pointer or touch surface exists.
+  const [touchCapable] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      (window.matchMedia?.('(any-pointer: coarse)').matches || 'ontouchstart' in window),
+  );
   const [nearbyPrompt, setNearbyPrompt] = useState<string | null>(null);
   const [legendOpen, setLegendOpen] = useState(false);
   const settings = useAppStore((s) => s.settings);
@@ -268,7 +276,7 @@ export default function CityView(): ReactElement {
           {nearbyPrompt}
         </p>
       )}
-      {(cameraMode === 'first-person' || cameraMode === 'fly') && (
+      {touchCapable && (cameraMode === 'first-person' || cameraMode === 'fly') && (
         <TouchJoystick
           showLift={cameraMode === 'fly'}
           onMove={(forward, strafe) => engineRef.current?.setMoveAxis(forward, strafe)}

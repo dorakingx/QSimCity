@@ -1053,6 +1053,32 @@ figure {
   margin: 0 0 1.25rem;
 }
 
+.onboarding-level {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.onboarding-level-label {
+  color: var(--text-dim);
+}
+
+.onboarding-level-choice {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-raised);
+  padding: 0.45rem 1rem;
+  font-size: 1rem;
+}
+
+.onboarding-level-choice.active {
+  border-color: var(--accent);
+  background: var(--accent-soft, rgba(45, 212, 191, 0.15));
+  font-weight: 600;
+}
+
 .onboarding-choices {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));

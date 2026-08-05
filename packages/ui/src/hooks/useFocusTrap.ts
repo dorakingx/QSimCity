@@ -13,9 +13,13 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, active = true):
     if (!container) return;
     const onKeyDown = (e: KeyboardEvent): void => {
       if (e.key !== 'Tab') return;
-      const focusable = container.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
+      const focusable = [
+        ...container.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+        // Hidden or collapsed elements must not become the trap's endpoints,
+        // or focus can land somewhere invisible.
+      ].filter((el) => el.offsetParent !== null || el === document.activeElement);
       if (focusable.length === 0) return;
       const first = focusable[0]!;
       const last = focusable[focusable.length - 1]!;

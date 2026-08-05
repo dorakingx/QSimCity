@@ -140,14 +140,10 @@ function InspectorBody({
             {which === 'input' ? 'Input circuit instruction' : 'Compiled circuit instruction'}
           </p>
           <dl>
-            <dt>Logical qubits</dt>
+            {/* After routing, compiled instructions address PHYSICAL qubits;
+                labeling those indices "logical" would be a mislabeled number. */}
+            <dt>{which === 'compiled' ? 'Physical qubits' : 'Logical qubits'}</dt>
             <dd>{instr.qubits.join(', ') || '—'}</dd>
-            {which === 'compiled' && trace.initialLayout && (
-              <>
-                <dt>Physical qubits</dt>
-                <dd>{instr.qubits.join(', ')}</dd>
-              </>
-            )}
             <dt>Status at tick {tick}</dt>
             <dd>{executed ? 'Executed' : 'Pending'}</dd>
             {firstEvent && (

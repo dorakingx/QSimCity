@@ -13,7 +13,10 @@ const AMBIENT_CAPACITY = 24;
 const COURIER_CAPACITY = 16;
 const PEDESTRIAN_CAPACITY = 96;
 
-const AMBIENT_COLORS = [0x93a1b0, 0x6b7a89, 0xa89a83, 0x7e8a7b, 0x5e6878, 0x96889b, 0xb0a598].map(
+// Kept well above mid-grey with low metalness: a moving car photographed in
+// building shade must still read as a car, not an untextured black box
+// (adversarial art review — the same lesson as the parked fleet).
+const AMBIENT_COLORS = [0x9aa8b6, 0x8a97a5, 0xb2a58f, 0x93a08f, 0x8b95a4, 0xa494a8, 0xbcb1a4].map(
   (c) => new THREE.Color(c),
 );
 const COURIER_COLOR = new THREE.Color(0x3a6ad8);
@@ -147,7 +150,7 @@ export function buildVehicles(): VehicleFleet {
   );
 
   // ------------------------------------------------------- ambient cars
-  const ambientBodyMaterial = new THREE.MeshStandardMaterial({ roughness: 0.35, metalness: 0.5 });
+  const ambientBodyMaterial = new THREE.MeshStandardMaterial({ roughness: 0.4, metalness: 0.2 });
   const ambientBody = new THREE.InstancedMesh(
     new THREE.BoxGeometry(4.0, 1.1, 1.8),
     ambientBodyMaterial,
@@ -156,9 +159,9 @@ export function buildVehicles(): VehicleFleet {
   ambientBody.name = 'ambient-car-bodies';
   ambientBody.castShadow = true;
   const ambientTopMaterial = new THREE.MeshStandardMaterial({
-    color: 0x252a31,
-    roughness: 0.25,
-    metalness: 0.4,
+    color: 0x626c78,
+    roughness: 0.35,
+    metalness: 0.2,
   });
   const ambientTop = new THREE.InstancedMesh(
     new THREE.BoxGeometry(2.0, 0.72, 1.6),

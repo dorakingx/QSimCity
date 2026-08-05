@@ -121,7 +121,9 @@ const SPECS: Record<Exclude<FacadeStyle, 'plain'>, FacadeSpec> = {
     wallVariation: 0.14,
     frame: rgb(0x5a6167),
     glassDay: rgb(0x707d88),
-    glassNight: rgb(0xcfe3ff),
+    // Warm like every other style: one cool-white facade at night reads as
+    // a different, cheaper material system (art review), not variety.
+    glassNight: rgb(0xf5deae),
     window: [0.08, 0.62, 0.92, 0.9],
     litChance: 0.3,
     roughness: 0.6,

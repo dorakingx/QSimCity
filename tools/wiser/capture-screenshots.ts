@@ -165,7 +165,9 @@ async function captureHonestyShots(
   // the doorway, seeing the furnished room and the Layout Desk console.
   await page.getByRole('button', { name: 'Close legend' }).click();
   await settle(page, 400);
-  await page.evaluate('window.__qsimcityWalkTo && window.__qsimcityWalkTo(-78.5, 79.2, 0.55)');
+  // Stand in the aisle between desk rows, clear of chair backs, looking
+  // across the desks toward the console and presentation screen.
+  await page.evaluate('window.__qsimcityWalkTo && window.__qsimcityWalkTo(-75.2, 80.8, 0.32)');
   await settle(page, 900);
   const interiorFile = join(OUT_DIR, 'desktop-day-interior.png');
   await page.screenshot({ path: interiorFile });

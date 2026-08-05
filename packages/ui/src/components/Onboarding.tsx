@@ -122,6 +122,7 @@ function BlocksIllustration(): ReactElement {
 export function Onboarding(): ReactElement | null {
   const seen = useAppStore((s) => s.progress.onboardingSeen);
   const reducedMotion = useAppStore((s) => s.settings.reducedMotion);
+  const level = useAppStore((s) => s.settings.explanationLevel);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(dialogRef, !seen);
@@ -153,6 +154,33 @@ export function Onboarding(): ReactElement | null {
           Welcome!
         </h2>
         <p className="onboarding-tagline">Pick a door into the quantum city.</p>
+        {/* The child register must be choosable HERE, by its audience —
+            not buried behind an adult-vocabulary Settings menu. */}
+        <div
+          className="onboarding-level"
+          role="radiogroup"
+          aria-label="How should we explain things?"
+        >
+          <span className="onboarding-level-label">Words for:</span>
+          {(
+            [
+              ['child', 'Kids'],
+              ['beginner', 'Beginners'],
+              ['expert', 'Experts'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={level === value}
+              className={`onboarding-level-choice${level === value ? ' active' : ''}`}
+              onClick={() => useAppStore.getState().updateSettings({ explanationLevel: value })}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <div className="onboarding-choices">
           <button
             type="button"

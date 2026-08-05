@@ -144,13 +144,16 @@ async function runCycle(page: Page, cycle: number): Promise<void> {
     }
   }
 
-  // 8. Guided Tour navigation.
+  // 8. Guided Tour navigation, then close it so the cycle ends in a
+  // stable state rather than mid-overlay.
   await nav.getByRole('button', { name: 'Guided Tour' }).click();
   const next = page.locator('.tour-overlay').getByRole('button', { name: 'Next →' });
   if (await next.count()) {
     await next.click();
     await page.waitForTimeout(250);
   }
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
 }
 
 async function main(): Promise<void> {
@@ -268,25 +271,49 @@ async function main(): Promise<void> {
 
   const actualDuration = elapsed();
 
-  // Final responsiveness probe: the UI must still react promptly.
+  // Final responsiveness probe: the UI must still react promptly. The pass
+  // bar stays maxFinalInteractionMs of MEASURED latency; the Playwright
+  // step timeouts are deliberately looser so driver retry mechanics (a
+  // scenario cut off mid-cycle re-rendering under the pointer) cannot turn
+  // a fast response into a spurious "unresponsive" verdict — a genuinely
+  // slow app still fails on the measured number.
   let finalInteractionMs = Number.POSITIVE_INFINITY;
   if (!crashed) {
+    // Settle: the last cycle may have been cut off mid-action, and a
+    // scenario-completion toast (5 s lifetime) may still be animating over
+    // the chrome. The probe measures the app's responsiveness, not the
+    // driver's fight with a transient overlay.
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(5500);
+    const dismiss = page.getByRole('button', { name: /Dismiss/i });
+    if (await dismiss.isVisible({ timeout: 250 }).catch(() => false)) {
+      await dismiss.click().catch(() => undefined);
+    }
     const t0 = Date.now();
     try {
       await page
         .getByRole('navigation', { name: 'Modes' })
         .getByRole('button', { name: 'Accessible 2D' })
-        .click({ timeout: SOAK_CRITERIA.maxFinalInteractionMs });
+        .click({ timeout: 10_000 });
       await page
         .getByLabel(/OpenQASM 2.0 program/)
         .first()
         .waitFor({
           state: 'visible',
-          timeout: SOAK_CRITERIA.maxFinalInteractionMs,
+          timeout: 10_000,
         });
       finalInteractionMs = Date.now() - t0;
     } catch {
       finalInteractionMs = Number.POSITIVE_INFINITY;
+      // Diagnostic: capture what the page looked like when the probe
+      // timed out, so an unresponsive verdict is explainable. A failure
+      // to capture is itself logged — never swallowed silently.
+      try {
+        await page.screenshot({ path: join(OUT_DIR, 'final-probe-timeout.png') });
+        console.error('Final probe timed out; diagnostic saved to final-probe-timeout.png');
+      } catch (captureError) {
+        console.error(`Final probe timed out and the diagnostic failed too: ${captureError}`);
+      }
     }
   }
 

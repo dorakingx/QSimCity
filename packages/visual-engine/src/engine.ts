@@ -216,15 +216,18 @@ export class CityEngine {
     canvas.width = 512;
     canvas.height = 104;
     const ctx = canvas.getContext('2d')!;
-    // Fit long names: shrink the font until the text fits the canvas.
+    // Fit long names: shrink the font until the text fits, and pass an
+    // explicit maxWidth when drawing — measureText under-reports the width
+    // of stroked bold glyphs, which clipped the last letter of long names.
     let fontSize = 46;
     ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
-    while (fontSize > 24 && ctx.measureText(text).width > 448) {
+    while (fontSize > 24 && ctx.measureText(text).width > 416) {
       fontSize -= 2;
       ctx.font = `700 ${fontSize}px system-ui, sans-serif`;
     }
     ctx.textAlign = 'center';
-    const width = Math.min(492, ctx.measureText(text).width + 44);
+    const measured = Math.min(416, ctx.measureText(text).width);
+    const width = Math.min(500, measured + 64);
     ctx.fillStyle = 'rgba(10, 14, 22, 0.62)';
     ctx.beginPath();
     ctx.roundRect(256 - width / 2, 14, width, 76, 18);
@@ -232,8 +235,8 @@ export class CityEngine {
     ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = 'rgba(0,0,0,0.85)';
     ctx.lineWidth = 8;
-    ctx.strokeText(text, 256, 66);
-    ctx.fillText(text, 256, 66);
+    ctx.strokeText(text, 256, 66, measured);
+    ctx.fillText(text, 256, 66, measured);
     return new THREE.Sprite(
       new THREE.SpriteMaterial({
         map: new THREE.CanvasTexture(canvas),
@@ -531,7 +534,10 @@ export class CityEngine {
     this.vehicles.setSemantic(convoyAt(trace, tick), trace ? couriersAt(trace, tick) : []);
     const weather = weatherAt(trace, tick);
     const rainMaterial = this.rain.material as THREE.PointsMaterial;
-    rainMaterial.opacity = this.particles ? weather.rain * 0.85 + weather.cover * 0.1 : 0;
+    // Rain is SAMPLED: visible only when noise.applied events fire at the
+    // tick. Configured-but-unsampled noise shows as clouds (ESTIMATED), not
+    // as a haze of the rain particle system.
+    rainMaterial.opacity = this.particles ? weather.rain * 0.85 : 0;
     this.sky.setCloudCover(weather.cover);
     this.updateLogicalBanners();
     this.updateCountStacks();
@@ -805,7 +811,11 @@ export class CityEngine {
     for (const da of activity.districts) {
       const accentMesh = this.city.districtAccents.get(da.districtId);
       if (accentMesh) {
-        (accentMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient + 1.2;
+        // Documented semantics (legend: district accent glow): the accent
+        // brightens while the district's stage fires. The boost stays well
+        // above ambient but below full-bright so lit accents keep reading
+        // as signage rather than as unlit materials.
+        (accentMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = ambient + 0.85;
         if (this.particles && !this.reducedMotion && this.pulses.length < 24) {
           const district = getDistrict(da.districtId);
           const ring = new THREE.Mesh(
