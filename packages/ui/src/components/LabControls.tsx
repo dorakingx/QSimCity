@@ -1,13 +1,15 @@
-import { useRef, useState, type ReactElement } from 'react';
+import { useId, useRef, useState, type ReactElement } from 'react';
 import { DEVICES, SAMPLE_CIRCUITS } from '@qsimcity/domain';
 import { MAX_SHOTS } from '@qsimcity/simulator';
 import { TRACE_FILE_EXTENSION, TRACE_LIMITS } from 'qsimcity-trace';
 import { useAppStore } from '../store/appStore.js';
 import { encodeShareUrl } from '../store/shareUrl.js';
+import { CircuitBuilder, useCircuitBuilder } from './CircuitBuilder.js';
 
 /**
- * Quantum Lab configuration (spec §7.3): program input, run parameters,
- * noise, layout, import/export, and shareable URLs. Inline validation with
+ * Quantum Lab configuration (spec §7.3): program input (visual Blocks or
+ * OpenQASM Code — both feed the same parser), run parameters, noise,
+ * layout, import/export, and shareable URLs. Inline validation with
  * line/column parser errors; user input is preserved on error.
  */
 export function LabControls(): ReactElement {
@@ -16,10 +18,13 @@ export function LabControls(): ReactElement {
   const progress = useAppStore((s) => s.runProgress);
   const error = useAppStore((s) => s.runError);
   const trace = useAppStore((s) => s.trace);
+  const inputTab = useAppStore((s) => s.labInputTab);
   const { updateConfig, loadSample, run, cancelRun, importTraceJson, exportTrace, showToast } =
     useAppStore.getState();
+  const builder = useCircuitBuilder();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const uid = useId();
 
   const onImportFile = async (file: File): Promise<void> => {
     setImportError(null);
@@ -69,9 +74,10 @@ export function LabControls(): ReactElement {
       }}
     >
       <div className="field-row">
-        <label htmlFor="lab-sample">Sample circuit</label>
+        <label htmlFor={`${uid}-sample`}>Sample circuit</label>
         <select
-          id="lab-sample"
+          id={`${uid}-sample`}
+          data-mission-target="lab-sample"
           value={config.sampleId ?? ''}
           onChange={(e) => {
             if (e.target.value) loadSample(e.target.value);
@@ -86,32 +92,59 @@ export function LabControls(): ReactElement {
         </select>
       </div>
 
-      <div className="field-row field-row-editor">
-        <label htmlFor="lab-qasm">
-          OpenQASM 2.0 program <span className="hint">(max 12 qubits for exact simulation)</span>
-        </label>
-        <textarea
-          id="lab-qasm"
-          value={config.qasm}
-          spellCheck={false}
-          rows={10}
-          onChange={(e) => updateConfig({ qasm: e.target.value, sampleId: null })}
-          aria-invalid={error !== null}
-          aria-describedby={error ? 'lab-qasm-error' : undefined}
-        />
-        {error && (
-          <p id="lab-qasm-error" className="field-error" role="alert">
-            {error.line !== undefined ? `Line ${error.line}, column ${error.col}: ` : ''}
-            {error.message}
-          </p>
-        )}
+      <div className="lab-input-tabs" role="tablist" aria-label="Program input mode">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={inputTab === 'blocks'}
+          className={inputTab === 'blocks' ? 'active' : ''}
+          data-mission-target="lab-tab-blocks"
+          onClick={() => useAppStore.getState().setLabInputTab('blocks')}
+        >
+          Blocks
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={inputTab === 'code'}
+          className={inputTab === 'code' ? 'active' : ''}
+          onClick={() => useAppStore.getState().setLabInputTab('code')}
+        >
+          Code
+        </button>
       </div>
+
+      {inputTab === 'blocks' ? (
+        <CircuitBuilder builder={builder} />
+      ) : (
+        <div className="field-row field-row-editor">
+          <label htmlFor={`${uid}-qasm`}>
+            OpenQASM 2.0 program <span className="hint">(max 12 qubits for exact simulation)</span>
+          </label>
+          <textarea
+            id={`${uid}-qasm`}
+            value={config.qasm}
+            spellCheck={false}
+            rows={10}
+            onChange={(e) => updateConfig({ qasm: e.target.value, sampleId: null })}
+            aria-invalid={error !== null}
+            aria-describedby={error ? `${uid}-qasm-error` : undefined}
+          />
+          {error && (
+            <p id={`${uid}-qasm-error`} className="field-error" role="alert">
+              {error.line !== undefined ? `Line ${error.line}, column ${error.col}: ` : ''}
+              {error.message}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="field-grid">
         <div className="field-row">
-          <label htmlFor="lab-shots">Shots</label>
+          <label htmlFor={`${uid}-shots`}>Shots</label>
           <input
-            id="lab-shots"
+            id={`${uid}-shots`}
+            data-mission-target="lab-shots"
             type="number"
             min={1}
             max={MAX_SHOTS}
@@ -120,18 +153,19 @@ export function LabControls(): ReactElement {
           />
         </div>
         <div className="field-row">
-          <label htmlFor="lab-seed">Seed</label>
+          <label htmlFor={`${uid}-seed`}>Seed</label>
           <input
-            id="lab-seed"
+            id={`${uid}-seed`}
             type="text"
             value={config.seed}
             onChange={(e) => updateConfig({ seed: e.target.value })}
           />
         </div>
         <div className="field-row">
-          <label htmlFor="lab-device">Device topology</label>
+          <label htmlFor={`${uid}-device`}>Device topology</label>
           <select
-            id="lab-device"
+            id={`${uid}-device`}
+            data-mission-target="lab-device"
             value={config.deviceId}
             onChange={(e) => updateConfig({ deviceId: e.target.value })}
           >
@@ -143,9 +177,10 @@ export function LabControls(): ReactElement {
           </select>
         </div>
         <div className="field-row">
-          <label htmlFor="lab-layout">Initial layout</label>
+          <label htmlFor={`${uid}-layout`}>Initial layout</label>
           <select
-            id="lab-layout"
+            id={`${uid}-layout`}
+            data-mission-target="lab-layout"
             value={Array.isArray(config.layoutMethod) ? 'manual' : config.layoutMethod}
             onChange={(e) => {
               const v = e.target.value;
@@ -158,7 +193,7 @@ export function LabControls(): ReactElement {
           </select>
         </div>
         <div className="field-row field-row-checkbox">
-          <label>
+          <label data-mission-target="lab-optimize">
             <input
               type="checkbox"
               checked={config.optimize}
@@ -168,7 +203,7 @@ export function LabControls(): ReactElement {
           </label>
         </div>
         <div className="field-row field-row-checkbox">
-          <label>
+          <label data-mission-target="lab-noise">
             <input
               type="checkbox"
               checked={config.noiseEnabled}
@@ -192,11 +227,11 @@ export function LabControls(): ReactElement {
             ] as const
           ).map(([key, label, max]) => (
             <div className="field-row" key={key}>
-              <label htmlFor={`noise-${key}`}>
+              <label htmlFor={`${uid}-noise-${key}`}>
                 {label}: {config.noise[key].toFixed(3)}
               </label>
               <input
-                id={`noise-${key}`}
+                id={`${uid}-noise-${key}`}
                 type="range"
                 min={0}
                 max={max}
@@ -220,7 +255,7 @@ export function LabControls(): ReactElement {
             </button>
           </>
         ) : (
-          <button type="submit" className="primary">
+          <button type="submit" className="primary" data-mission-target="lab-run">
             Run
           </button>
         )}

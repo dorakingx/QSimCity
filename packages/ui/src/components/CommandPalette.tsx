@@ -34,6 +34,7 @@ function PaletteContent(): ReactElement {
     const modes: [AppMode, string][] = [
       ['home', 'Go to Home'],
       ['tour', 'Start Guided Tour'],
+      ['learn', 'Open Missions'],
       ['explore', 'Explore the city'],
       ['lab', 'Open Quantum Lab'],
       ['compare', 'Open Compare Mode'],

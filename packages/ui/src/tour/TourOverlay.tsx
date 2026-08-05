@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 import { TOUR_CHAPTERS } from './chapters.js';
 import { DISTRICTS } from '@qsimcity/world';
+import { tourChapterExplanation } from '../content/explanations.js';
 
 /**
  * Guided Tour overlay: chapter navigation with previous/next/exit, keyboard
@@ -10,6 +11,7 @@ import { DISTRICTS } from '@qsimcity/world';
  */
 export function TourOverlay(): ReactElement {
   const chapterIndex = useAppStore((s) => s.tourChapter);
+  const level = useAppStore((s) => s.settings.explanationLevel);
   const { setTourChapter, setMode, select } = useAppStore.getState();
   const chapter = TOUR_CHAPTERS[Math.min(chapterIndex, TOUR_CHAPTERS.length - 1)]!;
   const district = DISTRICTS.find((d) => d.id === chapter.districtId)!;
@@ -41,16 +43,19 @@ export function TourOverlay(): ReactElement {
           {chapter.title}
         </h2>
       </header>
-      <dl className="tour-body">
-        <dt>What you see</dt>
-        <dd>{chapter.see}</dd>
-        <dt>What it represents</dt>
-        <dd>{chapter.represents}</dd>
-        <dt>How exact is this?</dt>
-        <dd>{chapter.exactness}</dd>
-        <dt>Why it matters</dt>
-        <dd>{chapter.why}</dd>
-      </dl>
+      <p className="tour-leveled">{tourChapterExplanation(chapter.id, level)}</p>
+      {level !== 'child' && (
+        <dl className="tour-body">
+          <dt>What you see</dt>
+          <dd>{chapter.see}</dd>
+          <dt>What it represents</dt>
+          <dd>{chapter.represents}</dd>
+          <dt>How exact is this?</dt>
+          <dd>{chapter.exactness}</dd>
+          <dt>Why it matters</dt>
+          <dd>{chapter.why}</dd>
+        </dl>
+      )}
       <nav className="tour-nav" aria-label="Tour navigation">
         <button type="button" onClick={() => goTo(chapterIndex - 1)} disabled={chapterIndex === 0}>
           ← Previous

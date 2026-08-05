@@ -37,7 +37,10 @@
     "repro:check": "tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts",
     "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm python:verify && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm verify:fresh-clone && pnpm soak",
     "verify:fresh-clone": "tsx tools/fresh-clone/run-fresh-clone.ts",
-    "python:verify": "tsx tools/python/run-python-verify.ts"
+    "python:verify": "tsx tools/python/run-python-verify.ts",
+    "wiser:fps": "tsx tools/wiser/run-fps-benchmark.ts",
+    "wiser:screens": "tsx tools/wiser/capture-screenshots.ts",
+    "wiser:reviews": "tsx tools/wiser/record-reviews.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

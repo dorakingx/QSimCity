@@ -16,6 +16,7 @@ import { TourOverlay } from './tour/TourOverlay.js';
 import { ScenarioPanel } from './scenarios/ScenarioPanel.js';
 import { Toast } from './components/Toast.js';
 import { SettingsMenu } from './components/SettingsMenu.js';
+import { MissionPanel } from './missions/MissionPanel.js';
 
 /** 3D city is code-split so 2D users never download three.js (spec §19). */
 const CityView = lazy(() => import('./views/CityView.js'));
@@ -23,6 +24,7 @@ const CityView = lazy(() => import('./views/CityView.js'));
 const MODE_LABELS: Record<AppMode, string> = {
   home: 'Home',
   tour: 'Guided Tour',
+  learn: 'Missions',
   explore: 'Explore',
   lab: 'Quantum Lab',
   compare: 'Compare',
@@ -156,6 +158,11 @@ export function App(): ReactElement {
 
       <main id="main-content" className="app-main">
         {mode === 'home' && <HomeView />}
+        {mode === 'learn' && (
+          <div className="learn-layout">
+            <MissionPanel />
+          </div>
+        )}
         {mode === 'accessible-2d' && <Accessible2DView />}
         {mode === 'compare' && <CompareView />}
         {wants3d && !canUse3d && (

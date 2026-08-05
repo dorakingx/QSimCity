@@ -51,6 +51,23 @@ export function SettingsMenu(): ReactElement {
             </select>
           </div>
           <div className="field-row">
+            <label htmlFor="set-explanation-level">Explanation level</label>
+            <select
+              id="set-explanation-level"
+              value={settings.explanationLevel}
+              data-mission-target="settings-explanation-level"
+              onChange={(e) =>
+                updateSettings({
+                  explanationLevel: e.target.value as 'child' | 'beginner' | 'expert',
+                })
+              }
+            >
+              <option value="child">Child (short and simple)</option>
+              <option value="beginner">Beginner</option>
+              <option value="expert">Expert</option>
+            </select>
+          </div>
+          <div className="field-row">
             <label htmlFor="set-daynight">Time of day</label>
             <select
               id="set-daynight"

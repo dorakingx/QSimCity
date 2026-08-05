@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanProhibitedNames } from './check-prohibited-names.js';
@@ -527,6 +528,59 @@ check('Sample traces validate and match committed hashes', () =>
     'trace hash verification',
   ),
 );
+
+// ------------------------------------------------------ WISER real city
+
+check('WISER frame-rate evidence', () => {
+  const evidence = readEvidence(join(ROOT, 'release-evidence', 'wiser-fps', 'fps-report.json'), {
+    requiredMeasurements: ['desktopMedianFps', 'mobileMedianFps'],
+    ...evidenceOptions,
+  });
+  const desktop = Number(evidence.measurements['desktopMedianFps']);
+  const mobile = Number(evidence.measurements['mobileMedianFps']);
+  if (desktop < 50) throw new Error(`desktop median ${desktop} fps below 50`);
+  if (mobile < 30) throw new Error(`mobile median ${mobile} fps below 30`);
+  return `desktop ${desktop} fps, mobile ${mobile} fps`;
+});
+
+check('WISER screenshot evidence', () => {
+  const evidence = readEvidence(
+    join(ROOT, 'release-evidence', 'wiser-screenshots', 'manifest.json'),
+    { requiredMeasurements: ['imageCount'], ...evidenceOptions },
+  );
+  const detail = evidence.detail as {
+    shots: { file: string; sha256: string; viewport: string; timeOfDay: string }[];
+  };
+  if (detail.shots.length < 12) throw new Error(`only ${detail.shots.length} screenshots`);
+  const times = new Set(detail.shots.map((s) => s.timeOfDay));
+  for (const t of ['day', 'golden', 'night']) {
+    if (!times.has(t)) throw new Error(`no ${t} screenshots`);
+  }
+  for (const shot of detail.shots) {
+    const path = join(ROOT, shot.file);
+    if (!existsSync(path)) throw new Error(`screenshot missing on disk: ${shot.file}`);
+    const digest = createHash('sha256').update(readFileSync(path)).digest('hex');
+    if (digest !== shot.sha256) {
+      throw new Error(`screenshot drifted from manifest: ${shot.file}`);
+    }
+  }
+  return `${detail.shots.length} screenshots across day/golden/night, all hash-bound`;
+});
+
+check('WISER adversarial reviews', () => {
+  const evidence = readEvidence(join(ROOT, 'release-evidence', 'wiser-reviews', 'reviews.json'), {
+    requiredMeasurements: ['reviewers', 'openBlockers', 'openMajors', 'minCategoryScore'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  if (Number(m['reviewers']) < 4) throw new Error('fewer than four reviewer stances');
+  if (Number(m['openBlockers']) > 0) throw new Error(`${m['openBlockers']} open blocking findings`);
+  if (Number(m['openMajors']) > 0) throw new Error(`${m['openMajors']} open major findings`);
+  if (Number(m['minCategoryScore']) < 4.5) {
+    throw new Error(`minimum category score ${m['minCategoryScore']} below 4.5`);
+  }
+  return `${m['reviewers']} reviewers, min category ${m['minCategoryScore']}/5, zero open blockers or majors`;
+});
 
 check('Accessibility evidence recorded', () => {
   const spec = readFileSync(join(ROOT, 'tests', 'e2e', 'accessibility.spec.ts'), 'utf8');

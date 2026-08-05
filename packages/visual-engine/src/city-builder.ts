@@ -446,11 +446,21 @@ export function buildCity(): CityMeshes {
       } else if (coastDistance < 12) {
         c.copy(sand);
       } else {
-        // Patchwork fields: large-scale hash tiles vary the green.
+        // Patchwork fields: large-scale hash tiles vary the green. The
+        // variation fades with distance from the city so the far terrain
+        // reads as haze-softened countryside, not compressed stripes.
+        const beyond = Math.max(
+          0,
+          CITY_BOUNDS.minX - x,
+          x - CITY_BOUNDS.maxX,
+          CITY_BOUNDS.minZ - z,
+          z - CITY_BOUNDS.maxZ,
+        );
+        const patchFade = Math.max(0, 1 - beyond / 320);
         const patch = hash01(`field:${Math.floor(x / 46)}:${Math.floor(z / 38)}`);
         const n = hash01(`terr:${Math.round(x / 9)}:${Math.round(z / 9)}`);
         c.copy(grass)
-          .lerp(grassDry, patch * 0.75)
+          .lerp(grassDry, patch * 0.75 * patchFade)
           .lerp(grass, n * 0.3);
         const urbanBlend = Math.max(0, 1 - zoneDistance(x, z) / 26);
         c.lerp(urban, urbanBlend * 0.85);
@@ -1274,12 +1284,12 @@ export function buildCity(): CityMeshes {
 
   // -------------------------------------------------------- time of day
   const applyTimeOfDay = (time: TimeOfDay): void => {
-    const windowGlow = time === 'night' ? 1.35 : time === 'golden' ? 0.45 : 0;
+    const windowGlow = time === 'night' ? 1.6 : time === 'golden' ? 0.5 : 0;
     for (const material of facadeMaterials) {
       material.emissiveIntensity = windowGlow;
     }
     lampHeadMaterial.emissiveIntensity = time === 'night' ? 2.2 : time === 'golden' ? 1.1 : 0;
-    lampPoolMaterial.opacity = time === 'night' ? 0.3 : time === 'golden' ? 0.1 : 0;
+    lampPoolMaterial.opacity = time === 'night' ? 0.42 : time === 'golden' ? 0.12 : 0;
     for (const mesh of districtAccents.values()) {
       (mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = accentBaseIntensity(time);
     }

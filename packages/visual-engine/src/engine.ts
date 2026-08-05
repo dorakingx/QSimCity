@@ -385,6 +385,13 @@ export class CityEngine {
       for (const mesh of this.city.farHidden) mesh.visible = shouldShow;
     }
 
+    // District labels are skyline furniture: hidden at street level, where
+    // architecture and consoles carry the meaning instead.
+    const labelsVisible = this.labelsEnabled && this.rig.mode !== 'first-person';
+    if (this.labelSprites[0] && this.labelSprites[0].visible !== labelsVisible) {
+      for (const sprite of this.labelSprites) sprite.visible = labelsVisible;
+    }
+
     // First-person proximity to interactive consoles.
     if (this.rig.mode === 'first-person') {
       const p = this.rig.position;
@@ -675,7 +682,7 @@ export class CityEngine {
       this.envTarget = this.pmrem.fromScene(skyScene, 0.04);
       this.scene.environment = this.envTarget.texture;
       this.scene.environmentIntensity =
-        this.timeOfDay === 'night' ? 0.35 : this.timeOfDay === 'golden' ? 0.45 : 0.5;
+        this.timeOfDay === 'night' ? 0.35 : this.timeOfDay === 'golden' ? 0.5 : 0.62;
       previous?.dispose();
     } catch {
       // Environment maps are an enhancement; rendering continues without

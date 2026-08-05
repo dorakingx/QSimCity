@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {
+  ARTERIAL_SEGMENTS,
   CITY_BOUNDS,
   EAST_COAST_X,
   INTERIOR_BUILDING_IDS,
@@ -97,24 +98,45 @@ export class CameraRig {
     this.mode = mode;
     if (mode === 'first-person') {
       if (previous === 'orbit' || previous === 'top') {
-        // Step onto the street a short distance from the viewed spot, on the
-        // side facing the city centre, and look back toward it.
-        const centreX = (CITY_BOUNDS.minX + CITY_BOUNDS.maxX) / 2;
-        const centreZ = (CITY_BOUNDS.minZ + CITY_BOUNDS.maxZ) / 2;
-        let dx = centreX - this.target.x;
-        let dz = centreZ - this.target.z;
-        const length = Math.hypot(dx, dz);
-        if (length < 1e-3) {
-          dx = 0;
-          dz = 1;
-        } else {
-          dx /= length;
-          dz /= length;
+        // Step onto the nearest street: snap to the closest arterial
+        // centerline point and face along the road, so the walker always
+        // starts standing in a street with a clear view — never inside a
+        // block or facing a wall.
+        let bestX = this.target.x;
+        let bestZ = this.target.z;
+        let bestYaw = 0;
+        let bestDistance = Infinity;
+        for (const segment of ARTERIAL_SEGMENTS) {
+          const ax = segment.a.x;
+          const az = segment.a.z;
+          const dx = segment.b.x - ax;
+          const dz = segment.b.z - az;
+          const lengthSq = dx * dx + dz * dz;
+          const t = Math.max(
+            0.05,
+            Math.min(
+              0.95,
+              ((this.target.x - ax) * dx + (this.target.z - az) * dz) / Math.max(1e-6, lengthSq),
+            ),
+          );
+          const length = Math.sqrt(lengthSq);
+          const ux = dx / Math.max(1e-6, length);
+          const uz = dz / Math.max(1e-6, length);
+          // Stand in the right-hand driving lane, not on the median.
+          const laneOffset = segment.width / 4 + segment.median / 2;
+          const px = ax + dx * t + uz * laneOffset;
+          const pz = az + dz * t - ux * laneOffset;
+          const d = Math.hypot(px - this.target.x, pz - this.target.z);
+          if (d < bestDistance) {
+            bestDistance = d;
+            bestX = px;
+            bestZ = pz;
+            bestYaw = Math.atan2(dx, dz);
+          }
         }
-        const standoff = 46;
-        this.fpPosition.set(this.target.x + dx * standoff, 0, this.target.z + dz * standoff);
-        this.yaw = Math.atan2(-dx, -dz);
-        this.pitch = 0.04;
+        this.fpPosition.set(bestX, 0, bestZ);
+        this.yaw = bestYaw;
+        this.pitch = 0.03;
       }
       this.fpPosition.y = terrainHeight(this.fpPosition.x, this.fpPosition.z) + EYE_HEIGHT;
       this.resolveCollision(this.fpPosition);

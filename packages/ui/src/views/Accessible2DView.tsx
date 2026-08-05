@@ -9,11 +9,13 @@ import { ResultsSection } from '../components/ResultsSection.js';
 import { MetricsPanel } from '../components/MetricsPanel.js';
 import { ProvenancePanel } from '../components/ProvenancePanel.js';
 import { EventLog } from '../components/EventLog.js';
+import { MissionPanel } from '../missions/MissionPanel.js';
 
 /**
  * Accessible 2D Mode (spec §16): the complete core workflow without any
- * WebGL. This view is also the automatic fallback when WebGL is
- * unavailable.
+ * WebGL, including the whole learning path — missions and the block
+ * builder are plain DOM and live here too (spec W6.9). This view is also
+ * the automatic fallback when WebGL is unavailable.
  */
 export function Accessible2DView(): ReactElement {
   const trace = useAppStore((s) => s.trace);
@@ -29,6 +31,10 @@ export function Accessible2DView(): ReactElement {
       <section aria-label="Program and run configuration" className="view-2d-column">
         <h2>Program</h2>
         <LabControls />
+        <details className="missions-2d">
+          <summary>Missions</summary>
+          <MissionPanel />
+        </details>
       </section>
       <section aria-label="Circuit and replay" className="view-2d-column view-2d-main">
         <h2>Circuit journey</h2>

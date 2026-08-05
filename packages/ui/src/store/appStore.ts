@@ -3,8 +3,16 @@ import { getSampleCircuit, DEVICES } from '@qsimcity/domain';
 import type { NoiseModel } from '@qsimcity/simulator';
 import { maxTickOf, type InteractiveAction } from '@qsimcity/world';
 import { parseTraceJson, serializeTrace, traceFileName, type Trace } from 'qsimcity-trace';
+import type { ExplanationLevel } from '../content/explanations.js';
+import {
+  clearProgressStorage,
+  DEFAULT_PROGRESS,
+  loadProgress,
+  persistProgress,
+  type LearningProgress,
+} from './progress.js';
 
-export type AppMode = 'home' | 'explore' | 'lab' | 'compare' | 'accessible-2d' | 'tour';
+export type AppMode = 'home' | 'learn' | 'explore' | 'lab' | 'compare' | 'accessible-2d' | 'tour';
 
 export type SelectionTarget =
   | { kind: 'district'; districtId: string }
@@ -35,6 +43,8 @@ export interface Settings {
   timeOfDay: TimeOfDaySetting;
   particles: boolean;
   labels: boolean;
+  /** How much prior knowledge the narration assumes (spec section 7.4). */
+  explanationLevel: ExplanationLevel;
 }
 
 export interface RunError {
@@ -71,6 +81,7 @@ export const DEFAULT_SETTINGS: Settings = {
   timeOfDay: 'day',
   particles: true,
   labels: true,
+  explanationLevel: 'beginner',
 };
 
 const SETTINGS_KEY = 'qsimcity.settings.v1';
@@ -95,6 +106,11 @@ interface AppState {
   selection: SelectionTarget | null;
   tourChapter: number;
   activeScenarioId: string | null;
+  activeMissionId: string | null;
+  /** Which program-input tab the Quantum Lab shows (spec section 7.2). */
+  labInputTab: 'blocks' | 'code';
+  /** Local learning progress: onboarding, missions, shots, assessments. */
+  progress: LearningProgress;
   settings: Settings;
   paletteOpen: boolean;
   helpOpen: boolean;
@@ -121,6 +137,9 @@ interface AppState {
   select(target: SelectionTarget | null): void;
   setTourChapter(index: number): void;
   setActiveScenario(id: string | null): void;
+  setActiveMission(id: string | null): void;
+  setLabInputTab(tab: 'blocks' | 'code'): void;
+  updateProgress(partial: Partial<LearningProgress>): void;
   updateSettings(partial: Partial<Settings>): void;
   setPaletteOpen(open: boolean): void;
   setHelpOpen(open: boolean): void;
@@ -148,6 +167,12 @@ export function loadSettings(): Settings {
       !['day', 'golden', 'night'].includes(migrated.timeOfDay)
     ) {
       delete migrated.timeOfDay;
+    }
+    if (
+      migrated.explanationLevel !== undefined &&
+      !['child', 'beginner', 'expert'].includes(migrated.explanationLevel)
+    ) {
+      delete migrated.explanationLevel;
     }
     delete (migrated as { dayNight?: unknown }).dayNight;
     return { ...DEFAULT_SETTINGS, ...migrated };
@@ -179,6 +204,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   selection: null,
   tourChapter: 0,
   activeScenarioId: null,
+  activeMissionId: null,
+  labInputTab: 'code',
+  progress: loadProgress(),
   settings: loadSettings(),
   paletteOpen: false,
   helpOpen: false,
@@ -209,6 +237,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ running: true, runProgress: 0, runError: null });
     try {
       const trace = await runner.run(config, (fraction) => set({ runProgress: fraction }));
+      // Record the completed run's shot count for the statistics mission.
+      const progress = get().progress;
+      const nextProgress: LearningProgress = {
+        ...progress,
+        shotsHistory: [...progress.shotsHistory, config.shots].slice(-50),
+      };
+      persistProgress(nextProgress);
       set({
         trace,
         traceImported: false,
@@ -216,6 +251,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         runProgress: 1,
         playbackTick: 0,
         playbackPlaying: true,
+        progress: nextProgress,
       });
     } catch (e) {
       const err = e as RunError & Error;
@@ -300,6 +336,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setTourChapter: (index) => set({ tourChapter: index }),
   setActiveScenario: (id) => set({ activeScenarioId: id }),
+  setActiveMission: (id) => set({ activeMissionId: id }),
+  setLabInputTab: (tab) => set({ labInputTab: tab }),
+
+  updateProgress: (partial) => {
+    const next = { ...get().progress, ...partial };
+    persistProgress(next);
+    set({ progress: next });
+  },
 
   updateSettings: (partial) => {
     const next = { ...get().settings, ...partial };
@@ -320,7 +364,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch {
       // Ignore storage failures; state below still resets.
     }
-    set({ settings: { ...DEFAULT_SETTINGS } });
+    clearProgressStorage();
+    set({
+      settings: { ...DEFAULT_SETTINGS },
+      progress: { ...DEFAULT_PROGRESS },
+      activeMissionId: null,
+    });
   },
 
   applyInteractiveAction: (action) => {

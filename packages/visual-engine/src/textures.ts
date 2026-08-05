@@ -62,15 +62,15 @@ interface FacadeSpec {
 
 const SPECS: Record<Exclude<FacadeStyle, 'plain'>, FacadeSpec> = {
   glass: {
-    wall: rgb(0x9fb2bd),
+    wall: rgb(0xaebfc9),
     wallVariation: 0.05,
-    frame: rgb(0x5c6b74),
-    glassDay: rgb(0x7f98a8),
+    frame: rgb(0x66757e),
+    glassDay: rgb(0x9ab2c2),
     glassNight: rgb(0xffd98c),
     window: [0.06, 0.08, 0.94, 0.92],
     litChance: 0.55,
-    roughness: 0.25,
-    metalness: 0.6,
+    roughness: 0.3,
+    metalness: 0.22,
   },
   panel: {
     wall: rgb(0xb9bcc2),
@@ -125,7 +125,7 @@ const SPECS: Record<Exclude<FacadeStyle, 'plain'>, FacadeSpec> = {
     window: [0.08, 0.62, 0.92, 0.9],
     litChance: 0.3,
     roughness: 0.6,
-    metalness: 0.35,
+    metalness: 0.18,
     bandEvery: 4,
   },
 };
