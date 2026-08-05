@@ -15,7 +15,9 @@ import {
   qpuPylonPositions,
   terrainHeight,
   hash01,
+  WATER_LEVEL,
   weatherAt,
+  WEST_COAST_X,
   type WorldActivity,
 } from '@qsimcity/world';
 import {
@@ -83,6 +85,16 @@ export class CityEngine {
   private pylonWorld: readonly (readonly [number, number])[] = [];
   /** Instanced containers stacking the live counts histogram (W4.4). */
   private countStacks: THREE.InstancedMesh | null = null;
+  /** Stage-specific set pieces (spec section 5.1): the arriving ship, the
+   * refinery steam, the scheduling beacon, and the observatory beam. */
+  private arrivalShip: THREE.Group | null = null;
+  private arrivalProgress = 0;
+  private arrivalTarget = 0;
+  private steam: THREE.Points | null = null;
+  private steamActive = false;
+  private beacon: THREE.Mesh | null = null;
+  private beaconActive = false;
+  private resultBeam: THREE.Mesh | null = null;
   private readonly rain: THREE.Points;
   private readonly rainBasePositions: Float32Array;
   private readonly pulses: { mesh: THREE.Mesh; born: number }[] = [];
@@ -340,6 +352,38 @@ export class CityEngine {
       this.reducedMotion,
     );
 
+    // The program ship sails from open water to the Program Port pier as
+    // the run begins; scrubbing back sends it out again.
+    if (this.arrivalShip) {
+      const k = this.reducedMotion ? 1 : Math.min(1, dt * 1.6);
+      this.arrivalProgress += (this.arrivalTarget - this.arrivalProgress) * k;
+      const t = this.arrivalProgress;
+      const dockX = WEST_COAST_X - 14;
+      const dockZ = 2;
+      const seaX = WEST_COAST_X - 170;
+      const seaZ = -70;
+      this.arrivalShip.position.set(
+        seaX + (dockX - seaX) * t,
+        WATER_LEVEL + 0.2,
+        seaZ + (dockZ - seaZ) * t,
+      );
+      this.arrivalShip.rotation.y = Math.atan2(dockX - seaX, dockZ - seaZ);
+    }
+
+    // Refinery steam rises; the scheduling beacon sweeps.
+    if (this.steam && this.steamActive && !this.reducedMotion) {
+      const positions = this.steam.geometry.getAttribute('position');
+      const array = positions.array as Float32Array;
+      for (let i = 1; i < array.length; i += 3) {
+        array[i] = array[i]! + dt * 7;
+        if (array[i]! > 62) array[i] = 32;
+      }
+      positions.needsUpdate = true;
+    }
+    if (this.beacon && this.beaconActive && !this.reducedMotion) {
+      this.beacon.rotation.y += dt * 1.7;
+    }
+
     // Logical banners fly toward their current physical homes; a SWAP reads
     // as two banners crossing between pylons.
     for (const [logical, banner] of this.logicalBanners) {
@@ -426,6 +470,130 @@ export class CityEngine {
     this.sky.setCloudCover(weather.cover);
     this.updateLogicalBanners();
     this.updateCountStacks();
+    this.updateStageSetPieces(trace, tick);
+  }
+
+  /**
+   * Stage set pieces (spec section 5.1), all derived from the same events:
+   * the program ship sails in and docks while intake/parse events fire,
+   * the refinery vents steam during translation, the scheduling tower
+   * sweeps its beacon, and the observatory raises a light beam when
+   * results arrive. Presentation only; scrubbing reproduces each state.
+   */
+  private updateStageSetPieces(trace: Trace | null, tick: number): void {
+    const stagesReached = new Set<string>();
+    let latestStage = '';
+    if (trace) {
+      for (const event of trace.events) {
+        if (event.logicalTick > tick) break;
+        stagesReached.add(event.stage);
+        latestStage = event.stage;
+      }
+    }
+    // Program ship: offshore before the run, docked once parsing started.
+    this.arrivalTarget = !trace ? 0 : stagesReached.has('parse') || stagesReached.has('input') ? 1 : 0;
+    if (!this.arrivalShip) {
+      const hullMaterial = new THREE.MeshStandardMaterial({ color: 0x4e6b86, roughness: 0.6 });
+      const castleMaterial = new THREE.MeshStandardMaterial({ color: 0xe8e9ec, roughness: 0.5 });
+      const crateMaterial = new THREE.MeshStandardMaterial({
+        color: 0x224455,
+        emissive: 0x66ccff,
+        emissiveIntensity: 1.1,
+        roughness: 0.35,
+      });
+      const ship = new THREE.Group();
+      ship.name = 'program-ship';
+      const hull = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 26), hullMaterial);
+      hull.position.y = 1.1;
+      const castle = new THREE.Mesh(new THREE.BoxGeometry(7, 4.5, 6), castleMaterial);
+      castle.position.set(0, 4.4, -8);
+      const crate = new THREE.Mesh(new THREE.BoxGeometry(4, 2.4, 6), crateMaterial);
+      crate.position.set(0, 3.2, 3);
+      ship.add(hull, castle, crate);
+      this.scene.add(ship);
+      this.arrivalShip = ship;
+    }
+
+    // Refinery steam during translation ticks; beacon during scheduling.
+    const eventsNow = trace ? activityAtTick(trace, tick).eventsAtTick : [];
+    this.steamActive = eventsNow.some((e) => e.stage === 'translation');
+    if (!this.steam) {
+      const site = LANDMARK_SITES['translation-refinery'];
+      const count = 60;
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        positions[i * 3] = site.anchor[0] - 8 + (hash01(`steam:${i}:x`) - 0.5) * 6;
+        positions[i * 3 + 1] = 32 + hash01(`steam:${i}:y`) * 26;
+        positions[i * 3 + 2] = site.anchor[1] + (hash01(`steam:${i}:z`) - 0.5) * 6;
+      }
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      this.steam = new THREE.Points(
+        geometry,
+        new THREE.PointsMaterial({
+          color: 0xe6ecf2,
+          size: 3.2,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+        }),
+      );
+      this.steam.name = 'refinery-steam';
+      this.scene.add(this.steam);
+    }
+    (this.steam.material as THREE.PointsMaterial).opacity =
+      this.steamActive && this.particles ? 0.55 : 0;
+
+    // Scheduling beacon sweep while scheduling events fire.
+    this.beaconActive = eventsNow.some((e) => e.stage === 'scheduling');
+    if (!this.beacon) {
+      const site = LANDMARK_SITES['scheduling-tower'];
+      const beam = new THREE.Mesh(
+        new THREE.BoxGeometry(52, 0.5, 1.2),
+        new THREE.MeshStandardMaterial({
+          color: 0x33330a,
+          emissive: 0xd8c93a,
+          emissiveIntensity: 1.6,
+          transparent: true,
+          opacity: 0,
+        }),
+      );
+      beam.position.set(
+        site.anchor[0],
+        terrainHeight(site.anchor[0], site.anchor[1]) + 79,
+        site.anchor[1],
+      );
+      beam.name = 'scheduling-beacon';
+      this.scene.add(beam);
+      this.beacon = beam;
+    }
+    (this.beacon.material as THREE.MeshStandardMaterial).opacity = this.beaconActive ? 0.85 : 0;
+
+    // Observatory beam once results exist.
+    const resultsReached = stagesReached.has('result');
+    if (!this.resultBeam) {
+      const site = LANDMARK_SITES.observatory;
+      const beam = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.6, 2.6, 160, 10, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0xa8f06a,
+          transparent: true,
+          opacity: 0,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
+      );
+      beam.position.set(
+        site.anchor[0],
+        terrainHeight(site.anchor[0], site.anchor[1]) + 95,
+        site.anchor[1],
+      );
+      beam.name = 'observatory-beam';
+      this.scene.add(beam);
+      this.resultBeam = beam;
+    }
+    (this.resultBeam.material as THREE.MeshBasicMaterial).opacity = resultsReached ? 0.28 : 0;
+    void latestStage;
   }
 
   /**
@@ -748,6 +916,25 @@ export class CityEngine {
     this.rain.geometry.dispose();
     (this.rain.material as THREE.Material).dispose();
     this.vehicles.dispose();
+    if (this.arrivalShip) {
+      for (const child of this.arrivalShip.children) {
+        const mesh = child as THREE.Mesh;
+        mesh.geometry.dispose();
+        (mesh.material as THREE.Material).dispose();
+      }
+    }
+    if (this.steam) {
+      this.steam.geometry.dispose();
+      (this.steam.material as THREE.Material).dispose();
+    }
+    if (this.beacon) {
+      this.beacon.geometry.dispose();
+      (this.beacon.material as THREE.Material).dispose();
+    }
+    if (this.resultBeam) {
+      this.resultBeam.geometry.dispose();
+      (this.resultBeam.material as THREE.Material).dispose();
+    }
     for (const banner of this.logicalBanners.values()) {
       banner.material.map?.dispose();
       banner.material.dispose();

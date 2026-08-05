@@ -1,41 +1,41 @@
 {
-  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
-  "sourceTreeHash": "fdf89a31945594bf",
-  "worktreeDirty": false,
-  "generatedAt": "2026-07-31T09:30:23.034Z",
+  "commitSha": "8b55d429729af86c94af9cdc4fdbe6646c80cff2",
+  "sourceTreeHash": "b9d0d3e47fb2ef48",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-05T08:27:38.875Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "966815077bd1e9d4",
+  "inputHash": "1a6cb4f64cfb0623",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 126669,
-    "totalJsGzipBytes": 305294,
-    "eagerChunks": 3,
+    "initialJsGzipBytes": 156062,
+    "totalJsGzipBytes": 351455,
+    "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 126669,
-    "totalJsGzipBytes": 305294,
+    "initialJsGzipBytes": 156062,
+    "totalJsGzipBytes": 351455,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
       {
-        "name": "three-bAKDV79k.js",
-        "gzipBytes": 135194
+        "name": "three-DrQIqESF.js",
+        "gzipBytes": 136061
       },
       {
         "name": "pipeline.worker-Bs6_6sSe.js",
         "gzipBytes": 33177
       },
       {
-        "name": "CityView-BM3-fVoi.js",
-        "gzipBytes": 7995
+        "name": "CityView-CzzpSq5H.js",
+        "gzipBytes": 23896
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -44,12 +44,16 @@
     ],
     "eagerChunks": [
       {
-        "name": "index-CBtTkRaZ.js",
-        "gzipBytes": 67340
-      },
-      {
         "name": "react-VZnIVrcg.js",
         "gzipBytes": 58969
+      },
+      {
+        "name": "CertaintyBadge-BDbUVE5a.js",
+        "gzipBytes": 53814
+      },
+      {
+        "name": "index-dQNW2kyW.js",
+        "gzipBytes": 42919
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -57,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-07-31T09:30:22.987Z"
+    "generatedAt": "2026-08-05T08:27:38.834Z"
   }
 }

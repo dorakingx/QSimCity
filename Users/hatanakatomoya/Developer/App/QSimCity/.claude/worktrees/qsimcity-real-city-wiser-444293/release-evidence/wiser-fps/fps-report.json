@@ -1,8 +1,8 @@
 {
-  "commitSha": "3bfd5d1c425551ab6d1405647ae9cc17825703c3",
-  "sourceTreeHash": "6c57ba3ba60a5b80",
+  "commitSha": "8b55d429729af86c94af9cdc4fdbe6646c80cff2",
+  "sourceTreeHash": "b9d0d3e47fb2ef48",
   "worktreeDirty": true,
-  "generatedAt": "2026-08-05T04:13:14.616Z",
+  "generatedAt": "2026-08-05T08:28:13.234Z",
   "tool": "wiser-fps-benchmark",
   "toolVersion": "1.0.0",
   "command": "pnpm wiser:fps",
@@ -14,8 +14,8 @@
   },
   "measurements": {
     "desktopMedianFps": 120.5,
-    "mobileMedianFps": 122,
-    "desktopDrawCalls": 128,
+    "mobileMedianFps": 120.5,
+    "desktopDrawCalls": 130,
     "mobileCpuThrottle": 4,
     "segments": 5
   },
@@ -24,29 +24,29 @@
     "desktopSegments": [
       {
         "name": "overview-static",
-        "fps": 120.48192494215621,
+        "fps": 121.95122234882314,
         "frames": 601
       },
       {
         "name": "orbit-drag",
         "fps": 120.48192494215621,
-        "frames": 1204
+        "frames": 1202
       },
       {
         "name": "street-walk",
-        "fps": 120.48192494215621,
+        "fps": 120.48193878559331,
         "frames": 1803
       }
     ],
     "mobileSegments": [
       {
         "name": "mobile-static",
-        "fps": 121.95120816568438,
-        "frames": 601
+        "fps": 120.48192494215621,
+        "frames": 600
       },
       {
         "name": "mobile-drag",
-        "fps": 120.48192494215621,
+        "fps": 119.04762445393628,
         "frames": 1202
       }
     ]

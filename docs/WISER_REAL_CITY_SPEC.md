@@ -198,18 +198,18 @@ selected:
 
 | Stage | City behavior |
 | --- | --- |
-| Intake/parsing | Ship docks at Program Port; program crates unload; Foundry lights up as parse/normalize events fire |
+| Intake/parsing | The program ship sails in and docks at the Program Port pier; the Foundry lights up as parse/normalize events fire |
 | Layout | Logical-qubit banners raised at the Layout Exchange are assigned to physical pylon homes; the coupling map overlay mirrors the assignment |
 | Routing | Route beacons light along the chosen path on the QPU Grid |
 | SWAP insertion | The two affected pylons exchange their logical banners with a visible swap animation; the mapping table in the inspector updates at the same tick |
-| Translation | Refinery columns vent as gates are recast; gate count deltas shown |
+| Translation | The Refinery vents steam as gates are recast; gate count deltas shown |
 | Optimization | Works machinery runs; cancelled gates visibly removed from the metrics |
-| Scheduling | Tower beacon sweeps; parallel lanes light simultaneously; conflicts (same-qubit overlap) never occur and the schedule panel proves it |
+| Scheduling | The Chronarch beacon sweeps; independent gates share ticks; the schedule panel shows the parallel lanes |
 | Execution | Pylons and coupling bridges fire per gate on physical qubits |
 | Noise | Weather over the QPU Grid per configured channels (depolarizing, amplitude damping, phase damping, readout) |
 | Measurement | Containers craned onto the Harbor stacks; stack heights are the live counts histogram |
 | Feed-forward | Courier van Harbor to Control Center; conditioned gate fires only when its classical condition held |
-| Results | Observatory dome opens; ideal vs physical vs noisy compared in panels |
+| Results | The Observatory raises its light beam; ideal vs physical vs noisy compared in panels |
 
 ### 5.2 Logical vs physical identity
 
