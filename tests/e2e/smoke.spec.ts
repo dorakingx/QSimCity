@@ -1,5 +1,15 @@
 import { expect, test } from '@playwright/test';
-import { trackConsoleErrors, runBellFromLab, expectCityRendered } from './helpers.js';
+import {
+  trackConsoleErrors,
+  runBellFromLab,
+  expectCityRendered,
+  skipOnboarding,
+} from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('home page presents the product and three entry points', async ({ page, browserName }) => {
   const assertClean = trackConsoleErrors(page, browserName);

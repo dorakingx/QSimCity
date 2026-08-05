@@ -1,5 +1,30 @@
 import { expect, test } from '@playwright/test';
-import { disableWebgl, runBellFromLab } from './helpers.js';
+import { disableWebgl, runBellFromLab, skipOnboarding } from './helpers.js';
+
+// One worker per project for this file: several WebGL cities rendering in
+// parallel contend for the GPU and keep screenshots from stabilizing.
+test.describe.configure({ mode: 'default' });
+
+// Every flow here models a returning user; onboarding has its own spec.
+// Baselines run under the app's reduced-motion contract: ambient city life
+// (traffic, pedestrians, cloud drift) pauses, so consecutive frames are
+// stable enough to snapshot. Ambient motion is covered by unit tests, the
+// FPS benchmark, and the reviewed WISER screenshot set instead.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+  await page.addInitScript(() => {
+    const key = 'qsimcity.settings.v1';
+    let settings: Record<string, unknown> = {};
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) settings = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      settings = {};
+    }
+    settings['reducedMotion'] = true;
+    localStorage.setItem(key, JSON.stringify(settings));
+  });
+});
 
 /**
  * Visual regression (spec §18.5): the required surface set. Chromium
@@ -15,27 +40,41 @@ test.describe('desktop surfaces', () => {
     await expect(page).toHaveScreenshot('home.png');
   });
 
+  test('city day (explore, default view)', async ({ page }) => {
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .click();
+    // City assets, first frames, and the offline-ready toast's 5 s life.
+    await page.waitForTimeout(6500);
+    await expect(page).toHaveScreenshot('city-day.png', { timeout: 20_000 });
+  });
+
   test('city night (explore)', async ({ page }) => {
     await page.goto('/');
     await page
       .getByRole('navigation', { name: 'Modes' })
       .getByRole('button', { name: 'Explore' })
       .click();
-    await page.waitForTimeout(2500); // city assets + first frames
-    await expect(page).toHaveScreenshot('city-night.png');
+    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByLabel('Time of day').selectOption('night');
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(6500);
+    await expect(page).toHaveScreenshot('city-night.png', { timeout: 20_000 });
   });
 
-  test('city day (explore)', async ({ page }) => {
+  test('city golden hour (explore)', async ({ page }) => {
     await page.goto('/');
     await page
       .getByRole('navigation', { name: 'Modes' })
       .getByRole('button', { name: 'Explore' })
       .click();
     await page.getByRole('button', { name: 'Settings' }).click();
-    await page.getByLabel('Time of day').selectOption('day');
+    await page.getByLabel('Time of day').selectOption('golden');
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(1500);
-    await expect(page).toHaveScreenshot('city-day.png');
+    await page.waitForTimeout(6500);
+    await expect(page).toHaveScreenshot('city-golden.png', { timeout: 20_000 });
   });
 
   test('city first-person', async ({ page }) => {

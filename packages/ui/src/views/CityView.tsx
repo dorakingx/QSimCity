@@ -3,6 +3,7 @@ import { getDevice } from '@qsimcity/domain';
 import { activityAtTick, INTERACTIVES, weatherAt } from '@qsimcity/world';
 import { CityAudio, CityEngine, type CameraMode } from '@qsimcity/visual-engine';
 import { useAppStore } from '../store/appStore.js';
+import { CityLegend } from '../components/CityLegend.js';
 
 /**
  * The 3D city canvas. Bridges the engine (imperative three.js) with the
@@ -15,6 +16,7 @@ export default function CityView(): ReactElement {
   const audioRef = useRef<CityAudio | null>(null);
   const [cameraMode, setCameraMode] = useState<CameraMode>('orbit');
   const [nearbyPrompt, setNearbyPrompt] = useState<string | null>(null);
+  const [legendOpen, setLegendOpen] = useState(false);
   const settings = useAppStore((s) => s.settings);
   const trace = useAppStore((s) => s.trace);
   const tick = useAppStore((s) => s.playbackTick);
@@ -218,6 +220,16 @@ export default function CityView(): ReactElement {
           </button>
         ))}
       </div>
+      <button
+        type="button"
+        className="legend-toggle"
+        aria-haspopup="dialog"
+        data-mission-target="city-legend"
+        onClick={() => setLegendOpen(true)}
+      >
+        Legend
+      </button>
+      {legendOpen && <CityLegend onClose={() => setLegendOpen(false)} />}
       {nearbyPrompt && (
         <p className="interactive-prompt" role="status">
           {nearbyPrompt}

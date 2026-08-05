@@ -1557,3 +1557,71 @@ figure {
     grid-template-columns: 1fr;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* City Legend                                                         */
+/* ------------------------------------------------------------------ */
+
+.legend-toggle {
+  position: absolute;
+  top: 12px;
+  right: 118px;
+  z-index: 5;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.legend-toggle:hover {
+  border-color: var(--accent);
+}
+
+.city-legend {
+  max-width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.legend-entry {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--bg-raised);
+}
+
+.legend-entry-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.legend-entry-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.legend-source {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.legend-entry p {
+  margin: 6px 0 0;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.legend-trigger {
+  color: var(--text-dim);
+}

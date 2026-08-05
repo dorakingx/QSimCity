@@ -1,6 +1,26 @@
 import { expect, type Page } from '@playwright/test';
 
 /**
+ * Seed the returning-user state so the first-run onboarding overlay does
+ * not intercept the flow under test. Onboarding itself has its own spec
+ * that exercises the genuine first run. Must run before page.goto.
+ */
+export async function skipOnboarding(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const key = 'qsimcity.progress.v1';
+    let progress: Record<string, unknown> = {};
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) progress = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      progress = {};
+    }
+    progress['onboardingSeen'] = true;
+    localStorage.setItem(key, JSON.stringify(progress));
+  });
+}
+
+/**
  * Console-error tracking: uncaught exceptions, unhandled rejections, and
  * unexpected console errors fail the test (spec §18.5).
  */

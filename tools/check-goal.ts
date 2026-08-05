@@ -507,6 +507,7 @@ check('Visual regression snapshots exist', () => {
     'home',
     'city-night',
     'city-day',
+    'city-golden',
     'city-first-person',
     'lab-results',
     'compare',

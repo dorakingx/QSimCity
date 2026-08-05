@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { runBellFromLab } from './helpers.js';
+import { runBellFromLab, skipOnboarding } from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 /**
  * Automated accessibility checks (spec §16): axe scans on every major
