@@ -152,6 +152,20 @@ export class CameraRig {
     this.updateCamera();
   }
 
+  /**
+   * Place the walker at an exact spot facing an exact direction. Camera-only:
+   * used by evidence capture and E2E tests to stand a visitor inside rooms
+   * without replaying a whole keyboard walk.
+   */
+  walkTo(x: number, z: number, yaw: number): void {
+    this.mode = 'first-person';
+    this.tween = null;
+    this.fpPosition.set(x, terrainHeight(x, z) + EYE_HEIGHT, z);
+    this.yaw = yaw;
+    this.pitch = 0;
+    this.updateCamera();
+  }
+
   /** Smoothly move the orbit target (tour and inspector focus). */
   flyTo(x: number, z: number, distance = 220): void {
     if (this.mode === 'first-person' || this.mode === 'fly') {

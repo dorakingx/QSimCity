@@ -62,6 +62,16 @@ export default function CityView(): ReactElement {
     // (never mutates scientific state); the full engine is exposed only in
     // dev builds for debugging.
     (globalThis as Record<string, unknown>)['__qsimcityStats'] = () => engine.renderStats();
+    // Camera-only teleport for evidence capture and E2E walk tests: places
+    // the first-person walker without touching any scientific state.
+    (globalThis as Record<string, unknown>)['__qsimcityWalkTo'] = (
+      x: number,
+      z: number,
+      yaw: number,
+    ) => {
+      engine.walkTo(x, z, yaw);
+      setCameraMode('first-person');
+    };
     if (import.meta.env.DEV) {
       (globalThis as Record<string, unknown>)['__qsimcityEngine'] = engine;
     }
@@ -128,6 +138,13 @@ export default function CityView(): ReactElement {
       audioRef.current = null;
       engine.dispose();
       engineRef.current = null;
+      // The hook closures share this effect's scope, which references the
+      // engine and canvas — leaving them registered would retain both.
+      delete (globalThis as Record<string, unknown>)['__qsimcityStats'];
+      delete (globalThis as Record<string, unknown>)['__qsimcityWalkTo'];
+      if (import.meta.env.DEV) {
+        delete (globalThis as Record<string, unknown>)['__qsimcityEngine'];
+      }
     };
   }, []);
 

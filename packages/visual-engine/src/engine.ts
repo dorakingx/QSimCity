@@ -184,10 +184,14 @@ export class CityEngine {
     this.setQuality(options.quality);
     this.setTimeOfDay(options.timeOfDay);
     this.bindInput();
-    options.canvas.addEventListener('webglcontextlost', (e) => {
-      e.preventDefault();
-      options.onContextLost();
-    });
+    options.canvas.addEventListener(
+      'webglcontextlost',
+      (e) => {
+        e.preventDefault();
+        if (!this.disposed) options.onContextLost();
+      },
+      { signal: this.inputAbort.signal },
+    );
 
     this.lastTime = performance.now();
     const loop = (): void => {
@@ -234,42 +238,63 @@ export class CityEngine {
     }
   }
 
+  /**
+   * All canvas listeners are registered under this abort signal and removed
+   * in dispose(). Without this, a detached canvas (kept registered by the
+   * browser while its WebGL context is alive) retains the whole engine
+   * through the listener closures — the city geometry never gets collected
+   * and every 3D remount leaks the previous engine.
+   */
+  private readonly inputAbort = new AbortController();
+
   private bindInput(): void {
     const c = this.canvas;
-    c.addEventListener('pointerdown', (e) => {
-      c.setPointerCapture(e.pointerId);
-      this.downAt = { x: e.clientX, y: e.clientY };
-      this.rig.onPointerDown(e.clientX, e.clientY);
+    const signal = this.inputAbort.signal;
+    c.addEventListener(
+      'pointerdown',
+      (e) => {
+        c.setPointerCapture(e.pointerId);
+        this.downAt = { x: e.clientX, y: e.clientY };
+        this.rig.onPointerDown(e.clientX, e.clientY);
+      },
+      { signal },
+    );
+    c.addEventListener('pointermove', (e) => this.rig.onPointerMove(e.clientX, e.clientY), {
+      signal,
     });
-    c.addEventListener('pointermove', (e) => this.rig.onPointerMove(e.clientX, e.clientY));
-    c.addEventListener('pointerup', (e) => {
-      this.rig.onPointerUp();
-      this.pick(e);
-    });
+    c.addEventListener(
+      'pointerup',
+      (e) => {
+        this.rig.onPointerUp();
+        this.pick(e);
+      },
+      { signal },
+    );
     c.addEventListener(
       'wheel',
       (e) => {
         e.preventDefault();
         this.rig.onWheel(e.deltaY);
       },
-      { passive: false },
+      { passive: false, signal },
     );
     c.addEventListener(
       'touchstart',
       (e) => {
         this.rig.onTouchStart([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
       },
-      { passive: true },
+      { passive: true, signal },
     );
     c.addEventListener(
       'touchmove',
       (e) => {
         this.rig.onTouchMove([...e.touches].map((t) => ({ x: t.clientX, y: t.clientY })));
       },
-      { passive: true },
+      { passive: true, signal },
     );
     c.addEventListener('touchend', () => this.rig.onTouchEnd(), {
       passive: true,
+      signal,
     });
   }
 
@@ -798,6 +823,11 @@ export class CityEngine {
     return this.rig.mode;
   }
 
+  /** Stand the walker at an exact spot (camera-only; see CameraRig.walkTo). */
+  walkTo(x: number, z: number, yaw: number): void {
+    this.rig.walkTo(x, z, yaw);
+  }
+
   /** Touch joystick input for walk and fly modes. */
   setMoveAxis(forward: number, strafe: number, lift = 0): void {
     this.rig.moveAxis.forward = forward;
@@ -908,6 +938,9 @@ export class CityEngine {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.animationHandle);
+    // Break the canvas → listener → engine retention edge, then release the
+    // WebGL context so the browser's canvas registry lets the canvas go.
+    this.inputAbort.abort();
     this.city.dispose();
     this.sky.dispose();
     this.qpu?.dispose();
@@ -949,6 +982,7 @@ export class CityEngine {
       sprite.material.dispose();
     }
     this.renderer.dispose();
+    this.renderer.forceContextLoss();
   }
 }
 

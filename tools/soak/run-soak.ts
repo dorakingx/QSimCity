@@ -202,6 +202,11 @@ async function main(): Promise<void> {
     });
   });
 
+  // The soak models a returning user: onboarding must not intercept the
+  // driver's clicks (first-run onboarding has its own E2E coverage).
+  await page.addInitScript(() => {
+    localStorage.setItem('qsimcity.progress.v1', JSON.stringify({ onboardingSeen: true }));
+  });
   await page.goto(baseUrl);
   await page.addInitScript(() => {
     window.addEventListener(

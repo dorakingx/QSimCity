@@ -149,6 +149,18 @@ async function captureHonestyShots(
   const legendFile = join(OUT_DIR, 'desktop-day-legend.png');
   await page.screenshot({ path: legendFile });
   record(shots, legendFile, 'desktop', 'day', 'legend');
+
+  // Inside the Assignment Hall trading floor: a visitor standing just past
+  // the doorway, seeing the furnished room and the Layout Desk console.
+  await page.getByRole('button', { name: 'Close legend' }).click();
+  await settle(page, 400);
+  await page.evaluate(
+    'window.__qsimcityWalkTo && window.__qsimcityWalkTo(-73.5, 80.5, 0.12)',
+  );
+  await settle(page, 900);
+  const interiorFile = join(OUT_DIR, 'desktop-day-interior.png');
+  await page.screenshot({ path: interiorFile });
+  record(shots, interiorFile, 'desktop', 'day', 'interior');
   await page.close();
 }
 

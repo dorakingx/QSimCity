@@ -844,6 +844,22 @@ export function buildCity(): CityMeshes {
     const lightPanel = new THREE.BoxGeometry(interior.halfW * 1.2, 0.12, interior.halfD * 1.2);
     transform(lightPanel, cx, baseY + interior.height - 0.12, cz);
     emissiveBucketFor(building.districtId).add(lightPanel, target);
+    // A real point light under the panel: walls and ceiling occlude the sun
+    // and most of the hemisphere light, so without it the room reads unlit.
+    const roomDoor = doorPosition(interior);
+    const roomLight = new THREE.PointLight(
+      0xffe3b8,
+      420,
+      Math.hypot(interior.halfW, interior.halfD) * 3.2,
+      1.8,
+    );
+    // Biased toward the doorway so the faces a visitor sees are the lit ones.
+    roomLight.position.set(
+      cx + (roomDoor.x - cx) * 0.55,
+      baseY + interior.height - 1.2,
+      cz + (roomDoor.z - cz) * 0.55,
+    );
+    group.add(roomLight);
     // Band from the room ceiling up to the original ground-part height.
     const bandHeight = Math.max(0, groundPart.size[1] - interior.height - 0.4);
     if (bandHeight > 0.05) {
@@ -1263,14 +1279,24 @@ export function buildCity(): CityMeshes {
     const accent = new THREE.Color(district.accentColor);
     const y = terrainHeight(interactive.position[0], interactive.position[1]);
     const kioskMaterial = new THREE.MeshStandardMaterial({
-      color: 0x22262d,
-      roughness: 0.5,
-      metalness: 0.3,
+      color: 0x4a515c,
+      roughness: 0.65,
+      metalness: 0.15,
     });
     const kiosk = new THREE.Mesh(kioskGeometry, kioskMaterial);
     kiosk.position.set(interactive.position[0], y + 1.2, interactive.position[1]);
     kiosk.name = `interactive-${interactive.id}`;
     kiosk.castShadow = true;
+    // A console that lives inside a room turns its screen toward the door,
+    // so a visitor walking in sees the readable face first.
+    const homeRoom = INTERIORS.find((room) => room.consoleId === interactive.id);
+    if (homeRoom) {
+      const roomDoor = doorPosition(homeRoom);
+      kiosk.rotation.y = Math.atan2(
+        roomDoor.x - interactive.position[0],
+        roomDoor.z - interactive.position[1],
+      );
+    }
     const screenMaterial = new THREE.MeshStandardMaterial({
       color: 0x0c0f14,
       emissive: accent,
