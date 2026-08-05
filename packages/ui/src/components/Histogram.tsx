@@ -65,6 +65,11 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
         <svg
           width={chartW}
           height={chartH}
+          // Scale down inside narrow containers (phone mission panel)
+          // instead of overflowing them: the chart must never push its
+          // panel wider than the viewport (child-UX review regression).
+          viewBox={`0 0 ${chartW} ${chartH}`}
+          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
           role="img"
           aria-label={`Histogram: ${title}. A data table alternative follows.`}
         >

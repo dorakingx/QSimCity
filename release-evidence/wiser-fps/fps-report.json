@@ -1,8 +1,8 @@
 {
-  "commitSha": "9bd097d09e75322d87c3f0ac938a01ee2b4f24ea",
-  "sourceTreeHash": "cdd8c2444fe53c2b",
+  "commitSha": "3562bd4f3c02b98df24b174a89c1ba49e31a265c",
+  "sourceTreeHash": "3355216dd7f59118",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-05T14:12:56.293Z",
+  "generatedAt": "2026-08-05T21:36:08.755Z",
   "tool": "wiser-fps-benchmark",
   "toolVersion": "2.0.0",
   "command": "pnpm wiser:fps",
@@ -15,7 +15,7 @@
   "measurements": {
     "desktopMedianFps": 120.5,
     "mobileMedianFps": 120.5,
-    "desktopDrawCalls": 183,
+    "desktopDrawCalls": 178,
     "mobileCpuThrottle": 4,
     "segments": 5
   },
@@ -25,35 +25,35 @@
       {
         "name": "overview-replay",
         "fps": 120.48192494215621,
-        "frames": 600
+        "frames": 601
       },
       {
         "name": "orbit-drag-replay",
         "fps": 120.48192494215621,
-        "frames": 1250
+        "frames": 1204
       },
       {
         "name": "street-walk-replay",
-        "fps": 120.48192494215621,
+        "fps": 121.95122234882314,
         "frames": 1803
       }
     ],
     "mobileSegments": [
       {
         "name": "mobile-replay-static",
-        "fps": 120.48192494215621,
+        "fps": 119.04762445393628,
         "frames": 600
       },
       {
         "name": "mobile-replay-drag",
-        "fps": 120.48192494215621,
-        "frames": 1238
+        "fps": 120.48193878559331,
+        "frames": 1234
       }
     ],
     "methodology": {
       "workload": "Bell sample executed and replay restarted before every segment; convoy, couriers, pedestrians, banners, and count stacks live during sampling",
       "medians": "median over every retained frame of the pass, not the max of segment medians",
-      "maxObservedSegmentMedianFps": 120,
+      "maxObservedSegmentMedianFps": 122,
       "caveats": [
         "rAF sampling is capped by the host display scheduler; a median at the cap means \"at least cap fps\"",
         "both passes render on the host GPU; the mobile pass emulates CPU slowness (4x) but not mobile GPU fill-rate"

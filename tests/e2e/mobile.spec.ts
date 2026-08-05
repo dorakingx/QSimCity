@@ -48,6 +48,17 @@ test('mobile: circuit builder works by touch alone (W6.2)', async ({ page, brows
   await mission.getByRole('button', { name: 'Bell pair' }).tap();
   await mission.getByRole('button', { name: 'Run', exact: true }).tap();
   await expect(mission.locator('.mission-celebration')).toBeVisible({ timeout: 20_000 });
+  // Regression guard: the post-run results must not overflow the phone
+  // viewport — a clipped celebration is an unreachable payoff (child-UX
+  // review). Nothing inside the mission panel may exceed its box.
+  const overflow = await mission.evaluate((node) =>
+    Math.max(0, node.scrollWidth - node.clientWidth),
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
+  const docOverflow = await page.evaluate(() =>
+    Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
+  );
+  expect(docOverflow).toBeLessThanOrEqual(1);
   // Touch walk controls exist in the 3D city too.
   await page
     .getByRole('navigation', { name: 'Modes' })

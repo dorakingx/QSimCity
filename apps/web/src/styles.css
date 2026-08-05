@@ -793,9 +793,12 @@ figure {
     overflow-x: auto;
     padding-bottom: 0.2rem;
     /* Fade the trailing edge so off-screen modes (Compare, Accessible 2D)
-       are discoverably "more to scroll", not silently hidden. */
+       are discoverably "more to scroll", not silently hidden. Trailing
+       padding keeps the LAST chip clear of the fade zone at scroll end,
+       so the active label never dims (child-UX review). */
     mask-image: linear-gradient(to right, black 90%, transparent);
     -webkit-mask-image: linear-gradient(to right, black 90%, transparent);
+    padding-right: 3rem;
   }
 
   .app-header nav button {
