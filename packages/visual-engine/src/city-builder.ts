@@ -679,6 +679,45 @@ export function buildCity(): CityMeshes {
       ),
     );
   }
+  // Harbor building parcels voided by the landmark's kept-clear ground
+  // read as dead paving from overview (art review); dress them as working
+  // container aprons along the edge away from the landmark.
+  const CONTAINER_STACK_COLORS = [0xa8574b, 0x4b7ba8, 0x67a04f, 0xb0913f].map(
+    (c) => new THREE.Color(c),
+  );
+  // Deferred into the buildings bucket (uv-complete box geometry).
+  const harborStacks: [THREE.BoxGeometry, THREE.Color, string][] = [];
+  for (const parcel of plan.parcels) {
+    if (parcel.usage !== 'building') continue;
+    if (parcel.districtId !== 'measurement-harbor' && parcel.districtId !== 'program-port') {
+      continue;
+    }
+    const pcx = (parcel.rect.minX + parcel.rect.maxX) / 2;
+    const pcz = (parcel.rect.minZ + parcel.rect.maxZ) / 2;
+    const hasBuilding = plan.buildings.some(
+      (b) => Math.abs(b.position[0] - pcx) < 2 && Math.abs(b.position[1] - pcz) < 2,
+    );
+    if (hasBuilding) continue;
+    const anchor = LANDMARK_SITES[parcel.districtId].anchor;
+    const awayX = Math.sign(pcx - anchor[0]) || 1;
+    const awayZ = Math.sign(pcz - anchor[1]) || 1;
+    for (let i = 0; i < 4; i++) {
+      const sx = pcx + awayX * ((parcel.rect.maxX - parcel.rect.minX) / 2 - 4.5);
+      const sz = pcz + awayZ * ((parcel.rect.maxZ - parcel.rect.minZ) / 2 - 4) - awayZ * i * 3.4;
+      const y = terrainHeight(sx, sz);
+      const stackH = hash01(`${parcel.id}:stack:${i}`) > 0.5 ? 2 : 1;
+      for (let level = 0; level < stackH; level++) {
+        const box = new THREE.BoxGeometry(6.1, 2.6, 2.5);
+        transform(box, sx, y + 1.3 + level * 2.6, sz);
+        const color =
+          CONTAINER_STACK_COLORS[
+            Math.floor(hash01(`${parcel.id}:sc:${i}:${level}`) * CONTAINER_STACK_COLORS.length) %
+              CONTAINER_STACK_COLORS.length
+          ]!;
+        harborStacks.push([box, color, parcel.districtId]);
+      }
+    }
+  }
   const groundMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 });
   const groundMesh = groundBucket.build(groundMaterial, 'parcel-ground');
   if (groundMesh) {
@@ -1042,6 +1081,9 @@ export function buildCity(): CityMeshes {
       rangedPicks.set(mesh, bucket.ranges);
       disposables.push(mesh.geometry, material);
     }
+  }
+  for (const [box, color, districtId] of harborStacks) {
+    plainPartsBucket.add(paint(box, color), { kind: 'district', districtId } as PickTarget);
   }
   const plainMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 });
   const plainMesh = plainPartsBucket.build(plainMaterial, 'building-parts');

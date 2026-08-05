@@ -194,7 +194,7 @@ async function main(): Promise<void> {
   let desktopMedian!: number;
   let mobileMedian!: number;
   let desktopDrawCalls!: number;
-  let displayRefreshCapFps!: number;
+  let maxObservedSegmentMedianFps!: number;
   try {
     // Desktop pass: 1920x1080, replay running.
     const desktop = await browser.newContext({
@@ -206,7 +206,7 @@ async function main(): Promise<void> {
     const desktopRun = await measureSegments(desktopPage);
     desktopSegments = desktopRun.segments;
     desktopMedian = passMedianFps(desktopRun.allSamples);
-    displayRefreshCapFps = Math.round(Math.max(...desktopRun.segments.map((s) => s.fps)));
+    maxObservedSegmentMedianFps = Math.round(Math.max(...desktopRun.segments.map((s) => s.fps)));
     desktopDrawCalls = await desktopPage.evaluate(() => {
       const stats = (window as unknown as { __qsimcityStats?: () => { drawCalls: number } })
         .__qsimcityStats;
@@ -294,7 +294,7 @@ async function main(): Promise<void> {
         workload:
           'Bell sample executed and replay restarted before every segment; convoy, couriers, pedestrians, banners, and count stacks live during sampling',
         medians: 'median over every retained frame of the pass, not the max of segment medians',
-        displayRefreshCapFps,
+        maxObservedSegmentMedianFps,
         caveats: [
           'rAF sampling is capped by the host display scheduler; a median at the cap means "at least cap fps"',
           'both passes render on the host GPU; the mobile pass emulates CPU slowness (4x) but not mobile GPU fill-rate',
