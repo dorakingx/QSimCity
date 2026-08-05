@@ -312,6 +312,12 @@ figure {
   padding: 0.5rem;
 }
 
+/* Charts narrower than their panel sit centered, not left-stranded. */
+.histogram .circuit-scroll svg {
+  display: block;
+  margin: 0 auto;
+}
+
 .table-alternative {
   margin-top: 0.4rem;
 }
@@ -786,6 +792,10 @@ figure {
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 0.2rem;
+    /* Fade the trailing edge so off-screen modes (Compare, Accessible 2D)
+       are discoverably "more to scroll", not silently hidden. */
+    mask-image: linear-gradient(to right, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, black 90%, transparent);
   }
 
   .app-header nav button {
@@ -793,9 +803,25 @@ figure {
   }
 
   .app-header nav button,
-  .header-tools button {
+  .header-tools button,
+  .camera-controls button {
     padding: 0.45rem 0.65rem;
     font-size: 0.88rem;
+    /* Child-friendly touch height (44px), not just the WCAG minimum. */
+    min-height: 2.75rem;
+  }
+
+  /* Camera chips scroll in one row too — a wrapped orphan chip reads as a
+     layout accident (performance review). */
+  .camera-controls {
+    max-width: calc(100% - 6.5rem);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .camera-controls button {
+    flex: 0 0 auto;
   }
 }
 

@@ -72,6 +72,14 @@ export class CameraRig {
 
   constructor(aspect: number, buildings: readonly Building[]) {
     this.camera = new THREE.PerspectiveCamera(55, aspect, 0.5, 4000);
+    // Portrait phones start steeper: at the landscape default pitch a tall
+    // narrow frame spends its top third on empty sky (art review).
+    if (aspect < 0.8) {
+      this.polar = 0.52;
+      this.polarGoal = 0.52;
+      this.distance = 590;
+      this.distanceGoal = 590;
+    }
     // Buildings with enterable interiors collide as wall segments with a
     // door gap; every other building is a solid box (W1.8).
     this.aabbs = buildings.flatMap((b) => {

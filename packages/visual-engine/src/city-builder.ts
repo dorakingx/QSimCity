@@ -640,8 +640,17 @@ export function buildCity(): CityMeshes {
   for (const parcel of plan.parcels) {
     let color =
       parcel.usage === 'park' ? parkColor : parcel.usage === 'plaza' ? plazaColor : yardColor;
-    // The fenced QPU campus reads as kept grounds: lawns and pale aprons.
-    if (parcel.districtId === 'qpu-grid') {
+    // Only the FENCED campus reads as kept grounds: lawns and pale aprons.
+    // QPU-district blocks outside the fence are ordinary city parcels — the
+    // pale apron there read as bare paved voids from overview (art review).
+    const pcx = (parcel.rect.minX + parcel.rect.maxX) / 2;
+    const pcz = (parcel.rect.minZ + parcel.rect.maxZ) / 2;
+    const insideCampus =
+      pcx > QPU_CAMPUS.minX &&
+      pcx < QPU_CAMPUS.maxX &&
+      pcz > QPU_CAMPUS.minZ &&
+      pcz < QPU_CAMPUS.maxZ;
+    if (parcel.districtId === 'qpu-grid' && insideCampus) {
       color = parcel.usage === 'park' ? campusLawn : campusApron;
     }
     const geometry = groundPatch(
@@ -996,9 +1005,11 @@ export function buildCity(): CityMeshes {
         const monitor = new THREE.BoxGeometry(piece.size[0] * 0.36, 0.5, 0.06);
         transform(monitor, px, deskTop + 0.28, pz - doorward * 0.35);
         interiorPartsBucket.add(paint(monitor, new THREE.Color(0x2f3743)), target);
+        // Desk monitors share the bright chart material, not the dark
+        // glass — a dark panel at this size reads as a switched-off TV.
         const monitorGlow = new THREE.BoxGeometry(piece.size[0] * 0.32, 0.42, 0.02);
         transform(monitorGlow, px, deskTop + 0.28, pz - doorward * 0.31);
-        screenGlowBucket.add(monitorGlow, target);
+        screenBarBucket.add(monitorGlow, target);
         const keyboard = new THREE.BoxGeometry(piece.size[0] * 0.28, 0.03, 0.32);
         transform(keyboard, px, deskTop + 0.02, pz + doorward * 0.12);
         interiorPartsBucket.add(paint(keyboard, new THREE.Color(0xa9a294)), target);

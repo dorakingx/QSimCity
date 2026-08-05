@@ -40,8 +40,9 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
     ...shownKeys.flatMap((k) => series.map((s, i) => (s.counts[k] ?? 0) / totals[i]!)),
   );
   // Few outcomes get wide bar groups so a two-bar Bell histogram fills its
-  // panel instead of stranding two slivers at the left edge (art review).
-  const barGroupW = shownKeys.length <= 4 ? 96 : shownKeys.length <= 8 ? 56 : 34;
+  // panel instead of stranding two slivers at the left edge (art review):
+  // groups stretch toward a ~460px plot, clamped for many-outcome charts.
+  const barGroupW = Math.max(34, Math.min(200, Math.floor(440 / shownKeys.length)));
   const chartW = 60 + shownKeys.length * barGroupW;
   const chartH = 170;
   const plotH = 120;

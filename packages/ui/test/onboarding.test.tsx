@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Onboarding } from '../src/components/Onboarding.js';
 import { HomeView } from '../src/views/HomeView.js';
@@ -53,6 +53,31 @@ describe('Onboarding', () => {
     expect(screen.getByRole('button', { name: 'Watch the city' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Build a circuit' })).toBeTruthy();
     expect(dialog.querySelectorAll('svg').length).toBe(3);
+  });
+
+  it('level picker follows the ARIA radio pattern: roving tabindex and arrow keys', async () => {
+    const user = userEvent.setup();
+    render(<Onboarding />);
+    const group = screen.getByRole('radiogroup', { name: 'How should we explain things?' });
+    const radios = Array.from(group.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
+    expect(radios.map((r) => r.textContent)).toEqual(['Kids', 'Beginners', 'Experts']);
+    // Default beginner: the checked radio is the single tab stop.
+    expect(radios[1]!.getAttribute('aria-checked')).toBe('true');
+    expect(radios[1]!.tabIndex).toBe(0);
+    expect(radios[0]!.tabIndex).toBe(-1);
+    // Arrow keys move selection and focus, wrapping at the ends.
+    radios[1]!.focus();
+    fireEvent.keyDown(radios[1]!, { key: 'ArrowRight' });
+    expect(useAppStore.getState().settings.explanationLevel).toBe('expert');
+    const expertRadio = screen.getByRole('radio', { name: 'Experts' });
+    fireEvent.keyDown(expertRadio, { key: 'ArrowRight' });
+    expect(useAppStore.getState().settings.explanationLevel).toBe('child');
+    const kidsRadio = screen.getByRole('radio', { name: 'Kids' });
+    fireEvent.keyDown(kidsRadio, { key: 'ArrowLeft' });
+    expect(useAppStore.getState().settings.explanationLevel).toBe('expert');
+    // Clicking selects directly.
+    await user.click(screen.getByRole('radio', { name: 'Kids' }));
+    expect(useAppStore.getState().settings.explanationLevel).toBe('child');
   });
 
   it('Play opens mission 1 in Missions mode and persists the seen flag', async () => {
