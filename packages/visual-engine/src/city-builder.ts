@@ -4,8 +4,12 @@ import {
   cityPlan,
   DISTRICTS,
   EAST_COAST_X,
+  doorPosition,
   getDistrict,
   INTERACTIVES,
+  INTERIOR_BUILDING_IDS,
+  INTERIORS,
+  interiorCollisionBoxes,
   PLAIN_HEIGHT,
   QPU_CAMPUS,
   QPU_GATE,
@@ -771,6 +775,118 @@ export function buildCity(): CityMeshes {
     }
   };
 
+  /**
+   * Furnished, enterable ground floor: wall segments with a real doorway,
+   * floor, lit ceiling, furniture, and a band closing the gap up to the
+   * original ground-part height so upper storeys still rest on something.
+   */
+  const buildInterior = (
+    building: Building,
+    interiorId: string,
+    groundPart: BuildingPart,
+    baseY: number,
+  ): void => {
+    const interior = INTERIORS.find((i) => i.id === interiorId);
+    if (!interior) return;
+    const target: PickTarget = {
+      kind: 'building',
+      buildingId: building.id,
+      districtId: building.districtId,
+    };
+    const accent = new THREE.Color(getDistrict(building.districtId).accentColor);
+    const [cx, cz] = interior.center;
+    const wallColor = new THREE.Color(0xb9b3a2);
+    const floorColor = new THREE.Color(0x8d887b);
+    // The first five collision boxes are the wall segments (door gap
+    // included); the rest are furniture, rendered separately below.
+    for (const box of interiorCollisionBoxes(interior).slice(0, 5)) {
+      const wall = new THREE.BoxGeometry(box.maxX - box.minX, interior.height, box.maxZ - box.minZ);
+      transform(
+        wall,
+        (box.minX + box.maxX) / 2,
+        baseY + interior.height / 2,
+        (box.minZ + box.maxZ) / 2,
+      );
+      plainPartsBucket.add(paint(wall, wallColor), target);
+    }
+    const t = 1.2;
+    const floor = new THREE.BoxGeometry(
+      interior.halfW * 2 + t * 2,
+      0.3,
+      interior.halfD * 2 + t * 2,
+    );
+    transform(floor, cx, baseY + 0.15, cz);
+    plainPartsBucket.add(paint(floor, floorColor), target);
+    const ceiling = new THREE.BoxGeometry(
+      interior.halfW * 2 + t * 2,
+      0.4,
+      interior.halfD * 2 + t * 2,
+    );
+    transform(ceiling, cx, baseY + interior.height + 0.2, cz);
+    plainPartsBucket.add(paint(ceiling, wallColor), target);
+    // Warm light panel under the ceiling so the room reads lit.
+    const lightPanel = new THREE.BoxGeometry(interior.halfW * 1.2, 0.12, interior.halfD * 1.2);
+    transform(lightPanel, cx, baseY + interior.height - 0.12, cz);
+    emissiveBucketFor(building.districtId).add(lightPanel, target);
+    // Band from the room ceiling up to the original ground-part height.
+    const bandHeight = Math.max(0, groundPart.size[1] - interior.height - 0.4);
+    if (bandHeight > 0.05) {
+      const band = new THREE.BoxGeometry(groundPart.size[0], bandHeight, groundPart.size[2]);
+      transform(
+        band,
+        building.position[0] + groundPart.offset[0],
+        baseY + interior.height + 0.4 + bandHeight / 2,
+        building.position[1] + groundPart.offset[2],
+        building.rotationY + groundPart.rotationY,
+      );
+      plainPartsBucket.add(paint(band, wallColor), target);
+    }
+    // Furniture.
+    for (const piece of interior.furniture) {
+      const geometry = new THREE.BoxGeometry(piece.size[0], piece.size[1], piece.size[2]);
+      transform(
+        geometry,
+        cx + piece.offset[0],
+        baseY + 0.3 + piece.size[1] / 2,
+        cz + piece.offset[1],
+        piece.rotationY,
+      );
+      if (piece.kind === 'screen') {
+        emissiveBucketFor(building.districtId).add(geometry, target);
+      } else {
+        const color =
+          piece.kind === 'desk' || piece.kind === 'table'
+            ? new THREE.Color(0x71614c)
+            : piece.kind === 'shelf'
+              ? new THREE.Color(0x5c5648)
+              : accent.clone().lerp(new THREE.Color(0x888888), 0.5);
+        plainPartsBucket.add(paint(geometry, color), target);
+      }
+    }
+    // Door frame jambs and lintel mark the entrance.
+    const door = doorPosition(interior);
+    const doorY = baseY;
+    const alongX = interior.doorSide === 'north' || interior.doorSide === 'south';
+    const frameColor = new THREE.Color(0x4c4a44);
+    for (const side of [-1, 1]) {
+      const jamb = new THREE.BoxGeometry(alongX ? 0.5 : 1.6, 4.2, alongX ? 1.6 : 0.5);
+      transform(
+        jamb,
+        door.x + (alongX ? side * (interior.doorWidth / 2 + 0.3) : 0),
+        doorY + 2.1,
+        door.z + (alongX ? 0 : side * (interior.doorWidth / 2 + 0.3)),
+      );
+      plainPartsBucket.add(paint(jamb, frameColor), target);
+    }
+    const lintel = new THREE.BoxGeometry(
+      alongX ? interior.doorWidth + 1.2 : 1.6,
+      0.5,
+      alongX ? 1.6 : interior.doorWidth + 1.2,
+    );
+    transform(lintel, door.x, doorY + 4.45, door.z);
+    plainPartsBucket.add(paint(lintel, frameColor), target);
+  };
+
   for (const building of buildings) {
     const baseY = terrainHeight(building.position[0], building.position[1]);
     // Foundation plinth seats the building on any slope.
@@ -785,7 +901,15 @@ export function buildCity(): CityMeshes {
       buildingId: building.id,
       districtId: building.districtId,
     });
-    for (const part of building.parts) addPart(building, part, baseY + 0.35);
+    const interiorId = INTERIOR_BUILDING_IDS[building.id];
+    building.parts.forEach((part, index) => {
+      if (interiorId && index === 0) {
+        // The ground part is replaced by the enterable room.
+        buildInterior(building, interiorId, part, baseY + 0.35);
+        return;
+      }
+      addPart(building, part, baseY + 0.35);
+    });
   }
 
   for (const [style, bucket] of facadeBuckets) {

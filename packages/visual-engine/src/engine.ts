@@ -4,11 +4,14 @@ import {
   activityAtTick,
   ambientVehiclesAt,
   convoyAt,
+  countsAtTick,
   couriersAt,
   DISTRICTS,
   getDistrict,
   INTERACTIVES,
+  LANDMARK_SITES,
   pedestriansAt,
+  physicalToLogicalAt,
   qpuPylonPositions,
   terrainHeight,
   hash01,
@@ -73,6 +76,13 @@ export class CityEngine {
   private animTime = 0;
   private readonly labelSprites: THREE.Sprite[] = [];
   private readonly vehicles: VehicleFleet;
+  /** Logical-qubit banners keyed by logical index; they fly between pylons
+   * when SWAPs exchange the mapping (W4.2, W4.3). */
+  private readonly logicalBanners = new Map<number, THREE.Sprite>();
+  private readonly bannerTargets = new Map<number, THREE.Vector3>();
+  private pylonWorld: readonly (readonly [number, number])[] = [];
+  /** Instanced containers stacking the live counts histogram (W4.4). */
+  private countStacks: THREE.InstancedMesh | null = null;
   private readonly rain: THREE.Points;
   private readonly rainBasePositions: Float32Array;
   private readonly pulses: { mesh: THREE.Mesh; born: number }[] = [];
@@ -330,6 +340,15 @@ export class CityEngine {
       this.reducedMotion,
     );
 
+    // Logical banners fly toward their current physical homes; a SWAP reads
+    // as two banners crossing between pylons.
+    for (const [logical, banner] of this.logicalBanners) {
+      const bannerTarget = this.bannerTargets.get(logical);
+      if (!bannerTarget || !banner.visible) continue;
+      if (this.reducedMotion) banner.position.copy(bannerTarget);
+      else banner.position.lerp(bannerTarget, Math.min(1, dt * 3.2));
+    }
+
     // Rain falls while visible.
     const rainMaterial = this.rain.material as THREE.PointsMaterial;
     if (rainMaterial.opacity > 0.01 && !this.reducedMotion) {
@@ -398,6 +417,127 @@ export class CityEngine {
     const rainMaterial = this.rain.material as THREE.PointsMaterial;
     rainMaterial.opacity = this.particles ? weather.rain * 0.85 + weather.cover * 0.1 : 0;
     this.sky.setCloudCover(weather.cover);
+    this.updateLogicalBanners();
+    this.updateCountStacks();
+  }
+
+  /**
+   * Logical-qubit banners over the physical pylons. Each logical qubit
+   * keeps one persistent banner (its identity); when a SWAP exchanges the
+   * mapping, the two banners visibly fly to their new physical homes at the
+   * same tick the inspector reports the exchange (W4.2, W4.3).
+   */
+  private updateLogicalBanners(): void {
+    if (!this.trace || this.pylonWorld.length === 0) {
+      for (const banner of this.logicalBanners.values()) banner.visible = false;
+      return;
+    }
+    const mapping = physicalToLogicalAt(this.trace, this.playbackTick);
+    const seen = new Set<number>();
+    for (const [physical, logical] of mapping) {
+      const world = this.pylonWorld[physical];
+      if (world === undefined) continue;
+      seen.add(logical);
+      let banner = this.logicalBanners.get(logical);
+      if (!banner) {
+        banner = this.makeLogicalBanner(logical);
+        this.logicalBanners.set(logical, banner);
+        this.scene.add(banner);
+      }
+      const y = terrainHeight(world[0], world[1]) + 13.5;
+      const target = this.bannerTargets.get(logical) ?? new THREE.Vector3();
+      const firstPlacement = !this.bannerTargets.has(logical);
+      target.set(world[0], y, world[1]);
+      this.bannerTargets.set(logical, target);
+      if (firstPlacement || this.reducedMotion) banner.position.copy(target);
+      banner.visible = true;
+    }
+    for (const [logical, banner] of this.logicalBanners) {
+      if (!seen.has(logical)) banner.visible = false;
+    }
+  }
+
+  /** Distinct persistent color per logical qubit. */
+  private makeLogicalBanner(logical: number): THREE.Sprite {
+    const hue = (logical * 137.508) % 360;
+    const color = new THREE.Color().setHSL(hue / 360, 0.72, 0.62);
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 80;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = `#${color.getHexString()}`;
+    ctx.beginPath();
+    ctx.moveTo(10, 8);
+    ctx.lineTo(118, 8);
+    ctx.lineTo(118, 54);
+    ctx.lineTo(64, 72);
+    ctx.lineTo(10, 54);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#10141c';
+    ctx.font = '700 38px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`q${logical}`, 64, 48);
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }),
+    );
+    sprite.scale.set(6.4, 4, 1);
+    sprite.name = `logical-banner-${logical}`;
+    return sprite;
+  }
+
+  /**
+   * The Measurement Harbor results dock: one container per representative
+   * measured record, stacked by bitstring — the live counts histogram
+   * derived from the same events every panel shows (W4.4).
+   */
+  private updateCountStacks(): void {
+    if (!this.countStacks) {
+      const material = new THREE.MeshStandardMaterial({ roughness: 0.65, metalness: 0.2 });
+      this.countStacks = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(5.6, 2.5, 2.4),
+        material,
+        160,
+      );
+      this.countStacks.name = 'count-stacks';
+      this.countStacks.count = 0;
+      this.countStacks.castShadow = true;
+      this.scene.add(this.countStacks);
+    }
+    const stacks = this.countStacks;
+    if (!this.trace) {
+      stacks.count = 0;
+      return;
+    }
+    const counts = countsAtTick(this.trace, this.playbackTick);
+    const keys = [...counts.keys()].sort();
+    const site = LANDMARK_SITES['measurement-harbor'];
+    const baseX = site.anchor[0] + site.clearHalfW + 8;
+    const baseZ = site.anchor[1] - 6;
+    const matrix = new THREE.Matrix4();
+    const color = new THREE.Color();
+    let index = 0;
+    keys.forEach((key, column) => {
+      const total = Math.min(counts.get(key) ?? 0, 12);
+      // Complete bitstrings get a solid hue per column; partial records
+      // (still being measured) read as neutral steel.
+      const partial = key.includes('?');
+      for (let level = 0; level < total && index < 160; level++) {
+        const x = baseX + column * 7.2;
+        const z = baseZ + (level % 2 === 0 ? 0 : 0.4);
+        const y = terrainHeight(x, baseZ) + 1.4 + level * 2.6;
+        matrix.makeRotationY(0);
+        matrix.setPosition(x, y, z);
+        stacks.setMatrixAt(index, matrix);
+        if (partial) color.set(0x9aa1a8);
+        else color.setHSL(((column * 67) % 360) / 360, 0.55, 0.5);
+        stacks.setColorAt(index, color);
+        index++;
+      }
+    });
+    stacks.count = index;
+    stacks.instanceMatrix.needsUpdate = true;
+    if (stacks.instanceColor) stacks.instanceColor.needsUpdate = true;
   }
 
   /** Applies a new activity snapshot (called when the playback tick changes). */
@@ -466,9 +606,13 @@ export class CityEngine {
     }
     if (view) {
       const world = qpuPylonPositions(view.positions);
+      this.pylonWorld = world;
       this.qpu = buildQpu(view.positions, view.edges, getDistrict('qpu-grid').accentColor, world);
       this.scene.add(this.qpu.group);
+    } else {
+      this.pylonWorld = [];
     }
+    this.updateLogicalBanners();
   }
 
   setCameraMode(mode: CameraMode): void {
@@ -597,6 +741,15 @@ export class CityEngine {
     this.rain.geometry.dispose();
     (this.rain.material as THREE.Material).dispose();
     this.vehicles.dispose();
+    for (const banner of this.logicalBanners.values()) {
+      banner.material.map?.dispose();
+      banner.material.dispose();
+    }
+    if (this.countStacks) {
+      this.countStacks.geometry.dispose();
+      (this.countStacks.material as THREE.Material).dispose();
+      this.countStacks.dispose();
+    }
     for (const sprite of this.labelSprites) {
       sprite.material.map?.dispose();
       sprite.material.dispose();

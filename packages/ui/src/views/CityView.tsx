@@ -223,6 +223,144 @@ export default function CityView(): ReactElement {
           {nearbyPrompt}
         </p>
       )}
+      {(cameraMode === 'first-person' || cameraMode === 'fly') && (
+        <TouchJoystick
+          showLift={cameraMode === 'fly'}
+          onMove={(forward, strafe) => engineRef.current?.setMoveAxis(forward, strafe)}
+          onLift={(lift) => engineRef.current?.setMoveAxis(0, 0, lift)}
+        />
+      )}
+    </div>
+  );
+}
+
+const JOYSTICK_PAD_STYLE: React.CSSProperties = {
+  width: 108,
+  height: 108,
+  borderRadius: '50%',
+  background: 'rgba(16, 20, 30, 0.55)',
+  border: '2px solid rgba(255, 255, 255, 0.35)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  touchAction: 'none',
+};
+
+const JOYSTICK_BUTTON_STYLE: React.CSSProperties = {
+  width: 48,
+  height: 48,
+  borderRadius: 12,
+  background: 'rgba(16, 20, 30, 0.55)',
+  border: '2px solid rgba(255, 255, 255, 0.35)',
+  color: '#fff',
+  fontSize: 18,
+  touchAction: 'none',
+};
+
+/**
+ * On-screen movement control for walk and fly modes so touch users can move,
+ * not just look (W5.2). A drag inside the pad maps to forward/strafe in
+ * [-1, 1]; fly mode adds rise and descend buttons. Styled inline: the
+ * control is self-contained and mode-scoped.
+ */
+function TouchJoystick({
+  showLift,
+  onMove,
+  onLift,
+}: {
+  showLift: boolean;
+  onMove: (forward: number, strafe: number) => void;
+  onLift: (lift: number) => void;
+}): ReactElement {
+  const padRef = useRef<HTMLDivElement>(null);
+  const activePointer = useRef<number | null>(null);
+
+  const applyFromEvent = (e: React.PointerEvent): void => {
+    const pad = padRef.current;
+    if (!pad) return;
+    const rect = pad.getBoundingClientRect();
+    const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+    const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+    const clamp = (v: number): number => Math.max(-1, Math.min(1, v));
+    onMove(clamp(-dy), clamp(dx));
+  };
+
+  return (
+    <div
+      className="touch-joystick"
+      style={{
+        position: 'absolute',
+        left: 18,
+        bottom: 86,
+        display: 'flex',
+        alignItems: 'flex-end',
+        gap: 10,
+        zIndex: 5,
+      }}
+    >
+      <div
+        ref={padRef}
+        style={JOYSTICK_PAD_STYLE}
+        role="application"
+        aria-label="Movement pad: drag to walk or fly"
+        onPointerDown={(e) => {
+          activePointer.current = e.pointerId;
+          (e.target as HTMLElement).setPointerCapture(e.pointerId);
+          applyFromEvent(e);
+        }}
+        onPointerMove={(e) => {
+          if (activePointer.current === e.pointerId) applyFromEvent(e);
+        }}
+        onPointerUp={(e) => {
+          if (activePointer.current === e.pointerId) {
+            activePointer.current = null;
+            onMove(0, 0);
+          }
+        }}
+        onPointerCancel={() => {
+          activePointer.current = null;
+          onMove(0, 0);
+        }}
+      >
+        <span
+          style={{
+            width: 34,
+            height: 34,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.55)',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
+      {showLift && (
+        <div
+          role="group"
+          aria-label="Altitude"
+          style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+        >
+          {(
+            [
+              ['Rise', 1, 'up'],
+              ['Descend', -1, 'down'],
+            ] as const
+          ).map(([label, value, glyph]) => (
+            <button
+              key={label}
+              type="button"
+              aria-label={label}
+              style={JOYSTICK_BUTTON_STYLE}
+              onPointerDown={(e) => {
+                (e.target as HTMLElement).setPointerCapture(e.pointerId);
+                onLift(value);
+              }}
+              onPointerUp={() => onLift(0)}
+              onPointerCancel={() => onLift(0)}
+            >
+              {glyph === 'up' ? '+' : '-'}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

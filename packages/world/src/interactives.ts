@@ -39,7 +39,8 @@ const RAW_INTERACTIVES: readonly Interactive[] = [
     districtId: 'program-port',
     name: 'Intake Desk',
     prompt: 'Open the Quantum Lab to load or paste a program',
-    position: [-185, 40],
+    // Inside the Harbor Gate Terminal lobby (see interiors.ts).
+    position: [-161, 50],
     action: { kind: 'open-lab' },
   },
   {
@@ -63,7 +64,8 @@ const RAW_INTERACTIVES: readonly Interactive[] = [
     districtId: 'layout-exchange',
     name: 'Layout Desk',
     prompt: 'Choose automatic or manual initial layout',
-    position: [-50, 45],
+    // Inside the Assignment Hall trading floor (see interiors.ts).
+    position: [-40, 51.7],
     action: { kind: 'choose-layout' },
   },
   {
@@ -159,7 +161,8 @@ const RAW_INTERACTIVES: readonly Interactive[] = [
     districtId: 'observatory',
     name: 'Observatory Lectern',
     prompt: 'Open the Observatory panels',
-    position: [-45, 140],
+    // Inside the Provenance Dome gallery (see interiors.ts).
+    position: [-41.9, 131.4],
     action: { kind: 'open-observatory' },
   },
 ];

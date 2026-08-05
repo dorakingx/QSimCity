@@ -102,6 +102,15 @@ export {
 } from './outskirts.js';
 export { LANDMARK_SITES, type LandmarkSite } from './landmarks.js';
 export {
+  INTERIORS,
+  INTERIOR_BUILDING_IDS,
+  interiorCollisionBoxes,
+  doorPosition,
+  type DoorSide,
+  type Interior,
+  type InteriorFurniture,
+} from './interiors.js';
+export {
   hash01,
   hashIndex,
   hashPick,

@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import {
   CITY_BOUNDS,
   EAST_COAST_X,
+  INTERIOR_BUILDING_IDS,
+  INTERIORS,
+  interiorCollisionBoxes,
   WEST_COAST_X,
   terrainHeight,
   type Building,
@@ -65,13 +68,27 @@ export class CameraRig {
 
   constructor(aspect: number, buildings: readonly Building[]) {
     this.camera = new THREE.PerspectiveCamera(55, aspect, 0.5, 4000);
-    this.aabbs = buildings.map((b) => ({
-      minX: b.position[0] - b.collisionHalfExtents[0],
-      maxX: b.position[0] + b.collisionHalfExtents[0],
-      minZ: b.position[1] - b.collisionHalfExtents[1],
-      maxZ: b.position[1] + b.collisionHalfExtents[1],
-      height: b.collisionHeight + terrainHeight(b.position[0], b.position[1]),
-    }));
+    // Buildings with enterable interiors collide as wall segments with a
+    // door gap; every other building is a solid box (W1.8).
+    this.aabbs = buildings.flatMap((b) => {
+      const interiorId = INTERIOR_BUILDING_IDS[b.id];
+      const height = b.collisionHeight + terrainHeight(b.position[0], b.position[1]);
+      if (interiorId) {
+        const interior = INTERIORS.find((i) => i.id === interiorId);
+        if (interior) {
+          return interiorCollisionBoxes(interior).map((box) => ({ ...box, height }));
+        }
+      }
+      return [
+        {
+          minX: b.position[0] - b.collisionHalfExtents[0],
+          maxX: b.position[0] + b.collisionHalfExtents[0],
+          minZ: b.position[1] - b.collisionHalfExtents[1],
+          maxZ: b.position[1] + b.collisionHalfExtents[1],
+          height,
+        },
+      ];
+    });
     this.updateCamera();
   }
 
