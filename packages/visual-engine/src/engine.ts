@@ -106,6 +106,7 @@ export class CityEngine {
   private envTarget: THREE.WebGLRenderTarget | null = null;
   private farPropsVisible = true;
   private disposed = false;
+  private released = false;
   /** Set when the user is near an interactive console in first-person mode. */
   nearbyInteractiveId: string | null = null;
 
@@ -993,12 +994,32 @@ export class CityEngine {
     };
   }
 
-  dispose(): void {
+  /**
+   * Stop the engine and break every reference that could retain it: the
+   * render loop, and the canvas → listener → engine edge that otherwise
+   * keeps a detached canvas holding the whole scene alive.
+   *
+   * This is the cheap half of teardown (microseconds). Releasing the GPU
+   * resources is the expensive half — see dispose() — and callers that
+   * unmount the view during a user interaction should detach here and let
+   * the browser paint before paying it.
+   */
+  detach(): void {
+    if (this.disposed) return;
     this.disposed = true;
     cancelAnimationFrame(this.animationHandle);
-    // Break the canvas → listener → engine retention edge, then release the
-    // WebGL context so the browser's canvas registry lets the canvas go.
     this.inputAbort.abort();
+  }
+
+  /**
+   * Full teardown: detach, then release every geometry, material, texture,
+   * and render target this engine created. Safe to call after detach() and
+   * safe to call twice.
+   */
+  dispose(): void {
+    if (this.released) return;
+    this.released = true;
+    this.detach();
     this.city.dispose();
     this.sky.dispose();
     this.qpu?.dispose();

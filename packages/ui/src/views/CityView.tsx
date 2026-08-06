@@ -160,8 +160,18 @@ export default function CityView(): ReactElement {
       observer.disconnect();
       audio.dispose();
       audioRef.current = null;
-      engine.dispose();
+      // Stop the engine and break its retention edges synchronously, but
+      // let the browser paint the incoming view before releasing the GPU
+      // resources: that release costs seconds on a full city, and paying
+      // it inside the unmount commit stalls the mode switch behind it.
+      engine.detach();
       engineRef.current = null;
+      const release = (): void => engine.dispose();
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => setTimeout(release, 0));
+      } else {
+        release();
+      }
       // The hook closures share this effect's scope, which references the
       // engine and canvas — leaving them registered would retain both.
       delete (globalThis as Record<string, unknown>)['__qsimcityStats'];

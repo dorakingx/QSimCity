@@ -1,41 +1,41 @@
 {
-  "commitSha": "8b55d429729af86c94af9cdc4fdbe6646c80cff2",
-  "sourceTreeHash": "b9d0d3e47fb2ef48",
-  "worktreeDirty": true,
-  "generatedAt": "2026-08-05T08:27:38.875Z",
+  "commitSha": "7b56020c7ad681cfc7b75042c544665340a30849",
+  "sourceTreeHash": "eda424bc9134b1a4",
+  "worktreeDirty": false,
+  "generatedAt": "2026-08-06T02:47:35.149Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "1a6cb4f64cfb0623",
+  "inputHash": "9e884b5712c5b1d9",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 156062,
-    "totalJsGzipBytes": 351455,
+    "initialJsGzipBytes": 157070,
+    "totalJsGzipBytes": 355304,
     "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 156062,
-    "totalJsGzipBytes": 351455,
+    "initialJsGzipBytes": 157070,
+    "totalJsGzipBytes": 355304,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
       {
-        "name": "three-DrQIqESF.js",
-        "gzipBytes": 136061
+        "name": "three-q9RKXkIj.js",
+        "gzipBytes": 136194
       },
       {
         "name": "pipeline.worker-Bs6_6sSe.js",
         "gzipBytes": 33177
       },
       {
-        "name": "CityView-CzzpSq5H.js",
-        "gzipBytes": 23896
+        "name": "CityView-DpG-jieE.js",
+        "gzipBytes": 26604
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -48,12 +48,12 @@
         "gzipBytes": 58969
       },
       {
-        "name": "CertaintyBadge-BDbUVE5a.js",
-        "gzipBytes": 53814
+        "name": "CertaintyBadge-D8Mw5V8X.js",
+        "gzipBytes": 54410
       },
       {
-        "name": "index-dQNW2kyW.js",
-        "gzipBytes": 42919
+        "name": "index-BLgKtneS.js",
+        "gzipBytes": 43331
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-05T08:27:38.834Z"
+    "generatedAt": "2026-08-06T02:47:35.108Z"
   }
 }

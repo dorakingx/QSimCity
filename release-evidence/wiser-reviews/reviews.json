@@ -1,0 +1,436 @@
+{
+  "commitSha": "aabc6401bf09c03a426966d60219a197305eff7e",
+  "sourceTreeHash": "1e7a4812837a5ae7",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-06T02:43:57.165Z",
+  "tool": "wiser-reviews",
+  "toolVersion": "1.0.0",
+  "command": "pnpm wiser:reviews",
+  "exitStatus": 0,
+  "inputHash": "b7e0316016bbfa69",
+  "thresholds": {
+    "minCategoryScore": 4.5,
+    "maxOpenBlockers": 0,
+    "maxOpenMajors": 0
+  },
+  "measurements": {
+    "reviewers": 4,
+    "totalFindings": 26,
+    "openBlockers": 0,
+    "openMajors": 0,
+    "minCategoryScore": 4.5,
+    "score:visual-fidelity": 4.5,
+    "score:urban-coherence": 4.5,
+    "score:semantic-animation": 4.5,
+    "score:interaction-clarity": 4.5,
+    "score:scientific-honesty": 5
+  },
+  "passed": true,
+  "detail": {
+    "reviews": [
+      {
+        "stance": "art-direction",
+        "summary": "Scoring round after three iterating rounds. All five outstanding minors are verified fixed in the regenerated clean-tree evidence (commit 3562bd4), and a live production-build session confirmed the motion language works: timeline ticks drive the convoy, the QPU gantry hook, a courier ribbon at Measurement Harbor, and a van passing at street level in walk mode, while the scene settles to near-stillness with only faint ambient shimmer once the replay ends (pixel-diff: 1.5k-4k px/s during replay vs ~400 px/s after). Adversarial hunting surfaced only three cosmetic nits. The product presents a cohesive, honest, legible city across all three times of day and both viewports.",
+        "findings": [
+          {
+            "severity": "minor",
+            "title": "Lab histogram left-anchored in an empty panel",
+            "detail": "desktop-day-lab-results.png: the two-outcome bar group now stretches wide and sits centered in the Measured counts panel; axis and labels legible. Verified fixed.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Orphaned Walk chip on mobile",
+            "detail": "All mobile shots: Orbit/Top-down/Fly/Walk render as one strip on a single row with Legend trailing; the top nav strip shows a trailing-edge fade (Quantum Lab) signaling scrollability. No orphan chip. Verified fixed.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Bare paved band southeast of the QPU lattice",
+            "detail": "desktop-day-overview.png and live orbit frames: parcels outside the QPU fence now carry ordinary city parcel ground colors and building stock; no anonymous apron band remains. Verified fixed.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Dead desk monitor in the interior",
+            "detail": "desktop-day-interior.png: the desk monitor now uses the bright mint chart material and reads as powered, matching the wall display. Verified fixed.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Sky-heavy mobile overview framing",
+            "detail": "mobile-day-overview.png and mobile-golden-overview.png: portrait orbit now starts steeper and closer; the city occupies the clear majority of the frame with labeled districts readable. Verified fixed.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Golden/night foreground silhouette",
+            "detail": "desktop-golden-overview.png foreground parcels fall into shadow toward the frame edge; previously accepted as a deliberate dusk vignette. Re-confirmed unchanged.",
+            "status": "accepted"
+          },
+          {
+            "severity": "minor",
+            "title": "Streetlamp head clipped at frustum edge on mobile street shots",
+            "detail": "mobile-golden-street.png and mobile-night-street.png show a partial white lamp sphere hugging the extreme left screen edge at mid-height; it reads as a floating white blob because its pole is outside the frustum. Cosmetic only.",
+            "status": "open"
+          },
+          {
+            "severity": "minor",
+            "title": "Lamp glow sprites read as flat discs in mobile night overview",
+            "detail": "mobile-night-overview.png: the streetlamp glow billboards viewed near top-down scatter dozens of uniform pale beige circles across roads and intersections, producing a mild polka-dot texture that competes with the district labels. Desktop night overview at its shallower angle does not suffer this.",
+            "status": "open"
+          },
+          {
+            "severity": "minor",
+            "title": "Keyboard focus ring baked into three evidence captures",
+            "detail": "desktop-golden-street.png, desktop-night-street.png, and mobile-golden-street.png carry the yellow focus outline on the Explore tab from capture-time keyboard input. The ring itself is a correct a11y affordance; this is an evidence-hygiene nit, not a product defect.",
+            "status": "open"
+          }
+        ],
+        "categoryScores": {
+          "visual-fidelity": {
+            "score": 4.5,
+            "rationale": "Cohesive low-poly language with confident lighting across all three times of day: lit-window facades and starfield at night, warm golden-hour grade, soft water shimmer at the coast, deterministic window lights that hold up in stills. Interior displays now all read as powered. Docked at half a point for the clipped lamp sphere on mobile street edges and the polka-dot lamp glow discs in the mobile night overview.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-night-overview.png",
+              "release-evidence/wiser-screenshots/desktop-golden-street.png",
+              "release-evidence/wiser-screenshots/desktop-day-interior.png",
+              "release-evidence/wiser-screenshots/mobile-night-overview.png",
+              "release-evidence/wiser-screenshots/mobile-golden-street.png"
+            ]
+          },
+          "urban-coherence": {
+            "score": 4.5,
+            "rationale": "The city reads as a real place organized by the compilation pipeline: labeled districts sequence Program Port through Measurement Harbor along a legible boulevard axis, the harbor sits on the waterfront with piers and container stacks, residential outskirts ring the core, and the former bare apron southeast of the QPU fence now carries ordinary parcel colors. Street level holds up: median trees, lampposts, sidewalks, crosswalks. Remaining half-point: the fenced QPU campus interior still reads sparse next to the dense core, a defensible but visible density step.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-street.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png"
+            ]
+          },
+          "semantic-animation": {
+            "score": 4.5,
+            "rationale": "Verified live against the production build: ticks 7 to 16 drive visible change (1.5k-4k px/s) - the QPU gantry hook advances along the coupler row, a courier ribbon materializes on the harbor boulevard at tick 14, and a van traverses the boulevard in walk mode mid-replay - then the city settles to near-stillness (~400 px/s ambient) when the run ends, proving motion is trace-bound rather than decorative churn. The post-run Observatory beacon anchors correctly to the dome. Half-point docked because the replay window is brief and street level offers almost no idle life after completion, so a viewer arriving late sees a frozen city.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-street.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png",
+              "release-evidence/wiser-screenshots/mobile-golden-overview.png"
+            ]
+          },
+          "interaction-clarity": {
+            "score": 4.5,
+            "rationale": "Camera modes are one consistent chip strip with numeric hotkeys and an unmistakable active state; the playback bar exposes Pause/Step/scrub/tick-count/speed and its Step control correctly disables at 16/16; mobile adds a walk joystick and a compact reorganized control panel; the Legend explains every moving entity with its certainty label; visible focus rings support keyboard use. Half-point: the mobile control panel still claims a large share of portrait height, and nav scrollability rests solely on an edge fade.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-legend.png",
+              "release-evidence/wiser-screenshots/mobile-day-street.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-overview.png"
+            ]
+          },
+          "scientific-honesty": {
+            "score": 5,
+            "rationale": "Every on-screen number carries a SourceClassification and CertaintyLabel (COMPUTED, SAMPLED, EXACT, ESTIMATED, ILLUSTRATIVE), the lab view ships an Active simplifications ledger stating that replay shows one sampled trajectory, that pacing is presentation time, and that the success proxy is not fidelity, and the Legend insists vehicles carry classical messages, never quantum states. The art direction consistently serves the honesty contract rather than fighting it.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png"
+            ]
+          }
+        }
+      },
+      {
+        "stance": "quantum-accuracy",
+        "summary": "Scoring round confirms the product's quantum-information accuracy is sound and stable. Spot verification: both evidence envelopes (release-evidence/wiser-fps/fps-report.json, release-evidence/wiser-screenshots/manifest.json) bind HEAD commit 3562bd4f3c02b98df24b174a89c1ba49e31a265c with worktreeDirty:false and identical sourceTreeHash 3355216dd7f59118; all 15 screenshot SHA-256 hashes match the manifest. desktop-day-lab-results.png shows the widened, centered two-bar Bell histogram under 'Measured counts (1024 shots)' with the SAMPLED badge and unchanged science (00/11 near 51%/49%), with 'Exact probabilities EXACT' collapsed below and the Active simplifications sidebar intact. I read the full diff of commit 3562bd4: the changes are provably presentation-only (Histogram bar-group width formula, QPU campus ground-color scoping, interior monitor material swap to the lit chart material, portrait orbit start pitch in cameras.ts, mobile chip CSS, an ARIA unit test) — no producer, trace, simulator, compiler, or labeling code was touched, and the camera change cannot affect scientific state. The City Legend still carries every verified accuracy fix: Job convoy COMPUTED, Courier vans SAMPLED (one van per sampled measurement), Logical qubit banners COMPUTED with SWAP exchange semantics, and Pylon/bridge lights dual-labeled EXACT with noisy replay SAMPLED. The scientific-core distribution-equivalence suite (packages/reference-compiler/test/compiled-execution.test.ts) passes 67/67. One new minor process note: the regenerated clean-tree evidence exists on disk but is not yet committed — the versions committed at HEAD still bind prior commit 9bd097d, so a fresh clone of HEAD would carry stale envelopes until the regenerated files are committed.",
+        "findings": [
+          {
+            "id": "QA-S1",
+            "title": "Regenerated clean-tree evidence is uncommitted; committed envelopes still bind commit 9bd097d",
+            "severity": "minor",
+            "status": "open",
+            "details": "On-disk envelopes correctly bind HEAD 3562bd4 with worktreeDirty:false (regenerated 2026-08-05T21:35-21:36Z), but git status shows all 18 release-evidence/wiser-* files modified: the versions committed at HEAD were generated at 9bd097d. This is release hygiene, not an accuracy defect — the evidence content itself is valid and correctly bound — but the regenerated files must be committed so HEAD's history carries evidence matching its own source tree.",
+            "evidence": [
+              "release-evidence/wiser-fps/fps-report.json",
+              "release-evidence/wiser-screenshots/manifest.json"
+            ]
+          },
+          {
+            "id": "QA-S2",
+            "title": "Post-fix commit 3562bd4 verified presentation-only; no science or labeling surface touched",
+            "severity": "info",
+            "status": "verified",
+            "details": "Full diff review: Histogram.tsx changes only barGroupW geometry (Math.max(34, Math.min(200, floor(440/shownKeys.length)))) with data mapping untouched; city-builder.ts changes ground colors inside the fenced QPU campus and moves desk-monitor glow to the lit screen material; cameras.ts sets a steeper initial polar/distance for portrait aspect only; remaining changes are CSS and a unit test. Distribution-equivalence tests pass 67/67, and desktop-day-lab-results.png confirms the histogram's sampled counts are unchanged.",
+            "evidence": [
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
+              "packages/reference-compiler/test/compiled-execution.test.ts"
+            ]
+          },
+          {
+            "id": "QA-S3",
+            "title": "All prior accuracy findings remain fixed in regenerated evidence",
+            "severity": "info",
+            "status": "verified",
+            "details": "desktop-day-legend.png shows Job convoy COMPUTED (reference compiler), Courier vans SAMPLED (one van per sampled measurement, feed-forward completion), Logical qubit banners COMPUTED (SWAP exchanges banners at the reported tick), Pylon and bridge lights EXACT / noisy replay: SAMPLED. The Accessible 2D lab view keeps the full badge glossary (SAMPLED/CALIBRATION/MEASURED/ESTIMATED/ILLUSTRATIVE) and the Active simplifications list including quantum-trajectory caveats, playback-pacing-vs-hardware-timing separation, and the 'quantum state never travels on roads' clarification.",
+            "evidence": [
+              "release-evidence/wiser-screenshots/desktop-day-legend.png",
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png"
+            ]
+          }
+        ],
+        "categoryScores": {
+          "visual-fidelity": {
+            "score": 4.5,
+            "rationale": "Regenerated stills confirm the cosmetic closeout: interior desk monitors now use the lit chart material (desktop-day-interior.png shows a lit mint screen rather than a dark slab), the Bell histogram stretches centered across its panel, and QPU-district blocks outside the fence read as ordinary parcels in desktop-day-overview.png. The deliberate low-poly style is internally consistent across day/golden/night; a half point withheld only for the inherent simplicity of the geometry, not for any defect.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-interior.png",
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-golden-street.png"
+            ]
+          },
+          "urban-coherence": {
+            "score": 4.5,
+            "rationale": "The pipeline-as-city mapping remains legible and complete in the overview: Program Port through IR Foundry, Layout Exchange, Routing Transit, Translation Refinery, Optimization Works, Scheduling Tower, QPU Grid, Classical Control Center, Measurement Harbor, and the Noise Atmosphere all labeled in correct causal order, with the campus ground treatment now scoped so surrounding blocks read as ordinary city. Harbor parcels are dressed. The city reads as a city while every district still means its compiler stage.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-night-overview.png"
+            ]
+          },
+          "semantic-animation": {
+            "score": 5,
+            "rationale": "Everything that moves is derived from (trace, playbackTick) with semantics I verified across three rounds and re-confirmed unchanged by diff review this round: convoy position equals the most advanced reached stage, banners exchange pylons exactly at reported SWAP ticks, one courier per sampled measurement with feed-forward completion, bridge lights fire per gate-executed event with the EXACT/SAMPLED split by replay kind. The 3562bd4 diff touches no derivation code, and compiled-execution tests (67/67) guard the underlying science.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-legend.png",
+              "release-evidence/wiser-screenshots/mobile-day-street.png"
+            ]
+          },
+          "interaction-clarity": {
+            "score": 4.5,
+            "rationale": "Tick-aware 'at tick N' residency labels, physical-qubit Inspector headings, and the playback readout (tick/total visible in every still) remain intact; mobile chrome is now a single scrollable strip with 44px targets and portrait framing starts on the city rather than sky (mobile-day-street.png). The legend answers 'what is this and how certain' for every moving object. Half point withheld because I verified the mobile affordance fixes from stills and code rather than live touch interaction.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/mobile-day-street.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png"
+            ]
+          },
+          "scientific-honesty": {
+            "score": 5,
+            "rationale": "Every on-screen number carries a defensible label: SAMPLED measured counts beside collapsed EXACT probabilities, COMPUTED circuit metrics, the full five-badge glossary with plain-language definitions, and an Active simplifications list that volunteers the project's own limits (single-trajectory replay caveat, presentation-time pacing vs estimated gate durations, error-product proxy labeled ESTIMATED, quantum state never on roads). Evidence envelopes bind measurements to the exact source tree with worktreeDirty:false and all 15 image hashes verified. The only open item is committing the regenerated evidence files — a hygiene step, not a misrepresentation, since the on-disk envelopes are truthful about what they measured.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png"
+            ]
+          }
+        }
+      },
+      {
+        "stance": "child-ux-accessibility",
+        "summary": "Final scoring round. I reproduced the round-4 major live on the production build (390x844 hasTouch, tools/serve-production, Missions -> Light Up the Twin Towers -> Bell pair -> Run -> celebration): the histogram now scales inside the panel (rendered 306px from a 460px viewBox), mission panel and document both measure zero horizontal overflow (356/356 and 390/390), and the step-3 text, Reset, timeline at 16/16, SAMPLED badge, and the full celebration card are all visible and reachable — the major is fixed, and the new E2E guard in tests/e2e/mobile.spec.ts asserts exactly this. The mode-strip trailing padding (48px) keeps the active Accessible 2D chip fully bright at scroll end, and the Accessible 2D results fit the phone with no sideways scroll. All previously verified fixes spot-checked clean (joystick bottom 612 vs dock top 688, district label plates, lit interior sign and monitors, tick-driven replay motion 5/16 -> 9/16). Two new minors only: sub-7px effective histogram tick text after viewBox scaling, and a benign duplicate histogram from the mission panel staying mounted under Accessible 2D.",
+        "findings": [
+          {
+            "severity": "major",
+            "title": "Phone mission panel overflow clipping results and celebration",
+            "detail": "Re-verified live on the production build at 390x844 with touch: after Run, missionScrollWidth==missionClientWidth (356) and document scrollWidth==clientWidth (390); histogram SVG carries viewBox 0 0 460 170 with max-width:100% and renders at 306px inside the panel. Timeline (16/16), SAMPLED badge, EXACT badges, Reset, and the full 'Bell pair complete' celebration are visible. E2E guard present in tests/e2e/mobile.spec.ts (overflow <= 1px on panel and document).",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Mode-strip fade dimmed the active trailing chip (cua-r4-7)",
+            "detail": "Verified live: strip has padding-right 48px (scrollWidth 630 vs client 371); scrolled fully right, the active 'Accessible 2D' chip renders fully bright and clear of the fade zone.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Accessible 2D two-bar chart overflowed phone panels (cua-r4-8)",
+            "detail": "Verified live at 390px: results region 290/290, document 390/390, histogram fits with badges and provenance visible; no sideways scroll anywhere.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Mobile joystick overlapped the playback dock",
+            "detail": "Re-confirmed live: movement pad occupies y 504-612, timeline dock starts at y 688 — fully separated; visually confirmed in the walk-mode capture and in mobile-day-street.png / mobile-golden-street.png evidence.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Prior-round fixes spot-checked and holding",
+            "detail": "District labels on backing plates legible in all mobile/desktop overviews; interior name sign 'Assignment Hall Trading Floor' fits its plate with lit desk monitors (desktop-day-interior.png); keycap hints absent on the touch profile (mobile chips show no 1-4 keycaps while desktop chips do); touch tap-to-place and remove control exercised by the passing mobile E2E; 44px chips; portrait framing is city-dominant with the dock compact at the bottom.",
+            "status": "fixed"
+          },
+          {
+            "severity": "minor",
+            "title": "Histogram tick text drops to ~6.7px effective on phones",
+            "detail": "The overflow fix scales the whole SVG (10px .axis-label at 306/460 = 0.665 scale, ~6.7px effective) so '52%', '0%', '00', '11' render below comfortable legibility for young readers on the phone mission panel. Impact is limited — only four short labels on a two-bar chart, and the 'Data table (text alternative)' disclosure carries the same numbers — but a responsive tick font (or counter-scaling text) would finish the job the viewBox fix started.",
+            "status": "open"
+          },
+          {
+            "severity": "minor",
+            "title": "Mission histogram stays mounted beneath Accessible 2D results",
+            "detail": "With a mission active, switching to Accessible 2D leaves the mission panel's 'Measured counts (512 shots)' histogram mounted and unhidden in document flow alongside the Accessible 2D copy of the same chart — two identical labeled role=img histograms on one page. No overflow and both sit in labeled regions, and persisting mission progress across modes appears deliberate, but screen-reader users hear the same chart twice.",
+            "status": "accepted"
+          }
+        ],
+        "categoryScores": {
+          "visual-fidelity": {
+            "score": 4.5,
+            "rationale": "Night renders with hash-stable window lights, streetlight pools, and a starfield read beautifully at both scales; golden hour gives warm facades and long shadows; day overview has atmospheric depth over the water. The enterable interior is the weakest surface — clean and legible with its lit dashboard and fitted name sign, but noticeably sparse and flatly lit next to the exterior richness.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-night-street.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png",
+              "release-evidence/wiser-screenshots/mobile-night-overview.png",
+              "release-evidence/wiser-screenshots/mobile-golden-street.png",
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-interior.png"
+            ]
+          },
+          "urban-coherence": {
+            "score": 4.5,
+            "rationale": "The pipeline boulevard anchors a coherent grid: labeled districts on backing plates (Program Port through Measurement Harbor), a working harbor edge with containers and cranes, tree-lined arterials, streetlights, and residential outskirts that thin naturally toward the periphery. Suburban parcels repeat their few house archetypes visibly from overview height, which slightly flattens the periphery.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png",
+              "release-evidence/wiser-screenshots/mobile-night-overview.png"
+            ]
+          },
+          "semantic-animation": {
+            "score": 4.5,
+            "rationale": "Motion is tick-driven and honest: live captures at tick 5/16 vs 9/16 show the Translation Refinery apparatus and district activity progressing with the replay, and every mover is documented in the City Legend with a 'Moves when' clause tied to trace events, never to wall-clock decoration. The mid-replay evidence shots (Routing Transit racks, Optimization Works rings) show the semantic layer alive in every capture. Held short of 5 because at overview distance some semantic changes are subtle enough that a child could miss what changed between ticks without the legend.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/mobile-day-overview.png",
+              "release-evidence/wiser-screenshots/mobile-night-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png"
+            ]
+          },
+          "interaction-clarity": {
+            "score": 4.5,
+            "rationale": "The whole mission arc now works by touch on a phone with nothing clipped: numbered steps check off, tap-to-place with per-tile remove controls, one-tap Bell pair template, Run, timeline scrub at 16/16, and a celebration that requires every step — verified live with zero overflow and guarded by E2E. Mode strip scrolls with a fade that no longer dims the active chip; joystick sits clear of the dock; focus outlines are visible on chips. The sub-7px scaled histogram tick text is the one remaining child-legibility rough edge.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/mobile-day-street.png",
+              "release-evidence/wiser-screenshots/mobile-golden-street.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png"
+            ]
+          },
+          "scientific-honesty": {
+            "score": 5,
+            "rationale": "Every number wears its label: SAMPLED on measured counts, EXACT on probabilities and completion, COMPUTED on circuit metrics, with a full glossary (CALIBRATION, MEASURED, ESTIMATED, ILLUSTRATIVE) and an 'Active simplifications' list that names the representative-trajectory replay, presentation-time pacing, and 'quantum state is not a thing that travels on roads'. The legend repeats that vehicles carry jobs and bits, never quantum states, and provenance records generator and seed. This honesty survives intact at phone width in the mission panel itself.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png"
+            ]
+          }
+        }
+      },
+      {
+        "stance": "performance",
+        "summary": "Live verification on the production build confirms the committed evidence rather than merely trusting it: rAF medians hit the 120 Hz host cap in all three desktop segments I re-measured myself (overview replay, continuous orbit drag, walk with W held), a 10-second night street dwell produced 1200 frames with median 8.3 ms, p99 9.2 ms, max 9.4 ms and zero frames over 33 ms, ten Explore/2D remount cycles left the GC'd heap at exactly ratio 1.000 (31.2 MB to 31.2 MB), and zero console or page errors occurred across both sessions. Interaction is effectively instant: load-to-3D-ready 709-968 ms, Run-to-replay-toolbar 58-91 ms, Explore-to-Accessible-2D 60 ms fresh and 24 ms after six remount cycles. Timed screenshot sequences during replay show real semantic motion distributed along the district band (plus the advancing timeline), not just HUD churn, and orbit/walk screenshots after heavy input show intact rendering from new vantages. fps-report.json and manifest.json envelopes verify as claimed: commitSha 3562bd4, worktreeDirty false, passed true, with the honestly named maxObservedSegmentMedianFps and explicit cap/host-GPU caveats. Two low-severity items remain open: the in-tree soak envelope predates the final tree (57c9a9d, worktreeDirty true) and must be regenerated in the planned final gate sequence — an ordering I judge sound since committing evidence changes the source hash — and the soak-only finalInteractionMs residual (2417 ms vs 24-60 ms in my live probes) persists under its 3000 ms threshold and is not reproduced by remount churn alone, pointing at the long scenario workload rather than a leak.",
+        "findings": [
+          {
+            "id": "PERF-V1",
+            "status": "verified",
+            "severity": "none",
+            "title": "Cap-limited frame rate reproduced live in all interactive segments",
+            "detail": "Independent rAF sampling against tools/serve-production.js (Chromium, GPU enabled, 1920x1080, quality high) during a live Bell replay: overview median 120.5 fps (p5 113.6, longest frame 9.4 ms over 600 frames), continuous 3-pass orbit drag median 120.5 fps (p5 112.4), walk mode with W held median 120.5 fps (p5 113.6). A separate 10 s night street dwell: 1200 frames, median 8.30 ms, p99 9.20 ms, max 9.40 ms, zero frames over 33.4 ms. Matches the committed fps-report.json medians (120.5/120.5) at commit 3562bd4."
+          },
+          {
+            "id": "PERF-V2",
+            "status": "verified",
+            "severity": "none",
+            "title": "Remount leak fix holds under live probing",
+            "detail": "Ten Explore <-> Accessible 2D cycles with forced GC (--js-flags=--expose-gc): usedJSHeapSize 31,200,000 bytes before and after, ratio 1.000. The AbortController-scoped listener fix is effective in the shipped bundle."
+          },
+          {
+            "id": "PERF-V3",
+            "status": "verified",
+            "severity": "none",
+            "title": "Interaction latency excellent and does not degrade with mode churn",
+            "detail": "Measured live: load to 3D-ready 709-968 ms, Run click to replay toolbar 58-91 ms, Explore to Accessible 2D 60 ms fresh and 24 ms after six full mode cycles. Zero console errors and zero page errors across both measurement sessions. Draw calls 185 at overview, 146 at street (vs 178 in the evidence — normal view-state variance)."
+          },
+          {
+            "id": "PERF-V4",
+            "status": "verified",
+            "severity": "none",
+            "title": "Semantic motion confirmed from timed frames, not screenshots alone",
+            "detail": "Four screenshots 1.2 s apart during replay: 0.17-0.22% of sampled pixels change per interval, and the change map concentrates along the district band (columns spanning Program Port through Measurement Harbor) plus the advancing timeline slider — consistent with convoy/courier/pedestrian motion at overview scale rather than HUD-only churn. Replay tick advanced 2/16 -> 16/16 across the session; orbit and walk screenshots after heavy input show intact rendering."
+          },
+          {
+            "id": "PERF-V5",
+            "status": "verified",
+            "severity": "none",
+            "title": "FPS and screenshot evidence regenerated from the clean tree at 3562bd4",
+            "detail": "release-evidence/wiser-fps/fps-report.json and release-evidence/wiser-screenshots/manifest.json both carry commitSha 3562bd4f, worktreeDirty false, passed true, whole-pass medians, the honestly named maxObservedSegmentMedianFps, and explicit caveats that cap-limited medians mean 'at least cap fps' and that the mobile pass emulates CPU but not mobile GPU fill-rate. These files are regenerated but not yet committed; committing them is part of the same planned final sequence as PERF-O1."
+          },
+          {
+            "id": "PERF-O1",
+            "status": "open",
+            "severity": "minor",
+            "title": "Soak envelope in tree is stale; regeneration on the final clean tree is planned but not yet done",
+            "detail": "release-evidence/soak/soak-report.json was generated at commit 57c9a9d with worktreeDirty true. The stated ordering — land audit documents, then re-run the soak on the exact final tree — is sound release mechanics (any tracked-file commit changes the source hash), so this is not scored as a product defect, but the release gate must not ship until that soak run exists with worktreeDirty false and passed true on the shipped commit."
+          },
+          {
+            "id": "PERF-O2",
+            "status": "open",
+            "severity": "minor",
+            "title": "finalInteractionMs residual after full soak remains unexplained (2417 ms vs 24-60 ms live)",
+            "detail": "The soak's final probe (Accessible 2D click to OpenQASM textarea visible) measured 2417 ms after the 10-minute 8-cycle workload; my live probes of the identical transition measure 60 ms fresh and 24 ms after six rapid remount cycles, and heap is flat across remounts. The residual is therefore not remount churn or a leak; it correlates with the long scenario workload (candidates: GC pause on a grown heap, deferred work flushing on mode switch). It sits under the 3000 ms threshold and is tracked; worth a targeted trace during the final soak run."
+          }
+        ],
+        "categoryScores": {
+          "visual-fidelity": {
+            "score": 4.5,
+            "rationale": "The city reads as a finished stylized place in all three times of day: night streets have per-window lit facades, lamp glow, and a starfield; day and golden overviews show coherent materials, water shading, and district labels; the interior shot is furnished and legibly lit. Critically, this fidelity costs nothing — 120 Hz cap-limited at 185 draw calls and 374k triangles at high quality, so there is no fidelity-versus-smoothness tradeoff left on the table. Held back half a point by residual sparseness up close: large bare wall planes in the Assignment Hall interior and floating bulb dots on night street lamps.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-night-street.png",
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-interior.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png"
+            ]
+          },
+          "urban-coherence": {
+            "score": 4.5,
+            "rationale": "The compilation pipeline maps onto legible urban geography: Program Port at the water's edge, IR Foundry, Layout Exchange, Routing Transit, Translation Refinery, Optimization Works, and Scheduling Tower along the boulevard spine, QPU Grid and Classical Control Center at the dense core, Measurement Harbor with dressed dock parcels and container stacks at the far shore, residential fringes and the Observatory softening the edges. Live orbiting to arbitrary vantages (after-orbit frame) shows the layout holds up from angles the evidence never staged. The grid is still visibly rectilinear-schematic from overview, which keeps it just short of feeling like a grown city.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-golden-overview.png",
+              "release-evidence/wiser-screenshots/mobile-day-overview.png"
+            ]
+          },
+          "semantic-animation": {
+            "score": 4.5,
+            "rationale": "Verified in motion, not from stills: timed frame sequences during a live Bell replay show continuous change concentrated along the district band with the tick counter advancing 2/16 to 16/16, and the fps benchmark's workload declaration (convoy, couriers, pedestrians, banners, count stacks live during sampling) matches what the pixel-change map shows. The animation never costs a frame — zero frames over 33 ms in a 10 s dwell while agents run. The half-point deduction is for overview-scale subtlety: at the default orbit distance the semantic motion is a quiet 0.2% of pixels per 1.2 s, so a first-time viewer must zoom or walk to feel the city working.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/desktop-day-street.png",
+              "release-evidence/wiser-screenshots/desktop-night-overview.png"
+            ]
+          },
+          "interaction-clarity": {
+            "score": 4.5,
+            "rationale": "Every control answers instantly — measured, not estimated: 58-91 ms from Run to replay toolbar, 24-60 ms mode switches, sub-second cold load to a live 3D scene, and camera modes (Orbit/Top-down/Fly/Walk) with visible hotkey badges that all responded correctly under scripted input. The replay toolbar (Pause/Step/slider/speed) states its position plainly, mobile gets a compact chrome with a touch joystick, and nothing degraded after remount churn. Withheld half a point for discoverability rather than responsiveness: walk-mode entry placement and the interior teleport affordance are not self-evident from the UI itself.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-overview.png",
+              "release-evidence/wiser-screenshots/mobile-day-street.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png"
+            ]
+          },
+          "scientific-honesty": {
+            "score": 5,
+            "rationale": "Honesty is structural here, and the performance evidence now meets the same bar as the science: whole-pass medians instead of best-segment cherry-picking, a field named maxObservedSegmentMedianFps that admits what it is, explicit caveats that cap-limited numbers mean 'at least cap' and that the mobile pass does not emulate mobile GPU fill-rate, and envelopes binding every number to commitSha 3562bd4 with worktreeDirty false. On the product side, the lab results screen shows COMPUTED/SAMPLED/EXACT badges on every figure, a certainty-label glossary, and an Active Simplifications list that volunteers its own limitations (playback pacing is presentation time; moving objects are never quantum amplitudes). My independent measurements reproduced the committed numbers, which is the strongest form of honesty a benchmark can have.",
+            "citedScreenshots": [
+              "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
+              "release-evidence/wiser-screenshots/desktop-day-legend.png"
+            ]
+          }
+        }
+      }
+    ],
+    "categoryMinimums": {
+      "visual-fidelity": 4.5,
+      "urban-coherence": 4.5,
+      "semantic-animation": 4.5,
+      "interaction-clarity": 4.5,
+      "scientific-honesty": 5
+    }
+  }
+}
