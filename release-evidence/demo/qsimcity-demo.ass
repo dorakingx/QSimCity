@@ -1,0 +1,48 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Demo,Helvetica,40,&H00FFFFFF,&H000000FF,&H00000000,&HB4000000,0,0,0,0,100,100,0,0,3,3,0,2,120,120,58,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.16,0:00:06.17,Demo,,0,0,0,,QSimCity: see what actually happens to a quantum program\Nbetween writing a circuit and getting results.
+Dialogue: 0,0:00:06.17,0:00:12.17,Demo,,0,0,0,,Everything runs in the browser. No account, no upload, no\Ntelemetry. This is the real application, recorded live.
+Dialogue: 0,0:00:12.17,0:00:17.25,Demo,,0,0,0,,A first-time learner picks a door. We take the mission path,\Nwhich is the one designed for beginners.
+Dialogue: 0,0:00:17.25,0:00:23.28,Demo,,0,0,0,,Mission 1 asks for a Bell pair. The numbered steps are the\Nonly instructions a learner needs.
+Dialogue: 0,0:00:23.28,0:00:28.31,Demo,,0,0,0,,We build the circuit ourselves. First a Hadamard: select the\Ngate, then place it on qubit zero.
+Dialogue: 0,0:00:28.31,0:00:32.37,Demo,,0,0,0,,Placed. The grid compiles to OpenQASM 2.0 as we edit.
+Dialogue: 0,0:00:32.37,0:00:38.44,Demo,,0,0,0,,Then a CX linking qubit zero to qubit one. Two gates: that is\Nthe whole circuit we wrote.
+Dialogue: 0,0:00:38.44,0:00:42.96,Demo,,0,0,0,,Two measurements, so we can see what the machine returns.
+Dialogue: 0,0:00:42.96,0:00:49.97,Demo,,0,0,0,,Run sends it through the whole pipeline: parse, layout, route,\Ntranslate, optimise, schedule, execute, measure.
+Dialogue: 0,0:00:49.97,0:01:00.80,Demo,,0,0,0,,The replay is now driving every surface. Watch the step tick\Noff as the run completes.
+Dialogue: 0,0:01:00.80,0:01:07.80,Demo,,0,0,0,,This is the same run, in the city. The geography IS the\Npipeline: each district is one compiler stage.
+Dialogue: 0,0:01:07.80,0:01:15.81,Demo,,0,0,0,,West to east along the boulevard: Program Port, IR Foundry,\NLayout Exchange, Routing Transit, Translation Refinery,\NOptimization Works, Scheduling Tower.
+Dialogue: 0,0:01:15.81,0:01:22.82,Demo,,0,0,0,,Then the QPU Grid where it executes, the Measurement Harbor\Nwhere shots land, and the Classical Control Center for\Nfeedback.
+Dialogue: 0,0:01:22.82,0:01:36.78,Demo,,0,0,0,,Everything derives from the trace and the current tick, so we\Ncan rewind and watch causality again.
+Dialogue: 0,0:01:36.78,0:01:43.32,Demo,,0,0,0,,The convoy carries the compiled job. It arrives at each\Ndistrict exactly when that stage emits its events.
+Dialogue: 0,0:01:43.32,0:01:53.68,Demo,,0,0,0,,Now the idea this visualisation exists for: the circuit you\Nwrite is not the circuit that runs.
+Dialogue: 0,0:01:53.68,0:02:02.21,Demo,,0,0,0,,This program needs qubits that sit far apart on the device.\NThe router must physically move them together.
+Dialogue: 0,0:02:02.21,0:02:15.75,Demo,,0,0,0,,Each SWAP the compiler inserts exchanges two logical-qubit\Nbanners between physical pylons, at the exact tick it happens.
+Dialogue: 0,0:02:15.75,0:02:25.29,Demo,,0,0,0,,Logical qubit q0 is a name tag. The pylon underneath it is the\Nphysical hardware. A SWAP changes which is which.
+Dialogue: 0,0:02:25.29,0:02:32.30,Demo,,0,0,0,,Compare Mode puts the circuit you wrote next to the circuit\Nthat actually ran, with the compiler metrics.
+Dialogue: 0,0:02:32.30,0:02:40.82,Demo,,0,0,0,,Gate count, two-qubit gates, SWAPs inserted, depth. This is\Nwhere the cost of connectivity becomes concrete.
+Dialogue: 0,0:02:40.82,0:02:53.89,Demo,,0,0,0,,Turn on the noise model and run again. Noise does not produce\Na wrong answer: it changes the distribution.
+Dialogue: 0,0:02:53.89,0:03:00.45,Demo,,0,0,0,,Accessible 2D Mode is the complete product with no WebGL at\Nall, for machines and users that need it.
+Dialogue: 0,0:03:00.45,0:03:07.95,Demo,,0,0,0,,Every number carries its provenance: measured counts are\NSAMPLED, compiler metrics are COMPUTED, probabilities are\NEXACT.
+Dialogue: 0,0:03:07.95,0:03:16.26,Demo,,0,0,0,,An Active Simplifications panel states what the model is NOT,\Nincluding that playback pacing is presentation time.
+Dialogue: 0,0:03:16.26,0:03:22.97,Demo,,0,0,0,,You are not limited to looking down at it. Press four, and you\Nare standing in the street.
+Dialogue: 0,0:03:22.97,0:03:30.77,Demo,,0,0,0,,Walking the Processing Boulevard: traffic, people, street\Nlamps, and the districts you just watched the job pass\Nthrough.
+Dialogue: 0,0:03:30.77,0:03:39.42,Demo,,0,0,0,,The city is deliberately ordinary. It is scaffolding for the\Npipeline, and the Legend says exactly which parts mean\Nanything.
+Dialogue: 0,0:03:39.42,0:04:20.28,Demo,,0,0,0,,Day, golden hour, and night are presentation settings only.\NThey never touch the science underneath.
+Dialogue: 0,0:04:20.28,0:04:28.56,Demo,,0,0,0,,The mission that carries the central idea: a program whose\Nqubits start far apart on the device.
+Dialogue: 0,0:04:28.56,0:04:44.42,Demo,,0,0,0,,A guided tour narrates the same pipeline hands-free, sixteen\Nchapters, each stating how certain its claims are.
+Dialogue: 0,0:04:44.42,0:04:51.42,Demo,,0,0,0,,The City Legend lists everything that moves, what it means,\Nwhat triggers it, and how certain it is.
+Dialogue: 0,0:04:51.42,0:04:58.95,Demo,,0,0,0,,The rule that makes this teach rather than mislead: vehicles\Ncarry jobs and measured bits. Never a quantum state.
+Dialogue: 0,0:04:58.95,0:05:05.45,Demo,,0,0,0,,No learning outcomes are claimed yet: the assessment\Ninstrument and study protocol are published, unrun.
+Dialogue: 0,0:05:05.45,0:05:10.45,Demo,,0,0,0,,QSimCity. Apache-2.0, original artwork, runs offline. Thank\Nyou for watching.

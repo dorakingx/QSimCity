@@ -41,7 +41,8 @@
     "python:verify": "tsx tools/python/run-python-verify.ts",
     "wiser:fps": "tsx tools/wiser/run-fps-benchmark.ts",
     "wiser:screens": "tsx tools/wiser/capture-screenshots.ts",
-    "wiser:reviews": "tsx tools/wiser/record-reviews.ts"
+    "wiser:reviews": "tsx tools/wiser/record-reviews.ts",
+    "demo:record": "tsx tools/demo/record-demo.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

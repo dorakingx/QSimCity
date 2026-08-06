@@ -1,26 +1,181 @@
 # QSimCity
 
-**An explorable 3D quantum city driven by real computation traces.**
+**See what actually happens to your quantum program between "I wrote a
+circuit" and "here are my results."**
 
-QSimCity turns the journey of a quantum program — parsing, layout, routing,
-SWAP insertion, basis translation, optimization, scheduling, execution, noise,
-measurement, and classical feedback — into a city you can fly over, walk
-through, and interrogate. Every light in the city is driven by a real
-computation trace, and every number on screen tells you how certain it is.
+QSimCity is a browser-based, client-side 3D visualisation of the quantum
+compilation and execution pipeline. You build a circuit; it is parsed, laid
+out, routed with real SWAP insertion, translated, optimised, scheduled,
+executed with optional noise, measured, and fed back — and every stage
+happens in a district of a city you can fly over and walk through. Every
+light is driven by a real computation trace, and every number on screen
+says how certain it is.
 
 > QSimCity is an **unofficial, independent, open-source educational and
-> research visualization project**, released under the Apache License 2.0. It
-> is not produced, endorsed, sponsored, or approved by Electronic Arts, Maxis,
-> IBM, or any quantum-hardware vendor. All artwork is original and generated
-> procedurally from source.
+> research visualization project**, released under the Apache License 2.0.
+> It is not produced, endorsed, sponsored, or approved by Electronic Arts,
+> Maxis, IBM, or any quantum-hardware vendor. All artwork is original and
+> generated procedurally from source.
 
-**Live: <https://qsimcity.vercel.app>**
+**Live: <https://qsimcity.vercel.app>** — verified reachable. It currently
+serves `main`; the branch under review is not deployed. See
+[Live URL and demo status](#live-url-and-demo-status).
+
+## The learning gap
+
+Newcomers meet quantum computing as circuit diagrams and state vectors, and
+leave with two wrong ideas.
+
+**"The circuit I write is the circuit that runs."** Introductions stop at
+the abstract circuit, so the compiler is invisible — the thing that decides
+where your logical qubits live, inserts SWAPs to drag distant qubits
+together, rewrites gates into the machine's basis, cancels what it can, and
+schedules the rest. Learners are then baffled that a two-gate circuit
+becomes fourteen operations on hardware.
+
+**"A quantum state is a thing that travels."** Popular animations show
+glowing orbs sliding along wires. That transport metaphor later blocks
+understanding of measurement, entanglement, and no-cloning.
+
+Circuit composers show the abstract circuit and hide the machine; hardware
+dashboards show calibration data and assume you know why it matters.
+QSimCity is built for the gap between them.
+
+## The solution
+
+The pipeline *is* the city. A convoy carries your compiled job down the
+boulevard, arriving at each district exactly when that stage's events fire.
+Logical-qubit banners ride physical pylons and trade places at the tick a
+SWAP is inserted. Measured bits leave the harbour as courier vans. Container
+stacks grow on the results dock as shots land. Scrub the timeline and every
+surface — 3D city, 2D mode, inspector, charts — moves together, because they
+all derive from the same `(trace, tick)`.
+
+Two rules make it teach rather than merely impress:
+
+1. **Everything that moves is classical.** Vehicles and people carry
+   instructions, jobs, and measured bits — never amplitudes or quantum
+   states. The City Legend says so for every animated class, and a test
+   enforces it. The transport misconception is designed out.
+2. **Every number carries its provenance** — `EXACT`, `COMPUTED`,
+   `SAMPLED`, `ESTIMATED`, `CALIBRATION`, `MEASURED`, or `ILLUSTRATIVE` —
+   and an "Active simplifications" panel states what the model is not.
+
+## Target audience
+
+Curious beginners from about age 12 up, including secondary students with no
+linear algebra; undergraduates meeting compilation for the first time; and
+educators or outreach staff who need a 45-minute activity with no
+installation. The child reading register and picture-led onboarding serve
+the youngest end.
+
+## Learning objectives
+
+After a 45-minute session a learner should be able to explain: that a
+compiler rewrites a circuit before it runs; what **layout** does; why
+**routing** inserts SWAPs and how that relates to connectivity; what **basis
+translation** is; one example of an **optimisation**; what **scheduling**
+decides; the difference between a **logical** and a **physical** qubit and
+how a SWAP changes the mapping; that **measurement** yields classical bits
+and repeated shots yield a distribution; how **noise** shifts that
+distribution rather than producing a "wrong answer"; and what **classical
+feedback** does with a measured bit.
+
+## Pedagogical sequence
+
+Picture onboarding with a reading-level choice → Mission 1 (Bell pair,
+one tap, watch the replay to the end) → Missions 2–7 (GHZ, a deliberately
+bad layout whose SWAP cost you then fix, translation, optimisation, noise,
+classical feedback) → Guided Tour → free exploration in the Quantum Lab →
+Compare Mode → a five-question picture assessment, growth-framed and never
+graded. Full detail in [docs/EDUCATOR_GUIDE.md](docs/EDUCATOR_GUIDE.md),
+including a zero-setup 45-minute lesson plan.
+
+## Technologies
+
+three.js (WebGL2) with merged per-material geometry and instanced agents;
+React and Zustand; Vite/Rolldown with a PWA service worker; own TypeScript
+packages for gates, topologies, seeded RNG, and an OpenQASM 2.0 parser; own
+reference compiler (normalise → layout → route → translate → optimise →
+schedule); own statevector simulator with noise channels in a Web Worker;
+the versioned QSimCity Trace format; an optional Python bridge to Qiskit and
+Qiskit Aer for cross-validation; Vitest and Playwright for testing.
+
+## Results and evidence
+
+Every claim is bound to an evidence envelope under `release-evidence/` that
+records the source tree it measured; `pnpm goal:check` recomputes the
+verdicts and refuses prose as evidence.
+
+| Claim | Evidence |
+| --- | --- |
+| Simulator agrees with Qiskit Aer | 71 pytest, within sampling tolerance |
+| Traces reproduce byte-identically | 12 independent processes agree |
+| Compiled circuits preserve measured distributions | `compiled-execution.test.ts` |
+| Frame time honestly characterised | p50/p95/p99, long and dropped frames, refresh-cap detection, plus a vsync-disabled ceiling run |
+| Repeated 3D/2D mounting is safe | 25 fixed cycles with heap, latency, and context limits set in advance |
+| Ten-minute production soak | zero uncaught errors, zero console errors |
+| Accessibility | Lighthouse 100 on four targets; axe WCAG 2.2 AA |
+| Bundle budget | 153 KiB gzip initial JS against 600 KiB |
+| Builds from a clean clone | 16 verified steps |
+| Tests | 919 unit, 82 end-to-end across four browser projects |
+
+**No learning outcomes are claimed** — see
+[docs/LEARNING_EVALUATION.md](docs/LEARNING_EVALUATION.md).
+
+## Limitations
+
+No human evaluation has been performed. The adversarial reviews in
+`docs/audits/` are **AI-assisted, not independent human validation**. Exact
+simulation is capped at 12 qubits. The compiler is a teaching reference, not
+Qiskit's transpiler. Noise is a simplified trajectory model and gate
+durations are estimates. Playback pacing is presentation time, not hardware
+timing. Mobile performance figures are Chromium emulation on a desktop GPU,
+not real-device measurements. Full list:
+[docs/limitations.md](docs/limitations.md).
+
+## Scalability
+
+A static bundle on a CDN with a service worker: no server, no database, no
+per-user cost, and it runs offline after first load — one deployment serves
+a classroom or a country. Missions, scenarios, and explanation registers are
+data rather than code. WebGL2 is used where available, with a complete
+Accessible 2D path that carries the entire workflow on machines without a
+GPU. The leveled-text system is the seam a translation would use; only
+English exists today. The known ceiling is statevector memory.
+
+## Team and contributions
+
+Solo project by the repository owner (**Doraking**,
+<https://github.com/dorakingx>): concept, architecture, implementation,
+scientific design, evaluation design, and documentation.
+
+## AI use disclosure
+
+Development was AI-assisted throughout (Claude): implementation, tests,
+documentation, and the adversarial reviews. What was AI-generated, what was
+human-directed, what is machine-verified, and what remains unverified are
+disclosed in [docs/AI_USAGE.md](docs/AI_USAGE.md). The adversarial reviews
+are **not** human expert review, independent external validation, or peer
+review.
+
+## Live URL and demo status
+
+- **Live application:** <https://qsimcity.vercel.app> — verified reachable
+  (HTTP 200), serving `main`. The branch under review is **not deployed**;
+  that is a deliberate human decision point.
+- **Demo video:** produced and committed in this repository. Path,
+  duration, resolution, checksum, and upload instructions are in
+  [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md). It has **not** been uploaded
+  and **no public video URL is claimed**.
+
+The full submission package is [docs/WISER_SUBMISSION.md](docs/WISER_SUBMISSION.md).
 
 ![The quantum city by day](tests/e2e/visual.spec.ts-snapshots/city-day-chromium-darwin.png)
 
-*A real coastal city whose geography is the pipeline: the twelve districts
-along the Processing Boulevard, west to east, from the Program Port docks to
-the Measurement Harbor cranes, with the Observatory on the southern hill.*
+*A coastal city whose geography is the pipeline: twelve districts along the
+Processing Boulevard, west to east, from the Program Port docks to the
+Measurement Harbor cranes.*
 
 ![The quantum city at night](tests/e2e/visual.spec.ts-snapshots/city-night-chromium-darwin.png)
 

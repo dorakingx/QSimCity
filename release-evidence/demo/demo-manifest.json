@@ -1,0 +1,16 @@
+{
+  "file": "release-evidence/demo/qsimcity-demo.mp4",
+  "captions": "release-evidence/demo/qsimcity-demo.srt",
+  "sha256": "e431ebf0d8eb1fbd6a749117c38914803e7046e4522241830ce6eb8393494466",
+  "bytes": 21705781,
+  "recordedDurationMs": 310457,
+  "captionCount": 35,
+  "probe": [
+    "width=1920",
+    "height=1080",
+    "duration=311.960000"
+  ],
+  "uploaded": false,
+  "publicUrl": null,
+  "note": "Recorded from the production build by pnpm demo:record. Not uploaded anywhere; no public URL exists."
+}
