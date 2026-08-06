@@ -1,0 +1,237 @@
+{
+  "commitSha": "8cdc7ad1cc7934f1a61343ecd4a08da84237225a",
+  "sourceTreeHash": "2d173639e305621b",
+  "worktreeDirty": true,
+  "generatedAt": "2026-08-06T07:14:58.721Z",
+  "tool": "remount-safety",
+  "toolVersion": "1.0.0",
+  "command": "pnpm remount:check",
+  "exitStatus": 0,
+  "inputHash": "3dd89f425e50ad81",
+  "thresholds": {
+    "cycles": 25,
+    "maxHeapGrowthRatio": 1.25,
+    "maxHeapGrowthBytes": 25165824,
+    "maxMountLatencyMs": 1500,
+    "maxLiveContexts": 4
+  },
+  "measurements": {
+    "cyclesCompleted": 25,
+    "settledBaselineHeapBytes": 11919651,
+    "trailingMeanHeapBytes": 14101353,
+    "heapGrowthRatio": 1.183,
+    "heapGrowthBytes": 2181702,
+    "worstMountLatencyMs": 315,
+    "worstDriverObservedCycleMs": 1270,
+    "leakedWebglContexts": 0,
+    "consoleErrors": 0,
+    "crashed": false
+  },
+  "passed": true,
+  "detail": {
+    "samples": [
+      {
+        "cycle": 1,
+        "heapBytes": 10709474,
+        "mountMs": 315,
+        "unmountMs": 11,
+        "driverMs": 1270,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 2,
+        "heapBytes": 11140059,
+        "mountMs": 187,
+        "unmountMs": 5,
+        "driverMs": 732,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 3,
+        "heapBytes": 11377147,
+        "mountMs": 185,
+        "unmountMs": 4,
+        "driverMs": 734,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 4,
+        "heapBytes": 11599699,
+        "mountMs": 185,
+        "unmountMs": 2,
+        "driverMs": 726,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 5,
+        "heapBytes": 11792815,
+        "mountMs": 195,
+        "unmountMs": 4,
+        "driverMs": 743,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 6,
+        "heapBytes": 11919651,
+        "mountMs": 193,
+        "unmountMs": 2,
+        "driverMs": 735,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 7,
+        "heapBytes": 12039475,
+        "mountMs": 190,
+        "unmountMs": 2,
+        "driverMs": 735,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 8,
+        "heapBytes": 12151699,
+        "mountMs": 189,
+        "unmountMs": 3,
+        "driverMs": 732,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 9,
+        "heapBytes": 12548143,
+        "mountMs": 186,
+        "unmountMs": 2,
+        "driverMs": 728,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 10,
+        "heapBytes": 12699015,
+        "mountMs": 182,
+        "unmountMs": 3,
+        "driverMs": 729,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 11,
+        "heapBytes": 12820587,
+        "mountMs": 184,
+        "unmountMs": 3,
+        "driverMs": 728,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 12,
+        "heapBytes": 12910443,
+        "mountMs": 183,
+        "unmountMs": 4,
+        "driverMs": 729,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 13,
+        "heapBytes": 13007363,
+        "mountMs": 184,
+        "unmountMs": 3,
+        "driverMs": 729,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 14,
+        "heapBytes": 13122847,
+        "mountMs": 186,
+        "unmountMs": 4,
+        "driverMs": 739,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 15,
+        "heapBytes": 13209071,
+        "mountMs": 185,
+        "unmountMs": 2,
+        "driverMs": 730,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 16,
+        "heapBytes": 13312015,
+        "mountMs": 188,
+        "unmountMs": 3,
+        "driverMs": 732,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 17,
+        "heapBytes": 13401591,
+        "mountMs": 187,
+        "unmountMs": 2,
+        "driverMs": 730,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 18,
+        "heapBytes": 13501807,
+        "mountMs": 191,
+        "unmountMs": 3,
+        "driverMs": 738,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 19,
+        "heapBytes": 13617723,
+        "mountMs": 181,
+        "unmountMs": 3,
+        "driverMs": 722,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 20,
+        "heapBytes": 13844243,
+        "mountMs": 181,
+        "unmountMs": 3,
+        "driverMs": 724,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 21,
+        "heapBytes": 13930215,
+        "mountMs": 184,
+        "unmountMs": 4,
+        "driverMs": 723,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 22,
+        "heapBytes": 14014699,
+        "mountMs": 184,
+        "unmountMs": 3,
+        "driverMs": 729,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 23,
+        "heapBytes": 14103971,
+        "mountMs": 181,
+        "unmountMs": 3,
+        "driverMs": 724,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 24,
+        "heapBytes": 14184783,
+        "mountMs": 183,
+        "unmountMs": 5,
+        "driverMs": 728,
+        "spareContexts": 32
+      },
+      {
+        "cycle": 25,
+        "heapBytes": 14273099,
+        "mountMs": 184,
+        "unmountMs": 3,
+        "driverMs": 727,
+        "spareContexts": 32
+      }
+    ],
+    "consoleErrors": [],
+    "latencyNote": "worstMountLatencyMs is measured in the page from a trusted click to the incoming view appearing — what a user waits for. worstDriverObservedCycleMs is the whole cycle as the Playwright driver observes it, including its actionability protocol, which is far more expensive than the application and is reported only for transparency."
+  }
+}

@@ -140,6 +140,7 @@ check('Required scripts declared', () => {
     'coverage:check',
     'lighthouse',
     'soak',
+    'remount:check',
     'python:verify',
     'lint',
     'typecheck',
@@ -446,6 +447,30 @@ check('Ten-minute soak evidence', () => {
   return (
     `${duration}s, ${m['cycles']} cycles, heap growth ratio ${m['trailingMinGrowthRatio']}, ` +
     `${m['uncaughtErrors']} uncaught, final interaction ${m['finalInteractionMs']}ms`
+  );
+});
+
+check('Remount safety evidence (fixed-count 3D/2D cycles)', () => {
+  const evidence = readEvidence('release-evidence/remount/remount-report.json', {
+    requiredMeasurements: [
+      'cyclesCompleted',
+      'heapGrowthRatio',
+      'heapGrowthBytes',
+      'worstMountLatencyMs',
+      'leakedWebglContexts',
+      'consoleErrors',
+    ],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  const cycles = Number(m['cyclesCompleted']);
+  if (cycles < 25) throw new Error(`only ${cycles} remount cycles; 25 are required`);
+  if (Number(m['leakedWebglContexts']) > 0) throw new Error('WebGL contexts accumulated');
+  if (Number(m['consoleErrors']) > 0) throw new Error(`${m['consoleErrors']} console errors`);
+  return (
+    `${cycles} cycles, heap growth ratio ${m['heapGrowthRatio']} ` +
+    `(${(Number(m['heapGrowthBytes']) / 1048576).toFixed(1)} MiB), ` +
+    `worst in-page mount ${m['worstMountLatencyMs']}ms, no context leak`
   );
 });
 
