@@ -1,8 +1,8 @@
 {
-  "commitSha": "aabc6401bf09c03a426966d60219a197305eff7e",
-  "sourceTreeHash": "1e7a4812837a5ae7",
+  "commitSha": "5b2f0fe344e4119e89b82bb9a6185abccf326ac2",
+  "sourceTreeHash": "cef36fe92447040b",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-05T21:54:40.471Z",
+  "generatedAt": "2026-08-06T05:18:47.804Z",
   "tool": "wiser-fps-benchmark",
   "toolVersion": "2.0.0",
   "command": "pnpm wiser:fps",
@@ -13,9 +13,9 @@
     "minMobileMedianFps": 30
   },
   "measurements": {
-    "desktopMedianFps": 122,
+    "desktopMedianFps": 120.5,
     "mobileMedianFps": 120.5,
-    "desktopDrawCalls": 183,
+    "desktopDrawCalls": 178,
     "mobileCpuThrottle": 4,
     "segments": 5
   },
@@ -24,18 +24,18 @@
     "desktopSegments": [
       {
         "name": "overview-replay",
-        "fps": 121.95122234882314,
+        "fps": 120.48192494215621,
         "frames": 601
       },
       {
         "name": "orbit-drag-replay",
         "fps": 120.48192494215621,
-        "frames": 1250
+        "frames": 1200
       },
       {
         "name": "street-walk-replay",
-        "fps": 121.95122234882314,
-        "frames": 1803
+        "fps": 120.48192494215621,
+        "frames": 1806
       }
     ],
     "mobileSegments": [
@@ -53,7 +53,7 @@
     "methodology": {
       "workload": "Bell sample executed and replay restarted before every segment; convoy, couriers, pedestrians, banners, and count stacks live during sampling",
       "medians": "median over every retained frame of the pass, not the max of segment medians",
-      "maxObservedSegmentMedianFps": 122,
+      "maxObservedSegmentMedianFps": 120,
       "caveats": [
         "rAF sampling is capped by the host display scheduler; a median at the cap means \"at least cap fps\"",
         "both passes render on the host GPU; the mobile pass emulates CPU slowness (4x) but not mobile GPU fill-rate"

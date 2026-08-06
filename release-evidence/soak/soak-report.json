@@ -1,8 +1,8 @@
 {
-  "commitSha": "7b56020c7ad681cfc7b75042c544665340a30849",
-  "sourceTreeHash": "eda424bc9134b1a4",
-  "worktreeDirty": true,
-  "generatedAt": "2026-08-06T03:24:59.380Z",
+  "commitSha": "5b2f0fe344e4119e89b82bb9a6185abccf326ac2",
+  "sourceTreeHash": "cef36fe92447040b",
+  "worktreeDirty": false,
+  "generatedAt": "2026-08-06T05:36:35.823Z",
   "tool": "qsimcity-soak",
   "toolVersion": "1.0.0",
   "command": "pnpm soak",
@@ -17,20 +17,20 @@
     "maxFinalInteractionMs": 3000
   },
   "measurements": {
-    "durationSeconds": 659.4,
+    "durationSeconds": 657.8,
     "cycles": 9,
     "heapSampleCount": 9,
-    "baselineMinHeapBytes": 36916042,
-    "trailingMinHeapBytes": 30213203,
-    "trailingMinGrowthRatio": 0.8184,
+    "baselineMinHeapBytes": 39799526,
+    "trailingMinHeapBytes": 46812365,
+    "trailingMinGrowthRatio": 1.1762,
     "uncaughtErrors": 0,
     "consoleErrors": 0,
     "failedRequests": 0,
     "contextLossEvents": 0,
     "contextRestoreEvents": 0,
     "unrecoveredContextLoss": 0,
-    "finalInteractionMs": 341,
-    "finalInteractionDriverMs": 2704,
+    "finalInteractionMs": 339,
+    "finalInteractionDriverMs": 2693,
     "crashed": false
   },
   "passed": true,
@@ -38,57 +38,57 @@
     "workloadError": null,
     "heapSamples": [
       {
-        "elapsedSeconds": 73.1,
-        "usedJsHeapBytes": 39122101,
-        "totalJsHeapBytes": 64215417,
+        "elapsedSeconds": 74.2,
+        "usedJsHeapBytes": 39858332,
+        "totalJsHeapBytes": 63169492,
         "cycle": 1
       },
       {
-        "elapsedSeconds": 138.4,
-        "usedJsHeapBytes": 36916042,
-        "totalJsHeapBytes": 63993934,
+        "elapsedSeconds": 140.7,
+        "usedJsHeapBytes": 39799526,
+        "totalJsHeapBytes": 65572330,
         "cycle": 2
       },
       {
-        "elapsedSeconds": 214.7,
-        "usedJsHeapBytes": 29406656,
-        "totalJsHeapBytes": 38050184,
+        "elapsedSeconds": 216.8,
+        "usedJsHeapBytes": 31390120,
+        "totalJsHeapBytes": 69805936,
         "cycle": 3
       },
       {
-        "elapsedSeconds": 287.8,
-        "usedJsHeapBytes": 42249073,
-        "totalJsHeapBytes": 49092089,
+        "elapsedSeconds": 290.5,
+        "usedJsHeapBytes": 42454208,
+        "totalJsHeapBytes": 49878500,
         "cycle": 4
       },
       {
-        "elapsedSeconds": 355.3,
-        "usedJsHeapBytes": 41683799,
-        "totalJsHeapBytes": 70911643,
+        "elapsedSeconds": 357.7,
+        "usedJsHeapBytes": 41887221,
+        "totalJsHeapBytes": 65668749,
         "cycle": 5
       },
       {
-        "elapsedSeconds": 432.9,
-        "usedJsHeapBytes": 46760236,
-        "totalJsHeapBytes": 66104840,
+        "elapsedSeconds": 435.3,
+        "usedJsHeapBytes": 29010026,
+        "totalJsHeapBytes": 33595646,
         "cycle": 6
       },
       {
-        "elapsedSeconds": 511.6,
-        "usedJsHeapBytes": 44740390,
-        "totalJsHeapBytes": 67668522,
+        "elapsedSeconds": 510.6,
+        "usedJsHeapBytes": 29958969,
+        "totalJsHeapBytes": 37262121,
         "cycle": 7
       },
       {
-        "elapsedSeconds": 587.5,
-        "usedJsHeapBytes": 42216976,
-        "totalJsHeapBytes": 76849544,
+        "elapsedSeconds": 586.1,
+        "usedJsHeapBytes": 54609278,
+        "totalJsHeapBytes": 80683138,
         "cycle": 8
       },
       {
-        "elapsedSeconds": 659.1,
-        "usedJsHeapBytes": 30213203,
-        "totalJsHeapBytes": 40270787,
+        "elapsedSeconds": 657.5,
+        "usedJsHeapBytes": 46812365,
+        "totalJsHeapBytes": 66257189,
         "cycle": 9
       }
     ]
