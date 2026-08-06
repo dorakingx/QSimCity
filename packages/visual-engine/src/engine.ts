@@ -13,6 +13,7 @@ import {
   INTERACTIVES,
   LANDMARK_SITES,
   pedestriansAt,
+  strollersAt,
   physicalToLogicalAt,
   qpuPylonPositions,
   terrainHeight,
@@ -411,10 +412,16 @@ export class CityEngine {
     // Vehicles: ambient traffic and pedestrians animate per frame; the
     // convoy chases its semantic target smoothly.
     this.animTime += dt;
+    // District workers (density follows activity) and arterial sidewalk
+    // strollers (pure ambience) share one instanced walker fleet: same
+    // geometry, one draw call, both listed separately in the City Legend.
     this.vehicles.update(
       dt,
       ambientVehiclesAt(this.animTime, this.reducedMotion),
-      pedestriansAt(this.trace, this.playbackTick, this.animTime, this.reducedMotion),
+      [
+        ...pedestriansAt(this.trace, this.playbackTick, this.animTime, this.reducedMotion),
+        ...strollersAt(this.animTime, this.reducedMotion),
+      ],
       this.reducedMotion,
     );
 

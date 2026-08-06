@@ -23,6 +23,7 @@ describe('city legend content', () => {
       'noise-weather',
       'noise-rain',
       'ambient-car',
+      'sidewalk-stroller',
       'pedestrian',
       'district-pulse',
       'city-ambience',
@@ -82,7 +83,13 @@ describe('city legend content', () => {
   });
 
   it('classifies purely decorative motion as ILLUSTRATIVE', () => {
-    for (const id of ['ambient-car', 'pedestrian', 'district-pulse', 'city-ambience']) {
+    for (const id of [
+      'ambient-car',
+      'sidewalk-stroller',
+      'pedestrian',
+      'district-pulse',
+      'city-ambience',
+    ]) {
       const entry = LEGEND_ENTRIES.find((e) => e.id === id)!;
       expect(entry.certainty, id).toBe('ILLUSTRATIVE');
     }

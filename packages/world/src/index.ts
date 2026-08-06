@@ -36,6 +36,7 @@ export {
   couriersAt,
   districtActivityAt,
   pedestriansAt,
+  strollersAt,
   COURIER_JOURNEY_TICKS,
   type PedestrianState,
   type VehicleState,

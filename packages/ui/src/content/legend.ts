@@ -156,6 +156,18 @@ export const LEGEND_ENTRIES: readonly LegendEntry[] = [
     certainty: 'ILLUSTRATIVE',
   },
   {
+    id: 'sidewalk-stroller',
+    name: 'Sidewalk strollers',
+    represents:
+      'People walking the pavements of the main roads so the streets you can walk down read as inhabited. Their number carries no signal whatsoever.',
+    childRepresents: 'People out walking. They are just going about their day.',
+    trigger:
+      'Fixed walkers pacing each arterial pavement on deterministic paths; frozen entirely when reduced motion is on.',
+    childTrigger: 'They walk up and down the street all day.',
+    source: 'illustrative',
+    certainty: 'ILLUSTRATIVE',
+  },
+  {
     id: 'district-pulse',
     name: 'District pulse rings',
     represents: 'A momentary highlight helping the eye find the district that just became active.',

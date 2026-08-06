@@ -6,6 +6,7 @@ import {
   couriersAt,
   districtActivityAt,
   pedestriansAt,
+  strollersAt,
   COURIER_JOURNEY_TICKS,
 } from '../src/agents.js';
 import { LANDMARK_SITES } from '../src/landmarks.js';
@@ -222,10 +223,11 @@ describe('ambient traffic (W3.3)', () => {
     expect(ambientVehiclesAt(12, true)).toEqual([]);
   });
 
-  it('keeps about 20 cars inside arterial road corridors at all times', () => {
+  it('keeps every ambient car inside arterial road corridors at all times', () => {
     for (const time of [0, 3.7, 42, 999.5]) {
       const cars = ambientVehiclesAt(time, false);
-      expect(cars).toHaveLength(20);
+      // Five loops: three interior rings plus both boulevard directions.
+      expect(cars).toHaveLength(48);
       for (const car of cars) {
         expect(car.kind).toBe('ambient-car');
         expect(withinSomeCorridor(car.position), `car ${car.id} at t=${time}`).toBe(true);
@@ -308,5 +310,44 @@ describe('pedestrians and district activity (W3.3)', () => {
     expect(pedestriansAt(trace, 1, 2.5, false)).toEqual(pedestriansAt(trace, 1, 2.5, false));
     expect(pedestriansAt(trace, 1, 2.5, true)).toEqual([]);
     expect(pedestriansAt(null, 1, 2.5, false)).toEqual([]);
+  });
+});
+
+describe('sidewalk strollers (W3.3)', () => {
+  it('populates every arterial pavement deterministically and pauses under reduced motion', () => {
+    const a = strollersAt(4.25, false);
+    const b = strollersAt(4.25, false);
+    expect(a.length).toBeGreaterThan(40);
+    expect(a).toEqual(b);
+    expect(strollersAt(4.25, true)).toEqual([]);
+  });
+
+  it('walks the boulevard pavements, clear of the carriageway', () => {
+    const blvd = ARTERIAL_SEGMENTS.find((s) => s.id === 'blvd')!;
+    const onBoulevard = strollersAt(6, false).filter((s) => s.id.startsWith('stroll:blvd:'));
+    expect(onBoulevard.length).toBeGreaterThanOrEqual(10);
+    for (const walker of onBoulevard) {
+      const offset = Math.abs(walker.position.z - blvd.a.z);
+      // Outside the carriageway, but still on the street, not in a block.
+      expect(offset, walker.id).toBeGreaterThan(blvd.width / 2);
+      expect(offset, walker.id).toBeLessThan(blvd.width / 2 + 6);
+      expect(walker.position.x).toBeGreaterThanOrEqual(Math.min(blvd.a.x, blvd.b.x));
+      expect(walker.position.x).toBeLessThanOrEqual(Math.max(blvd.a.x, blvd.b.x));
+    }
+  });
+
+  it('keeps walkers moving and turns them at the ends instead of teleporting', () => {
+    const t0 = strollersAt(0, false);
+    const t1 = strollersAt(1.5, false);
+    const byId = new Map(t1.map((s) => [s.id, s]));
+    for (const before of t0) {
+      const after = byId.get(before.id)!;
+      const step = Math.hypot(
+        after.position.x - before.position.x,
+        after.position.z - before.position.z,
+      );
+      // A 1.5 s step at walking pace: never a jump across the segment.
+      expect(step, before.id).toBeLessThan(6);
+    }
   });
 });

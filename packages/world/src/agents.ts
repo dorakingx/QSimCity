@@ -209,6 +209,29 @@ const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLe
       { segmentId: 'ave-tower', from: [150, 95], to: [150, -26] },
     ],
   },
+  // Processing Boulevard is the axis the pipeline story runs along and the
+  // street walk mode spawns on, so it carries traffic in both directions:
+  // two loops whose boulevard legs overlap across the city centre.
+  {
+    id: 'blvd-west',
+    carCount: 14,
+    legs: [
+      { segmentId: 'blvd', from: [-132, 20], to: [44, 20] },
+      { segmentId: 'ave-transit', from: [44, 20], to: [44, -26] },
+      { segmentId: 'col-north', from: [44, -26], to: [-132, -26] },
+      { segmentId: 'ave-port', from: [-132, -26], to: [-132, 20] },
+    ],
+  },
+  {
+    id: 'blvd-east',
+    carCount: 14,
+    legs: [
+      { segmentId: 'blvd', from: [150, 20], to: [-14, 20] },
+      { segmentId: 'ave-exchange', from: [-14, 20], to: [-14, 95] },
+      { segmentId: 'col-south', from: [-14, 95], to: [150, 95] },
+      { segmentId: 'ave-tower', from: [150, 95], to: [150, 20] },
+    ],
+  },
 ];
 
 function buildLoop(spec: (typeof LOOP_SPECS)[number]): AmbientLoop {
@@ -403,6 +426,76 @@ export function pedestriansAt(
   }
   return pedestrians;
 }
+
+/**
+ * Sidewalk strollers: walkers that pace the arterial sidewalks so the
+ * streets a visitor actually walks down read as inhabited. Purely
+ * ILLUSTRATIVE — unlike district workers their number carries no signal at
+ * all, and like every ambient class they vanish under reduced motion.
+ *
+ * Deterministic in animTimeSeconds: each stroller owns a hashed phase and
+ * speed and shuttles along one side of one arterial, turning at the ends.
+ */
+export function strollersAt(animTimeSeconds: number, reducedMotion: boolean): PedestrianState[] {
+  if (reducedMotion) return [];
+  const strollers: PedestrianState[] = [];
+  for (const segment of ARTERIAL_SEGMENTS) {
+    const params = STROLLER_PARAMS[segment.id];
+    if (!params) continue;
+    const dx = segment.b.x - segment.a.x;
+    const dz = segment.b.z - segment.a.z;
+    const length = Math.hypot(dx, dz);
+    if (length < 1) continue;
+    const ux = dx / length;
+    const uz = dz / length;
+    // Walk the pavement just outside the carriageway, both sides.
+    const offset = segment.width / 2 + 2.2;
+    for (const walker of params) {
+      const side = walker.side;
+      const span = length - 12;
+      if (span <= 0) continue;
+      // Shuttle: a triangle wave along the segment, so walkers turn round
+      // at the ends instead of teleporting back to the start.
+      const cycle = 2 * span;
+      const travelled = (walker.phase * cycle + walker.speed * animTimeSeconds) % cycle;
+      const along = travelled <= span ? travelled : cycle - travelled;
+      const forward = travelled <= span ? 1 : -1;
+      const x = segment.a.x + ux * (6 + along) - uz * offset * side;
+      const z = segment.a.z + uz * (6 + along) + ux * offset * side;
+      strollers.push({
+        id: walker.id,
+        position: { x, z },
+        heading: Math.atan2(ux * forward, uz * forward),
+      });
+    }
+  }
+  return strollers;
+}
+
+/** Per-stroller constants, hashed once at module load (never per frame). */
+const STROLLER_PARAMS: Record<
+  string,
+  readonly { id: string; speed: number; phase: number; side: 1 | -1 }[]
+> = Object.fromEntries(
+  ARTERIAL_SEGMENTS.map((segment) => {
+    // The boulevard is the axis visitors walk, so it gets the most life;
+    // other arterials get a token few. Counts are fixed, never random.
+    const perSide = segment.id === 'blvd' ? 20 : segment.id.startsWith('col-') ? 6 : 3;
+    const walkers: { id: string; speed: number; phase: number; side: 1 | -1 }[] = [];
+    for (const side of [1, -1] as const) {
+      for (let i = 0; i < perSide; i++) {
+        const seed = `stroll:${segment.id}:${side}:${i}`;
+        walkers.push({
+          id: seed,
+          speed: 1.0 + 0.6 * hash01(`${seed}:speed`),
+          phase: hash01(`${seed}:phase`),
+          side,
+        });
+      }
+    }
+    return [segment.id, walkers];
+  }),
+);
 
 // Per-walker constants, hashed once instead of on every animation frame.
 const pedestrianParamCache = new Map<string, { id: string; speed: number; phase: number }>();

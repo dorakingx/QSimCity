@@ -9,9 +9,12 @@ import type { TimeOfDay } from './sky.js';
  * @qsimcity/world — this module only draws states, it never invents them.
  */
 
-const AMBIENT_CAPACITY = 24;
+// Five ambient loops (36 cars) plus headroom; instanced, so the cost is
+// per-instance transform work, not extra draw calls.
+const AMBIENT_CAPACITY = 56;
 const COURIER_CAPACITY = 16;
-const PEDESTRIAN_CAPACITY = 96;
+// District workers (activity-driven) plus arterial sidewalk strollers.
+const PEDESTRIAN_CAPACITY = 224;
 
 // Kept well above mid-grey with low metalness: a moving car photographed in
 // building shade must still read as a car, not an untextured black box
