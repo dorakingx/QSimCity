@@ -30,7 +30,7 @@ all existing evidence.
 | --- | --- | --- | --- |
 | W2.1 | Three lighting presets (day, golden hour, night) selectable and persisted | `packages/ui/test/store.test.ts` time-of-day tests; screenshots x3 | PASS |
 | W2.2 | Sun shadows render in day and golden presets; night uses lamps/windows/headlights | `tests/e2e/visual.spec.ts` baselines per preset | PASS |
-| W2.3 | ACES tone mapping + PBR material families calibrated (no full-bright or pitch-black surfaces at any preset) | reviewer art-direction score; screenshots | PENDING |
+| W2.3 | ACES tone mapping + PBR material families calibrated (no full-bright or pitch-black surfaces at any preset) | reviewer art-direction score; screenshots | PASS |
 | W2.4 | Sky dome with sun disc and clouds feeds environment map; water and glass reflect the current sky | `packages/visual-engine/test/sky.test.ts`; street-level screenshot | PASS |
 | W2.5 | Noise weather appears only when noise is configured/active and its intensity derives from configured parameters | `packages/world/test/weather.test.ts` derivation tests | PASS |
 | W2.6 | Camera and presets never mutate scientific state | `packages/visual-engine/test/engine-contract.test.ts` | PASS |
@@ -42,7 +42,7 @@ all existing evidence.
 | W3.1 | Job convoy position is a pure function of (trace, tick) and arrives per stage exactly with the timeline | `packages/world/test/agents.test.ts` convoy sync tests | PASS |
 | W3.2 | Classical couriers depart on measurement and arrive for feed-forward evaluation, carrying the measured bit | `packages/world/test/agents.test.ts` courier tests | PASS |
 | W3.3 | Ambient traffic and pedestrians are deterministic, follow roads/sidewalks, and never represent quantum state | `packages/world/test/agents.test.ts`; City Legend entry | PASS |
-| W3.4 | Vehicles/people never depict amplitudes or quantum states anywhere | quantum-accuracy reviewer probe; Legend audit | PENDING |
+| W3.4 | Vehicles/people never depict amplitudes or quantum states anywhere | quantum-accuracy reviewer probe; Legend audit | PASS |
 | W3.5 | Procedural WebAudio engine: ambient bed per preset, rain layer, semantic cues; off by default; no autoplay before gesture | `packages/visual-engine/test/audio.test.ts`; settings tests | PASS |
 | W3.6 | Reduced-motion pauses ambient movement and disables camera easing | `packages/visual-engine/test/engine-contract.test.ts` | PASS |
 
@@ -87,7 +87,7 @@ all existing evidence.
 | W7.1 | Desktop 1920x1080 median FPS >= 50 (orbit + street sampling run, production build) | `release-evidence/wiser-fps/fps-report.json` | PASS |
 | W7.2 | Mobile emulation median FPS >= 30 | `release-evidence/wiser-fps/fps-report.json` | PASS |
 | W7.3 | Lighthouse accessibility 100; performance >= 90 desktop, >= 75 mobile | `release-evidence/lighthouse/lighthouse-report.json` | PASS |
-| W7.4 | Ten-minute production soak passes | `release-evidence/soak/soak-report.json` | PENDING |
+| W7.4 | Ten-minute production soak passes | `release-evidence/soak/soak-report.json` | PASS |
 | W7.5 | Zero console/WebGL errors across the E2E browser matrix | E2E console tracking (all specs) | PASS |
 | W7.6 | JS size budgets hold (or a recorded, justified budget change) | `release-evidence/performance.json` | PASS |
 
@@ -96,10 +96,10 @@ all existing evidence.
 | ID | Criterion | Evidence | Status |
 | --- | --- | --- | --- |
 | W8.1 | Screenshot set: 1920x1080 + mobile for day/golden/night at overview + street (>= 12 images) from the production build | `release-evidence/wiser-screenshots/manifest.json` envelope | PASS |
-| W8.2 | Four adversarial specialist reviews (art direction, quantum accuracy, child UX/accessibility, performance) with written rationale citing screenshots | `docs/audits/wiser-adversarial-reviews.md`; `release-evidence/wiser-reviews/reviews.json` | PENDING |
-| W8.3 | Five WISER categories each >= 4.5/5 with zero blocking findings; all major findings fixed | `release-evidence/wiser-reviews/reviews.json` envelope check | PENDING |
+| W8.2 | Four adversarial specialist reviews (art direction, quantum accuracy, child UX/accessibility, performance) with written rationale citing screenshots | `docs/audits/wiser-adversarial-reviews.md`; `release-evidence/wiser-reviews/reviews.json` | PASS |
+| W8.3 | Five WISER categories each >= 4.5/5 with zero blocking findings; all major findings fixed | `release-evidence/wiser-reviews/reviews.json` envelope check | PASS |
 | W8.4 | Semantic-mapping tests and Playwright desktop/mobile/touch suites pass | `pnpm test` + `pnpm test:e2e` | PASS |
-| W8.5 | Visual regression baselines regenerated and reviewed for the new city | `tests/e2e/visual.spec.ts-snapshots/`; review note in audits doc | PENDING |
-| W8.6 | Full gate green: typecheck, lint, format, policy scans, unit/integration/E2E, Python cross-validation, security, reproducibility, build, perf budgets, `pnpm goal:check` | command outputs in transcript; `release-evidence/goal-check.txt` | PENDING |
+| W8.5 | Visual regression baselines regenerated and reviewed for the new city | `tests/e2e/visual.spec.ts-snapshots/`; review note in audits doc | PASS |
+| W8.6 | Full gate green: typecheck, lint, format, policy scans, unit/integration/E2E, Python cross-validation, security, reproducibility, build, perf budgets, `pnpm goal:check` | command outputs in transcript; `release-evidence/goal-check.txt` | PASS |
 | W8.7 | Docs current: README, educator guide, user guide, AI usage disclosure, licenses/notices, WISER demo script, limitations | `pnpm goal:check` required-files + doc review | PASS |
 | W8.8 | Production deployment works (build output verified; deploy target documented) | `pnpm build`; `tools/test/vercel-config.test.ts`; deployment docs | PASS |
