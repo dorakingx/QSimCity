@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { currentCommit, sourceTreeHash } from '../evidence.js';
 import { createProductionServer } from '../serve-production.js';
 
 /**
@@ -616,6 +617,14 @@ async function main(): Promise<void> {
       {
         file: 'release-evidence/demo/qsimcity-demo.mp4',
         captions: 'release-evidence/demo/qsimcity-demo.srt',
+        // The tree this recording actually shows. Every other measurement
+        // in release-evidence/ carries one and is rejected when it no
+        // longer matches; the demo did not, and a change to the
+        // golden-hour palette left a video depicting a product that no
+        // longer looked like that, with nothing able to notice. A
+        // recording is evidence too, and it goes stale the same way.
+        sourceTreeHash: sourceTreeHash(),
+        commitSha: currentCommit(),
         sha256,
         bytes: bytes.length,
         recordedDurationMs: durationMs,

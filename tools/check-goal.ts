@@ -321,6 +321,63 @@ check('Python bridge verification evidence', () => {
   );
 });
 
+check('Demo recording matches the tree it depicts', () => {
+  // The demo was the one piece of release evidence with no tree binding,
+  // and it went stale exactly the way the bindings exist to prevent: a
+  // change to the golden-hour palette left a recording showing a product
+  // that no longer looked like that, while the submission described it as
+  // a recording of the build. A video is evidence, and it expires.
+  //
+  // Deliberately not routed through readEvidence: the manifest is written
+  // by the recorder rather than the evidence helper and has its own shape.
+  const manifestPath = join(ROOT, 'release-evidence', 'demo', 'demo-manifest.json');
+  if (!existsSync(manifestPath)) throw new Error('no demo manifest; run pnpm demo:record');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+    sourceTreeHash?: string;
+    sha256?: string;
+    captionCount?: number;
+    recordedDurationMs?: number;
+    uploaded?: boolean;
+    publicUrl?: string | null;
+  };
+  if (!manifest.sourceTreeHash) {
+    throw new Error('demo manifest records no source tree; re-record with pnpm demo:record');
+  }
+  const tree = sourceTreeHash();
+  if (manifest.sourceTreeHash !== tree) {
+    throw new Error(
+      `demo recorded against source tree ${manifest.sourceTreeHash} but the tree is ${tree}; ` +
+        're-record with pnpm demo:record',
+    );
+  }
+  // The checksum in the docs must be the checksum of the file on disk.
+  const mp4 = join(ROOT, 'release-evidence', 'demo', 'qsimcity-demo.mp4');
+  if (!existsSync(mp4)) throw new Error('demo manifest exists but the video does not');
+  const actual = createHash('sha256').update(readFileSync(mp4)).digest('hex');
+  if (actual !== manifest.sha256) {
+    throw new Error(`demo video sha256 ${actual} does not match the manifest`);
+  }
+  // The published checksum lives in the sidecar, not in prose. A document
+  // that inlines it cannot be corrected without changing the source tree,
+  // which would invalidate the very recording it describes — the checksum
+  // and the tree binding would deadlock each other. The sidecar sits under
+  // release-evidence/, outside the hashed tree, so it can carry the value.
+  const sidecar = readFileSync(
+    join(ROOT, 'release-evidence', 'demo', 'qsimcity-demo.sha256'),
+    'utf8',
+  );
+  if (!sidecar.includes(actual)) {
+    throw new Error('the demo checksum sidecar does not match the video on disk');
+  }
+  // No public URL may be claimed while the video has not been uploaded.
+  if (manifest.uploaded !== false || manifest.publicUrl !== null) {
+    throw new Error('demo manifest claims an upload that this process did not perform');
+  }
+  const seconds = Math.round((manifest.recordedDurationMs ?? 0) / 1000);
+  if (seconds < 300) throw new Error(`demo is ${seconds}s; the submission requires at least 5 min`);
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s, ${manifest.captionCount} captions, tree ${tree}, not uploaded`;
+});
+
 check('Meaningful test count (>= 300)', () => {
   const count = countTests();
   if (count < 300) throw new Error(`only ${count} tests found`);
