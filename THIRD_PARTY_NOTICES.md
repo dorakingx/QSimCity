@@ -54,6 +54,27 @@ titles, IBM, or any other third party are used anywhere in this project.
 | happy-dom | 20.11.1 | MIT | DOM environment for component tests |
 | tsx | 4.23.1 | MIT | TypeScript execution for tooling scripts |
 | @types/node, @types/react, @types/react-dom, @types/three | pinned | MIT | Type definitions |
+| @eslint/js | 10.0.1 | MIT | ESLint's own recommended rule sets |
+| lighthouse | 13.4.1 | Apache-2.0 | Accessibility and performance auditing |
+| chrome-launcher | 1.2.1 | Apache-2.0 | Launching Chrome for Lighthouse runs |
+| tslib | 2.8.1 | 0BSD | TypeScript helper runtime |
+
+### Transitive licences worth naming
+
+Two build-time transitive packages are not MIT or Apache-2.0 and are named
+here so no reader has to discover them:
+
+| Package | Licence | Reached through |
+| --- | --- | --- |
+| lightningcss (and its platform binaries) | MPL-2.0 | Vite's CSS pipeline |
+| axe-core | MPL-2.0 | @axe-core/playwright |
+| hypothesis | MPL-2.0 | the optional Python test suite |
+
+MPL-2.0 is file-level copyleft: it obliges anyone who *modifies those
+files* to publish the modifications. This project modifies none of them
+and ships none of them in the browser bundle — lightningcss and axe-core
+run only at build and test time — so the obligation is not triggered by
+distributing QSimCity. No package in the tree carries GPL, LGPL, or AGPL.
 
 ### Dependency overrides
 

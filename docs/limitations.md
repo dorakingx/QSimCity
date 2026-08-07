@@ -52,3 +52,25 @@ limitation touches a number on screen, the certainty label says so.
   reader.
 - **Localization**: English only in v1; the architecture leaves room for
   i18n but no translation exists yet.
+
+## Evaluation and review
+
+These three belong in any honest reading of this project and were once
+stated only in `README.md` and `docs/WISER_SUBMISSION.md`, while both of
+those documents pointed here for the full list.
+
+- **No human evaluation has been performed.** No learning outcome is
+  claimed anywhere. An assessment instrument and a study protocol exist and
+  are unrun; see [`LEARNING_EVALUATION.md`](LEARNING_EVALUATION.md).
+- **The adversarial reviews are AI-assisted.** The reviews in
+  `docs/audits/` were performed by language-model agents. They are not
+  human expert review, not independent external validation, and not peer
+  review. See [`AI_USAGE.md`](AI_USAGE.md).
+- **Mobile performance figures are Chromium device emulation** with CPU
+  throttling, running on a desktop GPU. No measurement has been taken on a
+  real phone or tablet, and the emulated numbers must never be quoted as
+  real-device performance.
+- **Repeated 3D/2D switching retains about 90 KiB per switch.** GPU
+  resources are released and the figure is bounded and gated, but it is
+  not zero; heap snapshots trace the residual to JavaScript bookkeeping
+  inside three.js. See `release-evidence/remount/`.

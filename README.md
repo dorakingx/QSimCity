@@ -8,8 +8,9 @@ compilation and execution pipeline. You build a circuit; it is parsed, laid
 out, routed with real SWAP insertion, translated, optimised, scheduled,
 executed with optional noise, measured, and fed back — and every stage
 happens in a district of a city you can fly over and walk through. Every
-light is driven by a real computation trace, and every number on screen
-says how certain it is.
+light that *means* something is driven by a real computation trace — the
+City Legend says which ones those are and which are scenery — and every
+number on screen says how certain it is.
 
 > QSimCity is an **unofficial, independent, open-source educational and
 > research visualization project**, released under the Apache License 2.0.
@@ -30,8 +31,8 @@ leave with two wrong ideas.
 the abstract circuit, so the compiler is invisible — the thing that decides
 where your logical qubits live, inserts SWAPs to drag distant qubits
 together, rewrites gates into the machine's basis, cancels what it can, and
-schedules the rest. Learners are then baffled that a two-gate circuit
-becomes fourteen operations on hardware.
+schedules the rest. Learners are then baffled that a circuit they wrote in
+two gates arrives at the machine as a longer, differently shaped one.
 
 **"A quantum state is a thing that travels."** Popular animations show
 glowing orbs sliding along wires. That transport metaphor later blocks
@@ -56,7 +57,8 @@ Two rules make it teach rather than merely impress:
 1. **Everything that moves is classical.** Vehicles and people carry
    instructions, jobs, and measured bits — never amplitudes or quantum
    states. The City Legend says so for every animated class, and a test
-   enforces it. The transport misconception is designed out.
+   enforces it. The transport misconception is designed against — whether
+   that design works on real learners is untested.
 2. **Every number carries its provenance** — `EXACT`, `COMPUTED`,
    `SAMPLED`, `ESTIMATED`, `CALIBRATION`, `MEASURED`, or `ILLUSTRATIVE` —
    and an "Active simplifications" panel states what the model is not.
@@ -84,9 +86,10 @@ feedback** does with a measured bit.
 ## Pedagogical sequence
 
 Picture onboarding with a reading-level choice → Mission 1 (Bell pair,
-one tap, watch the replay to the end) → Missions 2–7 (GHZ, a deliberately
-bad layout whose SWAP cost you then fix, translation, optimisation, noise,
-classical feedback) → Guided Tour → free exploration in the Quantum Lab →
+one tap, watch the replay to the end) → Missions 2–7 (a GHZ chain; a
+deliberately bad layout whose SWAP cost you then fix; noise; classical
+feed-forward; optimisation; sampling statistics) → Guided Tour → free
+exploration in the Quantum Lab →
 Compare Mode → a five-question picture assessment, growth-framed and never
 graded. Full detail in [docs/EDUCATOR_GUIDE.md](docs/EDUCATOR_GUIDE.md),
 including a zero-setup 45-minute lesson plan.
@@ -113,12 +116,12 @@ verdicts and refuses prose as evidence.
 | Traces reproduce byte-identically | 12 independent processes agree |
 | Compiled circuits preserve measured distributions | `compiled-execution.test.ts` |
 | Frame time honestly characterised | p50/p95/p99, long and dropped frames, refresh-cap detection, plus a vsync-disabled ceiling run |
-| Repeated 3D/2D mounting is safe | 25 fixed cycles with heap, latency, and context limits set in advance |
+| Repeated 3D/2D mounting is safe | 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |
 | Ten-minute production soak | zero uncaught errors, zero console errors |
 | Accessibility | Lighthouse 100 on four targets; axe WCAG 2.2 AA |
-| Bundle budget | 153 KiB gzip initial JS against 600 KiB |
+| Bundle budget | 153 KiB gzip initial JS against 320 KiB; 347 KiB total JS against 600 KiB |
 | Builds from a clean clone | 16 verified steps |
-| Tests | 919 unit, 82 end-to-end across four browser projects |
+| Tests | 925 unit, 94 end-to-end across four browser projects |
 
 **No learning outcomes are claimed** — see
 [docs/LEARNING_EVALUATION.md](docs/LEARNING_EVALUATION.md).

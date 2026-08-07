@@ -52,7 +52,8 @@ and repaired:
 
 ## Adversarial visual review
 
-The binding adversarial pass is external: four independent reviewer stances
+The binding adversarial pass is run by AI agents, not by human or external
+reviewers (see [`AI_USAGE.md`](AI_USAGE.md)): four separated reviewer stances
 (art direction, quantum accuracy, child UX and accessibility, performance)
 score the same five categories with cited screenshots in
 `docs/audits/wiser-adversarial-reviews.md`, and `pnpm wiser:reviews` fails

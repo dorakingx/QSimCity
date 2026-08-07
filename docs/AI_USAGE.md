@@ -79,9 +79,37 @@ measurement or adversarial review, not by inspection:
   documentation described a living city.
 - A **mission panel that clipped its own celebration off-screen on
   phones**, introduced by an earlier fix to the same area.
+- A **remount safety gate whose verdict was set by its own run length**:
+  it passed at 25 cycles and failed the identical experiment at 60, so the
+  sample size was deciding the result while looking like a sample size.
+- A **WebGL context-leak probe that could not fail** — it counted how many
+  further contexts the browser would hand out, which Chrome never refuses,
+  and destroyed the contexts it was supposed to be counting. With a probe
+  that worked, the application turned out to be leaking one context per
+  3D/2D switch, up to the browser's limit of 16.
+- A **frame-rate gate a blank page passed identically**, because every
+  scored figure was capped by the display refresh rate.
+- A **frame sampler that left one animation loop running per segment**, so
+  reported frame counts were inflated by the segment index.
+- A **release gate that required a measurement key the tool never writes**,
+  and so could never pass with its own evidence.
+- **Certainty labels computed by string-comparing a display label**, which
+  labelled every ideal replay SAMPLED while the City Legend promised EXACT.
+- **Nine accessibility barriers no automated tool detects**, including
+  Space no longer activating focused buttons, single-key shortcuts with no
+  off switch, and the operating system's reduced-motion preference being
+  ignored by the 3D city — all under a clean axe and Lighthouse 100.
 
-The pattern worth noting: in every case the *prose* was confident and the
-*measurement* was not. That is the reason this project gates on evidence.
+Two patterns worth naming. The first: in every case the *prose* was
+confident and the *measurement* was not. The second is subtler and shows
+up repeatedly above — AI-written *tests and gates* tend to be written so
+that they pass. A probe that cannot fail, a threshold checked against a
+key that is never written, a run length that stops just before the trend
+appears, and a criterion an empty page satisfies are all the same mistake,
+and none of them is visible from reading the output. Every one was found
+by an adversarial pass that re-ran the tool with one parameter changed.
+That is the reason this project gates on evidence, and the reason the
+gates themselves have to be attacked.
 
 ## Originality
 

@@ -128,46 +128,21 @@ function toSrt(captions: readonly Caption[]): string {
     .join('\n');
 }
 
-/** ASS timestamp: h:mm:ss.cc */
-function assTime(ms: number): string {
-  const total = Math.max(0, Math.round(ms));
-  const h = Math.floor(total / 3_600_000);
-  const m = String(Math.floor((total % 3_600_000) / 60_000)).padStart(2, '0');
-  const sec = String(Math.floor((total % 60_000) / 1000)).padStart(2, '0');
-  const cs = String(Math.floor((total % 1000) / 10)).padStart(2, '0');
-  return `${h}:${m}:${sec}.${cs}`;
-}
+
 
 /**
- * Styled subtitles as ASS. ffmpeg's `subtitles=...:force_style=...` option
- * needs fragile escaping through a filter description; an ASS file carries
- * its own styling, so the filter is just a filename.
+ * SWAP count from the metrics panel, so the caption states the numbers the
+ * viewer can see on screen rather than asserting an improvement in prose.
  */
-function toAss(captions: readonly Caption[]): string {
-  const header = [
-    '[Script Info]',
-    'ScriptType: v4.00+',
-    'PlayResX: 1920',
-    'PlayResY: 1080',
-    'WrapStyle: 0',
-    'ScaledBorderAndShadow: yes',
-    '',
-    '[V4+ Styles]',
-    'Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, ' +
-      'BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, ' +
-      'BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding',
-    'Style: Demo,Helvetica,40,&H00FFFFFF,&H000000FF,&H00000000,&HB4000000,' +
-      '0,0,0,0,100,100,0,0,3,3,0,2,120,120,58,1',
-    '',
-    '[Events]',
-    'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text',
-  ].join('\n');
-  const events = captions.map((caption) => {
-    const end = Math.max(caption.endMs, caption.startMs + 900);
-    const text = wrap(caption.text).split('\n').join('\\N');
-    return `Dialogue: 0,${assTime(caption.startMs)},${assTime(end)},Demo,,0,0,0,,${text}`;
-  });
-  return `${header}\n${events.join('\n')}\n`;
+async function readSwapCount(page: Page): Promise<string> {
+  const text = await page
+    .evaluate(`(() => {
+      const el = document.body.innerText || '';
+      const m = el.match(/SWAPs?[^0-9]{0,12}(\\d+)/i);
+      return m ? m[1] : '';
+    })()`)
+    .catch(() => '');
+  return typeof text === 'string' && text.length > 0 ? text : 'fewer';
 }
 
 async function clickMode(page: Page, name: string): Promise<void> {
@@ -452,49 +427,57 @@ async function main(): Promise<void> {
   }
 
   // ------------------------------------------- the layout lesson, end to end
+  //
+  // This segment is the one the demo script calls the central idea, so it
+  // must not be optional. An earlier version wrapped the whole thing in
+  // `if (await longWay.count())` while leaving the narration outside it:
+  // when the selector missed, the captions still played over the previous
+  // screen and the recording described a segment it did not contain.
+  // Anything missing here now fails the recording.
   await clickMode(page, 'Missions');
   await page.waitForTimeout(1200);
+  const longWay = page.getByRole('button', { name: /The Long Way Around/ }).first();
+  await longWay.waitFor({ state: 'visible', timeout: 20_000 });
+  await longWay.click();
+  await page.waitForTimeout(2500);
+  const missionRegion = page.getByRole('region', { name: /Mission:/ });
+  await missionRegion.waitFor({ state: 'visible', timeout: 20_000 });
+  const missionRun = missionRegion.getByRole('button', { name: 'Run', exact: true });
+  await missionRun.waitFor({ state: 'visible', timeout: 20_000 });
+
   await narration.say(
     page,
     'The mission that carries the central idea: a program whose qubits start far apart on the device.',
     6000,
   );
-  const longWay = page.getByRole('button', { name: /The Long Way Around/ }).first();
-  if (await longWay.count()) {
-    await longWay.click();
-    await page.waitForTimeout(2500);
-    await narration.say(
-      page,
-      'Run it with a deliberately poor initial layout and the router must insert SWAP after SWAP just to bring qubits together.',
-      7000,
-    );
-    const missionRun = page
-      .getByRole('region', { name: /Mission:/ })
-      .getByRole('button', { name: 'Run', exact: true });
-    if (await missionRun.count()) {
-      await missionRun.click();
-      await page.waitForTimeout(5000);
-    }
-    await narration.say(
-      page,
-      'Then the learner changes one setting — the layout method — and runs the identical circuit again.',
-      6000,
-    );
-    const layoutSelect = page.getByLabel(/Initial layout/).first();
-    if (await layoutSelect.count()) {
-      await layoutSelect.selectOption('interaction').catch(() => undefined);
-      await page.waitForTimeout(800);
-      if (await missionRun.count()) {
-        await missionRun.click();
-        await page.waitForTimeout(5000);
-      }
-    }
-    await narration.say(
-      page,
-      'Same circuit, same hardware, fewer SWAPs. That is the compiler decision made visible, and it is the point of the whole project.',
-      7500,
-    );
-  }
+  await narration.say(
+    page,
+    'Run it with a deliberately poor initial layout and the router must insert SWAP after SWAP just to bring qubits together.',
+    7000,
+  );
+  await missionRun.click();
+  await page.waitForTimeout(5000);
+  const swapsBefore = await readSwapCount(page);
+
+  await narration.say(
+    page,
+    'Then the learner changes one setting — the layout method — and runs the identical circuit again.',
+    6000,
+  );
+  const layoutSelect = page.getByLabel(/Initial layout/).first();
+  await layoutSelect.waitFor({ state: 'visible', timeout: 20_000 });
+  await layoutSelect.selectOption('interaction');
+  await page.waitForTimeout(800);
+  await missionRun.click();
+  await page.waitForTimeout(5000);
+  const swapsAfter = await readSwapCount(page);
+  console.log(`  layout lesson: SWAPs ${swapsBefore} -> ${swapsAfter}`);
+
+  await narration.say(
+    page,
+    `Same circuit, same hardware, fewer SWAPs: ${swapsBefore} became ${swapsAfter}. That is the compiler decision made visible, and it is the point of the whole project.`,
+    7500,
+  );
 
   // ------------------------------------------------------------ guided tour
   await clickMode(page, 'Guided Tour');
@@ -563,7 +546,6 @@ async function main(): Promise<void> {
 
   const srtPath = join(OUT_DIR, 'qsimcity-demo.srt');
   writeFileSync(srtPath, toSrt(captions));
-  writeFileSync(join(OUT_DIR, 'qsimcity-demo.ass'), toAss(captions));
 
   // Burn the captions in so the video is self-contained on any player.
   // ffmpeg runs without a shell, so the filter string carries no quotes and

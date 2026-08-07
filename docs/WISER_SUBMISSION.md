@@ -10,9 +10,10 @@ Almost every introduction stops at the abstract circuit. The compiler —
 which decides where your logical qubits live, inserts SWAP operations to
 drag distant qubits together, rewrites your gates into the machine's own
 basis, cancels what it can, and schedules the result — is invisible.
-Learners are then surprised that a "two-gate" circuit becomes fourteen
-operations on hardware, and have no intuition for why connectivity,
-depth, and gate count dominate practical quantum computing.
+Learners are then surprised that a circuit they wrote in two gates
+arrives at the machine as a longer, differently shaped one, and have no
+intuition for why connectivity, depth, and gate count dominate practical
+quantum computing.
 
 The second is that **a quantum state is a thing that moves around**.
 Popular animations show glowing orbs travelling down wires. Learners
@@ -29,7 +30,8 @@ and "here are my results".
 ## The solution
 
 QSimCity renders the *compilation and execution pipeline* as a city, and
-drives every light in it from a real computation trace.
+drives every light that carries meaning from a real computation trace. The
+City Legend names each of those and classifies the rest as illustrative.
 
 You write or drag together a circuit. It is parsed, laid out onto a device
 topology, routed with real SWAP insertion, translated into the machine's
@@ -41,13 +43,18 @@ Logical-qubit banners ride physical pylons and swap places at the tick a
 SWAP is inserted. Measured bits leave the harbour as courier vans.
 Container stacks on the results dock grow as shots land.
 
-Two rules make it teach rather than merely impress:
+Two rules are intended to make it teach rather than merely impress. They
+are design commitments, machine-checked in the product; whether they
+change what a learner understands is untested (see
+[`LEARNING_EVALUATION.md`](LEARNING_EVALUATION.md)):
 
 1. **Everything that moves is classical.** Vehicles and people carry
    instructions, jobs, or measured bits — never amplitudes or quantum
    states. The City Legend says so explicitly for every animated class,
-   and a unit test enforces it. The transport misconception is designed
-   out rather than reinforced.
+   and a unit test enforces it — one that derives its required coverage
+   from the names the renderer gives the objects it animates, so a new
+   animated object fails the test until it is explained. The transport
+   misconception is designed against rather than reinforced.
 2. **Every number carries its provenance.** Each displayed quantity has a
    source classification and a certainty label — `EXACT`, `COMPUTED`,
    `SAMPLED`, `ESTIMATED`, `CALIBRATION`, `MEASURED`, or `ILLUSTRATIVE`.
@@ -90,8 +97,8 @@ After a 45-minute session a learner should be able to:
    wrong answer.
 10. Explain what **classical feedback** does with a measured bit.
 
-Objectives 2–7 are the ones this visualisation is uniquely positioned to
-carry, and are the primary outcome in the evaluation plan.
+Objectives 2–7 are the ones this visualisation is built to carry, and are
+the primary outcome in the evaluation plan.
 
 ## Pedagogical sequence
 
@@ -101,10 +108,14 @@ The product implements a deliberate progression, not a sandbox:
    choice (Kids / Beginners / Experts). Near-zero reading required.
 2. **Mission 1, Bell pair** — one-tap template, Run, watch the replay to
    the end. The first payoff: two bars, always agreeing.
-3. **Missions 2–7** — GHZ chains; a deliberately bad layout whose SWAP
-   cost the learner then fixes; basis translation; optimisation; noise;
-   classical feedback. Each has machine-checkable completion against a
-   real trace and immediate per-step feedback.
+3. **Missions 2–7** — *Three of a Kind* (a GHZ chain); *The Long Way
+   Around* (a deliberately bad layout whose SWAP cost the learner then
+   fixes); *Storm Over the Grid* (noise); *Message from the Docks*
+   (classical feed-forward); *The Great Cleanup* (optimisation); *Count on
+   It* (sampling statistics). Each has machine-checkable completion against
+   a real trace and immediate per-step feedback. Basis translation is
+   taught in the Guided Tour and the Compare view rather than by a mission
+   of its own.
 4. **Guided Tour** — the same pipeline narrated end to end.
 5. **Quantum Lab** — free exploration: write OpenQASM or drag blocks,
    change device, layout method, noise, and shots.
@@ -123,13 +134,13 @@ watch it happen again.
 | --- | --- | --- |
 | Rendering | three.js (WebGL2), merged per-material geometry, instanced agents | One coherent city at ~180 draw calls |
 | UI | React + Zustand | Small, testable, no framework lock-in |
-| Build | Vite / Rolldown, PWA service worker | 153 KiB gzip initial JS; installable and offline-capable |
+| Build | Vite / Rolldown, PWA service worker | 153 KiB gzip initial JS of a 320 KiB budget; installable and offline-capable |
 | Domain | Own TypeScript packages: gates, topologies, seeded RNG, OpenQASM parser | Deterministic and dependency-light |
 | Compiler | Own reference compiler: normalise → layout → route → translate → optimise → schedule | The pipeline is the subject, so it must be inspectable |
 | Simulation | Own statevector engine with noise channels, in a Web Worker | Keeps the main thread free for rendering |
 | Trace format | QSimCity Trace: versioned, hashed, migratable | The single source every surface renders from |
 | Cross-validation | Optional Python bridge to Qiskit and Qiskit Aer | Independent check that the science is right |
-| Testing | Vitest, Playwright (Chromium/Firefox/WebKit/mobile), mutation testing | 919 unit and 82 end-to-end tests |
+| Testing | Vitest, Playwright (Chromium/Firefox/WebKit/mobile), mutation testing | 925 unit and 94 end-to-end tests |
 
 ## Results and evidence
 
@@ -143,10 +154,10 @@ gate recomputes them and refuses prose as evidence.
 | Traces reproduce byte-identically | `release-evidence/trace-reproducibility/` — 12 independent processes agree |
 | Compiled circuits preserve measured distributions | `packages/reference-compiler/test/compiled-execution.test.ts` |
 | Frame time, honestly characterised | `release-evidence/wiser-fps/` — p50/p95/p99, long and dropped frames, refresh-cap detection, vsync-disabled ceiling |
-| Repeated 3D/2D mounting is safe | `release-evidence/remount/` — 25 fixed cycles, heap and latency limits set in advance |
+| Repeated 3D/2D mounting is safe | `release-evidence/remount/` — 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |
 | Ten-minute production soak | `release-evidence/soak/` |
 | Accessibility | Lighthouse accessibility 100 on four targets; axe WCAG 2.2 AA scans across surfaces |
-| Bundle budget | 153 KiB gzip initial JS against a 600 KiB budget |
+| Bundle budget | 153 KiB gzip initial JS against 320 KiB; 347 KiB total JS against 600 KiB |
 | Security | `pnpm audit` clean of high/critical; no committed secrets |
 | Builds from a clean clone | `release-evidence/fresh-clone/` — 16 steps |
 | Adversarial review | `docs/audits/wiser-adversarial-reviews.md` — **AI-assisted, not independent human validation** |
@@ -172,6 +183,10 @@ Stated plainly, and in full in [`limitations.md`](limitations.md):
   real-device measurement has been taken.
 - **The city is an illustration.** Buildings, traffic, and pedestrians
   carry no scientific meaning beyond what the City Legend states.
+- **A small memory residual survives repeated 3D/2D switching** — about
+  90 KiB per switch of JavaScript bookkeeping inside three.js. GPU
+  resources are released; the figure is measured and bounded by the
+  remount gate rather than assumed away.
 
 ## Scalability
 

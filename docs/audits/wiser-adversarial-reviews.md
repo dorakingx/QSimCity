@@ -1,5 +1,13 @@
 # WISER Adversarial Reviews
-Four independent reviewer agents — art direction, quantum-information
+
+> **These reviews were performed by AI agents.** They are not human expert
+> review, not independent external validation, and not peer review. Where
+> a finding is declared resolved or a score assigned, that is one language
+> model's assessment of another's work, constrained by machine-checked
+> evidence. Read them as internal QA. See
+> [`../AI_USAGE.md`](../AI_USAGE.md).
+
+Four separated AI reviewer agents — art direction, quantum-information
 accuracy, child UX and accessibility, and performance — reviewed the
 release evidence adversarially across three fix rounds. Every blocking
 and major finding raised in any round was fixed and re-verified by the

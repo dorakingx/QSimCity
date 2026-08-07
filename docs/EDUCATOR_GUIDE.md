@@ -20,9 +20,11 @@ Two honesty rules matter in class:
 1. **Vehicles and people are never quantum states.** Trucks carry jobs,
    vans carry classical bits. The in-app Legend states this explicitly —
    a good discussion prompt about what *can* be visualized.
-2. **Every number is labeled** EXACT, COMPUTED, SAMPLED, or ILLUSTRATIVE.
-   Ask learners to find each kind; the child-level tooltips explain them
-   as "measured for real / computed exactly / sampled like dice / just a
+2. **Every number is labeled** — EXACT, COMPUTED, SAMPLED, ESTIMATED,
+   CALIBRATION, MEASURED, or ILLUSTRATIVE. The four a class will meet in a
+   45-minute session are EXACT, COMPUTED, SAMPLED and ILLUSTRATIVE. Ask
+   learners to find each kind; the child-level tooltips explain them as
+   "measured for real / computed exactly / sampled like dice / just a
    picture".
 
 ## The mission path (recommended for ages 10+)
@@ -71,12 +73,15 @@ worker caches it; after that it runs offline. Write the URL on the board.
 | 0:34–0:40 | Mission 4 | Put two harbours side by side on the projector | Turn noise on, compare the container stacks | Noise shifts a distribution; it is not a "wrong answer" |
 | 0:40–0:45 | Post-check and close | Collect the post-test; ask the misconception question aloud | Answer the same five questions; answer "what travels on the roads?" | Measure change; catch the transport misconception |
 
-**If you have only 20 minutes:** rows 0:08–0:18 and 0:18–0:24 alone deliver
-objectives 1, 7, and 8.
+**If you have only 20 minutes:** rows 0:08–0:18 and 0:18–0:24 alone cover
+objectives 1 and 8 — a compiler rewrites the circuit, and measurement
+produces classical bits. Objective 7 (logical versus physical, and what a
+SWAP changes) needs the Mission 3 row, because no SWAP occurs before it.
 
-**If the class runs long:** Mission 5 (translation) and Mission 6
-(optimisation) extend naturally, and the Guided Tour narrates the whole
-pipeline hands-free.
+**If the class runs long:** Mission 5 (*Message from the Docks*, classical
+feed-forward) and Mission 6 (*The Great Cleanup*, optimisation) extend
+naturally, and the Guided Tour narrates the whole pipeline hands-free
+— including basis translation, which no mission covers on its own.
 
 ### What to look for while circulating
 
