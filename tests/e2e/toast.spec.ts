@@ -57,27 +57,36 @@ test.describe('transient status messages', () => {
     // tick and Playwright waits for stability before reporting a box.
     await pauseReplay(page);
 
-    await page.evaluate('window.__qsimcityTest.showToast("Run finished: geometry check.")');
-    const toast = page.locator('.toast').filter({ hasText: 'geometry check' });
-    await expect(toast).toBeVisible();
+    // Show the message and measure it in a single in-page step. The toast
+    // dismisses itself after five seconds, so any sequence of separate
+    // round trips is racing that clock — on CI the gap between reading the
+    // box and reading the computed style was enough for the element to
+    // disappear, and the second call then waited out the whole test.
+    const geometry = await page.evaluate(async () => {
+      const hooks = (window as unknown as { __qsimcityTest: { showToast(m: string): void } })
+        .__qsimcityTest;
+      hooks.showToast('Run finished: geometry check.');
+      // Two frames: one for React to commit, one for layout to settle.
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      const toast = document.querySelector('.toast');
+      const toolbar = document.querySelector('[role="toolbar"]');
+      if (!toast || !toolbar) return null;
+      const a = toast.getBoundingClientRect();
+      const b = toolbar.getBoundingClientRect();
+      return {
+        text: toast.textContent ?? '',
+        pointerEvents: getComputedStyle(toast).pointerEvents,
+        overlaps: a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top,
+      };
+    });
 
+    expect(geometry, 'toast and replay toolbar must both be present').not.toBeNull();
+    expect(geometry!.text).toContain('geometry check');
     // The soak caught this as a 30-second click failure: the toast sat on
     // top of the timeline dock and swallowed presses on Play and Step. A
     // status message must never block the thing it reports on.
-    const toastBox = (await toast.boundingBox())!;
-    const timelineBox = (await page
-      .getByRole('toolbar', { name: 'Replay timeline' })
-      .first()
-      .boundingBox())!;
-    const overlaps =
-      toastBox.x < timelineBox.x + timelineBox.width &&
-      toastBox.x + toastBox.width > timelineBox.x &&
-      toastBox.y < timelineBox.y + timelineBox.height &&
-      toastBox.y + toastBox.height > timelineBox.y;
-    expect(overlaps, 'the status message overlaps the replay toolbar').toBe(false);
-
+    expect(geometry!.overlaps, 'the status message overlaps the replay toolbar').toBe(false);
     // And even if it did overlap, it must not intercept pointer events.
-    const pointerEvents = await toast.evaluate((n) => getComputedStyle(n).pointerEvents);
-    expect(pointerEvents).toBe('none');
+    expect(geometry!.pointerEvents).toBe('none');
   });
 });
