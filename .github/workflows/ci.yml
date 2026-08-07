@@ -68,7 +68,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+        with:
+          # Defence in depth, not the fix. semanticHash must not move because
+          # an interpreter reports a different patch version — that is
+          # enforced by the hashing contract and its parity tests. Pinning
+          # the toolchain as well keeps artifactHash and the lockfile
+          # reproducible, and stops an unrelated interpreter change from
+          # muddying a future investigation.
+          python-version: '3.12.12'
+      - run: uv python pin 3.12.12
       - run: uv sync --frozen
+      - run: uv run python -c "import platform; print('python', platform.python_version())"
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pyright
