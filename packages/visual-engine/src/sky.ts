@@ -20,6 +20,14 @@ export interface LightingPreset {
   readonly hemiSky: number;
   readonly hemiGround: number;
   readonly hemiIntensity: number;
+  /**
+   * Aerial perspective. The city spans roughly 800 units, and fog that
+   * started at 470 left almost all of it equally crisp — which is a large
+   * part of why the city read as a model on a table rather than as a place
+   * with distance in it. Real air takes contrast out of far buildings;
+   * bringing the fog in gives the skyline depth without hiding anything a
+   * learner needs to read.
+   */
   readonly fogColor: number;
   readonly fogNear: number;
   readonly fogFar: number;
@@ -42,8 +50,8 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     hemiGround: 0x8f8a7a,
     hemiIntensity: 0.95,
     fogColor: 0xbcd7ec,
-    fogNear: 470,
-    fogFar: 1450,
+    fogNear: 320,
+    fogFar: 1280,
     exposure: 1.0,
     starOpacity: 0,
     cloudColor: 0xffffff,
@@ -61,8 +69,8 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     hemiGround: 0x6a6053,
     hemiIntensity: 0.72,
     fogColor: 0xf2a35c,
-    fogNear: 440,
-    fogFar: 1380,
+    fogNear: 300,
+    fogFar: 1200,
     exposure: 1.24,
     starOpacity: 0,
     cloudColor: 0xffc9a0,
@@ -80,7 +88,7 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     hemiGround: 0x1c202b,
     hemiIntensity: 0.95,
     fogColor: 0x1c2a4a,
-    fogNear: 420,
+    fogNear: 330,
     fogFar: 1300,
     exposure: 1.12,
     starOpacity: 1,

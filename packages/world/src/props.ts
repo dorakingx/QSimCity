@@ -2,7 +2,7 @@ import { CITY_SCALE, type DistrictId } from './districts.js';
 import type { Parcel } from './blocks.js';
 import type { RoadRect, RoadSegment } from './roads.js';
 import { lampPositions } from './roads.js';
-import { EAST_COAST_X, WEST_COAST_X } from './terrain.js';
+import { EAST_COAST_X, WEST_COAST_X, eastCoastAt, westCoastAt } from './terrain.js';
 import { hash01, type Vec2 } from './util.js';
 
 /**
@@ -84,32 +84,46 @@ export const PIERS: readonly Pier[] = [
   },
 ];
 
+/**
+ * Water props are placed relative to the shoreline at their own z, not to
+ * a fixed x. The coast wanders (see terrain.ts), so a ship moored a fixed
+ * distance west of WEST_COAST_X could end up beached on the land the
+ * wander added — which is precisely what the W1.1 prop test caught.
+ */
+function westOfShore(z: number, distance: number): { x: number; z: number } {
+  return { x: westCoastAt(z) - distance, z };
+}
+
+function eastOfShore(z: number, distance: number): { x: number; z: number } {
+  return { x: eastCoastAt(z) + distance, z };
+}
+
 /** Moored ships alongside the piers (illustrative harbor life). */
 const SHIPS: readonly Prop[] = [
   {
     kind: 'ship',
-    position: { x: WEST_COAST_X - 20, z: 4 * CITY_SCALE + 22 },
+    position: westOfShore(4 * CITY_SCALE + 22, 20),
     rotationY: 0,
     variant: 0.2,
     districtId: 'program-port',
   },
   {
     kind: 'ship',
-    position: { x: WEST_COAST_X - 16, z: 34 * CITY_SCALE + 24 },
+    position: westOfShore(34 * CITY_SCALE + 24, 16),
     rotationY: Math.PI,
     variant: 0.7,
     districtId: 'program-port',
   },
   {
     kind: 'ship',
-    position: { x: EAST_COAST_X + 18, z: 74 * CITY_SCALE + 22 },
+    position: eastOfShore(74 * CITY_SCALE + 22, 18),
     rotationY: Math.PI,
     variant: 0.45,
     districtId: 'measurement-harbor',
   },
   {
     kind: 'ship',
-    position: { x: EAST_COAST_X + 14, z: 102 * CITY_SCALE + 24 },
+    position: eastOfShore(102 * CITY_SCALE + 24, 14),
     rotationY: 0,
     variant: 0.9,
     districtId: 'measurement-harbor',
@@ -119,25 +133,25 @@ const SHIPS: readonly Prop[] = [
 const BUOYS: readonly Prop[] = [
   {
     kind: 'buoy',
-    position: { x: WEST_COAST_X - 72, z: -8 * CITY_SCALE },
+    position: westOfShore(-8 * CITY_SCALE, 72),
     rotationY: 0,
     variant: 0.1,
   },
   {
     kind: 'buoy',
-    position: { x: WEST_COAST_X - 84, z: 64 * CITY_SCALE },
+    position: westOfShore(64 * CITY_SCALE, 84),
     rotationY: 0,
     variant: 0.5,
   },
   {
     kind: 'buoy',
-    position: { x: EAST_COAST_X + 74, z: 60 * CITY_SCALE },
+    position: eastOfShore(60 * CITY_SCALE, 74),
     rotationY: 0,
     variant: 0.3,
   },
   {
     kind: 'buoy',
-    position: { x: EAST_COAST_X + 82, z: 128 * CITY_SCALE },
+    position: eastOfShore(128 * CITY_SCALE, 82),
     rotationY: 0,
     variant: 0.8,
   },

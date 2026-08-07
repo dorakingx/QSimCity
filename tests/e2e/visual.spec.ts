@@ -146,10 +146,13 @@ test.describe('desktop surfaces', () => {
 
   test('offline mode still serves the app shell', async ({ page, context }) => {
     await page.goto(e2eUrl('/'));
-    // Wait for the service worker to finish precaching rather than sleeping.
-    await page.waitForFunction('navigator.serviceWorker.controller !== null', undefined, {
-      timeout: 30_000,
-    });
+    // Wait for the service worker to be active rather than sleeping.
+    // `controller` is the wrong signal: it stays null on the very first
+    // navigation until the worker claims the page, which it may only do
+    // after this test has already reloaded. `ready` resolves once the
+    // registration is active, and activation happens after install — so
+    // precaching is complete by then, which is what the test needs.
+    await page.evaluate('navigator.serviceWorker.ready.then(() => true)');
     await context.setOffline(true);
     await page.reload();
     await expect(page.getByRole('heading', { name: /QSimCity/ })).toBeVisible({ timeout: 15_000 });
