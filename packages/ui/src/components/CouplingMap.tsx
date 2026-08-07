@@ -131,6 +131,10 @@ export function CouplingMap({
           {device.displayName}: {device.numQubits} physical qubits. Coupling edges:{' '}
           {device.edges.map(([a, b]) => `${a}-${b}`).join(', ')}.
         </p>
+        {/* Saying nothing when the compiler has not chosen a layout yet
+            makes the panel look identical before and after the layout
+            stage, which is the confusion this figure exists to remove. */}
+        {!layout && layoutMoment && <p>Layout {layoutMoment}.</p>}
         {layout && (
           <p>
             Layout{layoutMoment ? ` ${layoutMoment}` : ''}:{' '}

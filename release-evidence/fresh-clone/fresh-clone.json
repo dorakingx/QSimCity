@@ -1,8 +1,8 @@
 {
-  "commitSha": "e4668e40df262a578288c13fc3bb56159c28eaca",
-  "sourceTreeHash": "bcee31c933b5288a",
+  "commitSha": "5383bcf35ff392c0b9ce4c7d63cf72e93315bdad",
+  "sourceTreeHash": "bd1608102ba197c5",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:11:32.938Z",
+  "generatedAt": "2026-08-07T03:24:16.487Z",
   "tool": "qsimcity-fresh-clone",
   "toolVersion": "v22.23.1",
   "command": "git clone <repo> && pnpm install --frozen-lockfile && verify + build + e2e",
@@ -13,14 +13,14 @@
     "failedSteps": 0
   },
   "measurements": {
-    "stepsRun": 4,
-    "stepsPassed": 3,
+    "stepsRun": 9,
+    "stepsPassed": 8,
     "failedSteps": 1,
-    "totalSeconds": 13
+    "totalSeconds": 25.3
   },
   "passed": false,
   "detail": {
-    "commit": "e4668e40df262a578288c13fc3bb56159c28eaca",
+    "commit": "5383bcf35ff392c0b9ce4c7d63cf72e93315bdad",
     "steps": [
       {
         "id": "install",
@@ -33,7 +33,7 @@
         "id": "typecheck",
         "command": "pnpm typecheck",
         "exitStatus": 0,
-        "durationSeconds": 3.4,
+        "durationSeconds": 3.5,
         "tail": "$ tsc -p tsconfig.typecheck.json"
       },
       {
@@ -46,9 +46,44 @@
       {
         "id": "format",
         "command": "pnpm format",
-        "exitStatus": 1,
+        "exitStatus": 0,
         "durationSeconds": 2.3,
-        "tail": "Checking formatting...\n[ELIFECYCLE] Command failed with exit code 1.\n$ prettier --check .\n[\u001b[33mwarn\u001b[39m] tools/demo/record-demo.ts\n[\u001b[33mwarn\u001b[39m] Code style issues found in the above file. Run Prettier with --write to fix."
+        "tail": "Checking formatting...\nAll matched files use Prettier code style!\n$ prettier --check ."
+      },
+      {
+        "id": "policy-names",
+        "command": "pnpm check:names",
+        "exitStatus": 0,
+        "durationSeconds": 1,
+        "tail": "Prohibited-name scan passed.\n$ tsx tools/check-prohibited-names.ts"
+      },
+      {
+        "id": "policy-language",
+        "command": "pnpm check:language",
+        "exitStatus": 0,
+        "durationSeconds": 0.4,
+        "tail": "Language-policy scan passed.\n$ tsx tools/check-language.ts"
+      },
+      {
+        "id": "policy-todos",
+        "command": "pnpm check:todos",
+        "exitStatus": 0,
+        "durationSeconds": 0.4,
+        "tail": "Blocking-marker scan passed.\n$ tsx tools/check-todos.ts"
+      },
+      {
+        "id": "unit-tests",
+        "command": "pnpm test",
+        "exitStatus": 0,
+        "durationSeconds": 4.4,
+        "tail": "\n\n Test Files  56 passed (56)\n      Tests  927 passed (927)\n   Start at  12:24:03\n   Duration  3.41s (transform 4.00s, setup 0ms, import 9.73s, tests 12.69s, environment 1.93s)\n\n$ vitest run"
+      },
+      {
+        "id": "coverage",
+        "command": "pnpm test:coverage",
+        "exitStatus": 1,
+        "durationSeconds": 6,
+        "tail": "Statements   : 94.56% ( 6043/6390 )\nBranches     : 84.92% ( 2906/3422 )\nFunctions    : 92.88% ( 1083/1166 )\nLines        : 95.74% ( 5397/5637 )\n================================================================================\n[ELIFECYCLE] Command failed with exit code 1.\n$ vitest run --coverage\nERROR: Coverage for branches (84.92%) does not meet global threshold (85%)"
       }
     ]
   }
