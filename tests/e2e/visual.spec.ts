@@ -9,10 +9,18 @@ import {
   skipOnboarding,
 } from './helpers.js';
 
-// Serial: rendering the city is expensive, and on a GPU-less CI runner it
-// is expensive in software. Two cities racing for the same rasterizer is
-// what turned this file into nine 60-second timeouts in one CI run.
-test.describe.configure({ mode: 'serial' });
+// One at a time, but without serial's cascade. The `city` projects set
+// `fullyParallel: false` and CI runs them with --workers=1, so these
+// already execute one after another in a single worker — which is the
+// point, because two cities racing for the same software rasterizer is
+// what turned this file into nine 60-second timeouts.
+//
+// `mode: 'serial'` would add something else on top: when one test fails it
+// SKIPS the rest of the file. That cost a whole CI round of information —
+// one slow test hid the results of the four after it, and the run reported
+// "8 failed, 3 passed" for a file with twelve cases. Sequencing is wanted;
+// hiding is not.
+test.describe.configure({ mode: 'default' });
 
 /**
  * Every flow models a returning user; onboarding has its own spec.
@@ -93,7 +101,12 @@ test.describe('desktop surfaces', () => {
   });
 
   test('quantum lab with results', async ({ page }) => {
-    await page.goto(e2eUrl('/'));
+    // 64 shots: this is the most expensive case in the file — it builds the
+    // 3D city *and* runs the pipeline — and on a GPU-less runner drawing
+    // through SwiftShader the default 1024 shots pushed it past the budget.
+    // The screenshot is of the Lab surface with results present; the shot
+    // count is not what it shows.
+    await page.goto(e2eUrl('/?sample=bell&shots=64&seed=lab-visual&device=linear-5'));
     await runBellFromLab(page);
     await freezeCity(page, { tick: 0 });
     await expect(page).toHaveScreenshot('lab-results.png');
