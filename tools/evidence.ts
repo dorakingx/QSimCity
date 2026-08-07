@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute, join } from 'node:path';
 
 /**
  * Release-evidence envelope.
@@ -14,6 +14,16 @@ import { dirname, join } from 'node:path';
  */
 
 const ROOT = new URL('..', import.meta.url).pathname;
+
+/**
+ * Accept absolute or repo-relative paths. Joining an absolute path onto
+ * ROOT used to concatenate the two, silently writing evidence into a junk
+ * `<repo>/Users/...` tree that the goal gate then read back through the
+ * same doubled path (adversarial performance review finding).
+ */
+function resolveEvidencePath(path: string): string {
+  return isAbsolute(path) ? path : join(ROOT, path);
+}
 
 export interface EvidenceEnvelope<T> {
   /** Commit the evidence was generated from, for human traceability. */
@@ -119,7 +129,7 @@ export function writeEvidence<T>(
     generatedAt: new Date().toISOString(),
     ...envelope,
   };
-  const path = join(ROOT, relativePath);
+  const path = resolveEvidencePath(relativePath);
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify(full, null, 2) + '\n');
   return full;
@@ -139,7 +149,7 @@ export function readEvidence<T>(
     readonly allowDirty?: boolean;
   },
 ): EvidenceEnvelope<T> {
-  const path = join(ROOT, relativePath);
+  const path = resolveEvidencePath(relativePath);
   if (!existsSync(path)) {
     throw new EvidenceError(`${relativePath} is missing — the measurement has not been run`);
   }

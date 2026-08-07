@@ -4,12 +4,17 @@ packages:
 allowBuilds:
   esbuild: true
 
-# Security override: brace-expansion <=5.0.7 carries a high-severity ReDoS
-# advisory (GHSA-mh99-v99m-4gvg). It reaches the tree only through build-time
-# tooling (vite-plugin-pwa -> workbox-build), never the shipped bundle, but is
-# forced to the patched release so `pnpm audit` is clean for the whole tree.
+# Security override: brace-expansion carries high-severity ReDoS advisories
+# (GHSA-mh99-v99m-4gvg, and GHSA-rgw5-rvv9-x895 bypassing the first fix in
+# releases before 5.0.9). It reaches the tree only through build-time tooling
+# (eslint/minimatch, vite-plugin-pwa -> workbox-build), never the shipped
+# bundle, but is forced to the patched release so `pnpm audit` is clean for
+# the whole tree.
 overrides:
-  brace-expansion: 5.0.8
+  brace-expansion: 5.0.9
+  # fast-uri <3.1.5 host-confusion advisory (GHSA-7p8r-x3mc-p8w7); reached
+  # only via build-time workbox tooling, forced to the patched release.
+  fast-uri: 3.1.5
 
 # intl-messageformat (via lighthouse) requires tslib at runtime but does not
 # declare it, which strict pnpm linking correctly refuses to resolve.

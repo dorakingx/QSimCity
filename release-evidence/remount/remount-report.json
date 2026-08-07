@@ -1,0 +1,584 @@
+{
+  "commitSha": "d7609fc26d6c407d47ed59af22e20677fa8f9443",
+  "sourceTreeHash": "2d85dcc67da479c1",
+  "worktreeDirty": false,
+  "generatedAt": "2026-08-07T13:43:57.792Z",
+  "tool": "remount-safety",
+  "toolVersion": "2.1.0",
+  "command": "pnpm remount:check",
+  "exitStatus": 0,
+  "inputHash": "97dc6d36a1ff7d15",
+  "thresholds": {
+    "cycles": 60,
+    "maxHeapGrowthBytes": 8388608,
+    "maxHeapSlopeBytesPerCycle": 163840,
+    "maxMountLatencyMs": 1500,
+    "maxLiveContexts": 4
+  },
+  "measurements": {
+    "cyclesCompleted": 60,
+    "settledBaselineHeapBytes": 11992238.8,
+    "trailingMeanHeapBytes": 16347544,
+    "heapGrowthRatio": 1.3632,
+    "heapGrowthBytes": 4355306,
+    "heapSlopeBytesPerCycle": 91598,
+    "settledCycles": 52,
+    "risingCycleSteps": 51,
+    "worstMountLatencyMs": 307,
+    "worstDriverObservedCycleMs": 1196,
+    "peakLiveWebglContexts": 0,
+    "consoleErrors": 0,
+    "crashed": false
+  },
+  "passed": true,
+  "detail": {
+    "samples": [
+      {
+        "cycle": 1,
+        "heapBytes": 9851031,
+        "mountMs": 307,
+        "unmountMs": 10,
+        "driverMs": 1196,
+        "liveContexts": 0,
+        "createdContexts": 4
+      },
+      {
+        "cycle": 2,
+        "heapBytes": 10323390,
+        "mountMs": 206,
+        "unmountMs": 5,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 5
+      },
+      {
+        "cycle": 3,
+        "heapBytes": 10572494,
+        "mountMs": 221,
+        "unmountMs": 6,
+        "driverMs": 772,
+        "liveContexts": 0,
+        "createdContexts": 6
+      },
+      {
+        "cycle": 4,
+        "heapBytes": 10793434,
+        "mountMs": 214,
+        "unmountMs": 3,
+        "driverMs": 758,
+        "liveContexts": 0,
+        "createdContexts": 7
+      },
+      {
+        "cycle": 5,
+        "heapBytes": 11014526,
+        "mountMs": 210,
+        "unmountMs": 6,
+        "driverMs": 764,
+        "liveContexts": 0,
+        "createdContexts": 8
+      },
+      {
+        "cycle": 6,
+        "heapBytes": 11128086,
+        "mountMs": 213,
+        "unmountMs": 3,
+        "driverMs": 755,
+        "liveContexts": 0,
+        "createdContexts": 9
+      },
+      {
+        "cycle": 7,
+        "heapBytes": 11242402,
+        "mountMs": 218,
+        "unmountMs": 4,
+        "driverMs": 765,
+        "liveContexts": 0,
+        "createdContexts": 10
+      },
+      {
+        "cycle": 8,
+        "heapBytes": 11355362,
+        "mountMs": 209,
+        "unmountMs": 4,
+        "driverMs": 755,
+        "liveContexts": 0,
+        "createdContexts": 11
+      },
+      {
+        "cycle": 9,
+        "heapBytes": 11741406,
+        "mountMs": 214,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 12
+      },
+      {
+        "cycle": 10,
+        "heapBytes": 11895086,
+        "mountMs": 216,
+        "unmountMs": 4,
+        "driverMs": 763,
+        "liveContexts": 0,
+        "createdContexts": 13
+      },
+      {
+        "cycle": 11,
+        "heapBytes": 12014166,
+        "mountMs": 215,
+        "unmountMs": 4,
+        "driverMs": 759,
+        "liveContexts": 0,
+        "createdContexts": 14
+      },
+      {
+        "cycle": 12,
+        "heapBytes": 12110130,
+        "mountMs": 214,
+        "unmountMs": 5,
+        "driverMs": 765,
+        "liveContexts": 0,
+        "createdContexts": 15
+      },
+      {
+        "cycle": 13,
+        "heapBytes": 12200406,
+        "mountMs": 213,
+        "unmountMs": 4,
+        "driverMs": 761,
+        "liveContexts": 0,
+        "createdContexts": 16
+      },
+      {
+        "cycle": 14,
+        "heapBytes": 12308230,
+        "mountMs": 211,
+        "unmountMs": 4,
+        "driverMs": 758,
+        "liveContexts": 0,
+        "createdContexts": 17
+      },
+      {
+        "cycle": 15,
+        "heapBytes": 12408514,
+        "mountMs": 217,
+        "unmountMs": 4,
+        "driverMs": 767,
+        "liveContexts": 0,
+        "createdContexts": 18
+      },
+      {
+        "cycle": 16,
+        "heapBytes": 12493718,
+        "mountMs": 214,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 19
+      },
+      {
+        "cycle": 17,
+        "heapBytes": 12608466,
+        "mountMs": 215,
+        "unmountMs": 4,
+        "driverMs": 767,
+        "liveContexts": 0,
+        "createdContexts": 20
+      },
+      {
+        "cycle": 18,
+        "heapBytes": 12708966,
+        "mountMs": 217,
+        "unmountMs": 3,
+        "driverMs": 756,
+        "liveContexts": 0,
+        "createdContexts": 21
+      },
+      {
+        "cycle": 19,
+        "heapBytes": 12827906,
+        "mountMs": 212,
+        "unmountMs": 4,
+        "driverMs": 754,
+        "liveContexts": 0,
+        "createdContexts": 22
+      },
+      {
+        "cycle": 20,
+        "heapBytes": 13054674,
+        "mountMs": 202,
+        "unmountMs": 4,
+        "driverMs": 749,
+        "liveContexts": 0,
+        "createdContexts": 23
+      },
+      {
+        "cycle": 21,
+        "heapBytes": 13137722,
+        "mountMs": 216,
+        "unmountMs": 4,
+        "driverMs": 765,
+        "liveContexts": 0,
+        "createdContexts": 24
+      },
+      {
+        "cycle": 22,
+        "heapBytes": 13221170,
+        "mountMs": 213,
+        "unmountMs": 3,
+        "driverMs": 752,
+        "liveContexts": 0,
+        "createdContexts": 25
+      },
+      {
+        "cycle": 23,
+        "heapBytes": 13309802,
+        "mountMs": 212,
+        "unmountMs": 3,
+        "driverMs": 756,
+        "liveContexts": 0,
+        "createdContexts": 26
+      },
+      {
+        "cycle": 24,
+        "heapBytes": 13389790,
+        "mountMs": 214,
+        "unmountMs": 6,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 27
+      },
+      {
+        "cycle": 25,
+        "heapBytes": 13477986,
+        "mountMs": 213,
+        "unmountMs": 2,
+        "driverMs": 755,
+        "liveContexts": 0,
+        "createdContexts": 28
+      },
+      {
+        "cycle": 26,
+        "heapBytes": 13565718,
+        "mountMs": 212,
+        "unmountMs": 2,
+        "driverMs": 747,
+        "liveContexts": 0,
+        "createdContexts": 29
+      },
+      {
+        "cycle": 27,
+        "heapBytes": 13646874,
+        "mountMs": 213,
+        "unmountMs": 4,
+        "driverMs": 761,
+        "liveContexts": 0,
+        "createdContexts": 30
+      },
+      {
+        "cycle": 28,
+        "heapBytes": 13730922,
+        "mountMs": 212,
+        "unmountMs": 4,
+        "driverMs": 756,
+        "liveContexts": 0,
+        "createdContexts": 31
+      },
+      {
+        "cycle": 29,
+        "heapBytes": 13825890,
+        "mountMs": 212,
+        "unmountMs": 6,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 32
+      },
+      {
+        "cycle": 30,
+        "heapBytes": 13904650,
+        "mountMs": 210,
+        "unmountMs": 4,
+        "driverMs": 752,
+        "liveContexts": 0,
+        "createdContexts": 33
+      },
+      {
+        "cycle": 31,
+        "heapBytes": 13987870,
+        "mountMs": 215,
+        "unmountMs": 5,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 34
+      },
+      {
+        "cycle": 32,
+        "heapBytes": 14079894,
+        "mountMs": 205,
+        "unmountMs": 4,
+        "driverMs": 751,
+        "liveContexts": 0,
+        "createdContexts": 35
+      },
+      {
+        "cycle": 33,
+        "heapBytes": 14155658,
+        "mountMs": 214,
+        "unmountMs": 6,
+        "driverMs": 758,
+        "liveContexts": 0,
+        "createdContexts": 36
+      },
+      {
+        "cycle": 34,
+        "heapBytes": 14244962,
+        "mountMs": 213,
+        "unmountMs": 6,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 37
+      },
+      {
+        "cycle": 35,
+        "heapBytes": 14343330,
+        "mountMs": 211,
+        "unmountMs": 3,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 38
+      },
+      {
+        "cycle": 36,
+        "heapBytes": 14423534,
+        "mountMs": 213,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 39
+      },
+      {
+        "cycle": 37,
+        "heapBytes": 14546814,
+        "mountMs": 217,
+        "unmountMs": 3,
+        "driverMs": 763,
+        "liveContexts": 0,
+        "createdContexts": 40
+      },
+      {
+        "cycle": 38,
+        "heapBytes": 14604498,
+        "mountMs": 208,
+        "unmountMs": 3,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 41
+      },
+      {
+        "cycle": 39,
+        "heapBytes": 14681526,
+        "mountMs": 215,
+        "unmountMs": 3,
+        "driverMs": 761,
+        "liveContexts": 0,
+        "createdContexts": 42
+      },
+      {
+        "cycle": 40,
+        "heapBytes": 14770982,
+        "mountMs": 212,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 43
+      },
+      {
+        "cycle": 41,
+        "heapBytes": 14862194,
+        "mountMs": 214,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 44
+      },
+      {
+        "cycle": 42,
+        "heapBytes": 14963446,
+        "mountMs": 215,
+        "unmountMs": 6,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 45
+      },
+      {
+        "cycle": 43,
+        "heapBytes": 15065906,
+        "mountMs": 214,
+        "unmountMs": 3,
+        "driverMs": 758,
+        "liveContexts": 0,
+        "createdContexts": 46
+      },
+      {
+        "cycle": 44,
+        "heapBytes": 15154622,
+        "mountMs": 205,
+        "unmountMs": 4,
+        "driverMs": 749,
+        "liveContexts": 0,
+        "createdContexts": 47
+      },
+      {
+        "cycle": 45,
+        "heapBytes": 15231558,
+        "mountMs": 215,
+        "unmountMs": 3,
+        "driverMs": 762,
+        "liveContexts": 0,
+        "createdContexts": 48
+      },
+      {
+        "cycle": 46,
+        "heapBytes": 15311426,
+        "mountMs": 203,
+        "unmountMs": 4,
+        "driverMs": 750,
+        "liveContexts": 0,
+        "createdContexts": 49
+      },
+      {
+        "cycle": 47,
+        "heapBytes": 15424142,
+        "mountMs": 205,
+        "unmountMs": 4,
+        "driverMs": 749,
+        "liveContexts": 0,
+        "createdContexts": 50
+      },
+      {
+        "cycle": 48,
+        "heapBytes": 15502274,
+        "mountMs": 208,
+        "unmountMs": 2,
+        "driverMs": 747,
+        "liveContexts": 0,
+        "createdContexts": 51
+      },
+      {
+        "cycle": 49,
+        "heapBytes": 15584030,
+        "mountMs": 212,
+        "unmountMs": 4,
+        "driverMs": 757,
+        "liveContexts": 0,
+        "createdContexts": 52
+      },
+      {
+        "cycle": 50,
+        "heapBytes": 15672210,
+        "mountMs": 194,
+        "unmountMs": 3,
+        "driverMs": 736,
+        "liveContexts": 0,
+        "createdContexts": 53
+      },
+      {
+        "cycle": 51,
+        "heapBytes": 15751722,
+        "mountMs": 217,
+        "unmountMs": 4,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 54
+      },
+      {
+        "cycle": 52,
+        "heapBytes": 15841510,
+        "mountMs": 216,
+        "unmountMs": 3,
+        "driverMs": 760,
+        "liveContexts": 0,
+        "createdContexts": 55
+      },
+      {
+        "cycle": 53,
+        "heapBytes": 15933382,
+        "mountMs": 213,
+        "unmountMs": 4,
+        "driverMs": 756,
+        "liveContexts": 0,
+        "createdContexts": 56
+      },
+      {
+        "cycle": 54,
+        "heapBytes": 16009486,
+        "mountMs": 208,
+        "unmountMs": 4,
+        "driverMs": 754,
+        "liveContexts": 0,
+        "createdContexts": 57
+      },
+      {
+        "cycle": 55,
+        "heapBytes": 16091314,
+        "mountMs": 215,
+        "unmountMs": 5,
+        "driverMs": 762,
+        "liveContexts": 0,
+        "createdContexts": 58
+      },
+      {
+        "cycle": 56,
+        "heapBytes": 16178754,
+        "mountMs": 204,
+        "unmountMs": 4,
+        "driverMs": 752,
+        "liveContexts": 0,
+        "createdContexts": 59
+      },
+      {
+        "cycle": 57,
+        "heapBytes": 16260934,
+        "mountMs": 207,
+        "unmountMs": 4,
+        "driverMs": 754,
+        "liveContexts": 0,
+        "createdContexts": 60
+      },
+      {
+        "cycle": 58,
+        "heapBytes": 16344006,
+        "mountMs": 212,
+        "unmountMs": 4,
+        "driverMs": 756,
+        "liveContexts": 0,
+        "createdContexts": 61
+      },
+      {
+        "cycle": 59,
+        "heapBytes": 16430726,
+        "mountMs": 213,
+        "unmountMs": 5,
+        "driverMs": 761,
+        "liveContexts": 0,
+        "createdContexts": 62
+      },
+      {
+        "cycle": 60,
+        "heapBytes": 16523302,
+        "mountMs": 211,
+        "unmountMs": 6,
+        "driverMs": 753,
+        "liveContexts": 0,
+        "createdContexts": 63
+      }
+    ],
+    "consoleErrors": [],
+    "contextNote": "peakLiveWebglContexts counts contexts the application itself created that are still reachable and not lost, observed by wrapping getContext before the app loads. An earlier probe counted how many further contexts the page would hand out, which Chrome never refuses (it evicts the oldest instead), so it could not fail and destroyed the contexts it was counting.",
+    "ratioNote": "heapGrowthRatio is reported for continuity with earlier runs but is not a pass criterion: it scales with run length, which is how a 25-cycle version of this gate passed at 1.183 while the same experiment at 60 cycles failed at 1.443.",
+    "residualNote": "A residual retention of roughly 90 KiB per cycle remains after the fixes in CityEngine.dispose (engine retention through canvas listeners, and WebGL context accumulation, both eliminated and both verified here). Heap snapshots trace what is left to V8 closure scopes inside three.js holding the disposed context wrapper and its detached canvas; GPU resources are released, and peakLiveWebglContexts is 0 where it was 16. This is disclosed in docs/limitations.md.",
+    "slopeNote": "heapSlopeBytesPerCycle is the least-squares slope of post-GC heap over the settled cycles. It, not the first-to-last ratio, is what distinguishes a bounded steady state from a linear leak: a ratio depends on how long the run happens to be.",
+    "latencyNote": "worstMountLatencyMs is measured in the page from a trusted click to the incoming view appearing — what a user waits for. worstDriverObservedCycleMs is the whole cycle as the Playwright driver observes it, including its actionability protocol, which is far more expensive than the application and is reported only for transparency."
+  }
+}

@@ -50,9 +50,12 @@ Python 3.12 with uv.
   real coupling edges; all gates in the device basis.
 - Compiled circuits executed end to end across 67 sample × device × layout
   combinations, with measured distributions matching the input circuit's.
-- Sample traces regenerate byte-identically (verified 8 consecutive runs) and
-  their content hashes are checked from TypeScript against the committed
-  manifest.
+- Sample traces reproduce **semantically**: 12 independent processes produced
+  one distinct `semanticHash` per sample, and those hashes are checked from
+  TypeScript against the committed manifest. Byte-for-byte identity holds
+  only within one environment — it is a property of `artifactHash`, which
+  legitimately moves when the interpreter or package versions do. Conflating
+  the two is what made CI red while the local gate read green.
 
 ## Deployment status
 

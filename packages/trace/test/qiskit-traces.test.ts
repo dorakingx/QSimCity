@@ -82,6 +82,120 @@ describe('Qiskit bridge trace parity', () => {
     }
   });
 
+  /**
+   * The contract semanticHash exists to enforce, tested in both directions.
+   *
+   * This is the defect that made CI red while the local gate reported a
+   * clean 33/33: `packageVersions` was inside the semantic view and carries
+   * `platform.python_version()`, so the committed traces (generated on
+   * Python 3.12.12) could not be reproduced on the CI runner (3.12.3) even
+   * though every circuit, layout, metric, result and event was identical.
+   */
+  describe('semanticHash covers the science, not the environment', () => {
+    const sample = (): ReturnType<typeof parseTraceJson> =>
+      parseTraceJson(readFileSync(join(TRACES_DIR, traceFiles()[0]!), 'utf8'));
+
+    it('is unmoved by environment and package versions', () => {
+      const trace = sample();
+      const before = semanticHash(trace);
+      const mutated = {
+        ...trace,
+        packageVersions: {
+          ...trace.packageVersions,
+          python: '3.99.0',
+          qiskit: '99.0.0',
+          'qiskit-aer': '99.0.0',
+        },
+      };
+      expect(semanticHash(mutated)).toBe(before);
+    });
+
+    it('is unmoved by identity and timestamp', () => {
+      const trace = sample();
+      const before = semanticHash(trace);
+      expect(
+        semanticHash({ ...trace, traceId: 't-different', createdAt: '2000-01-01T00:00:00.000Z' }),
+      ).toBe(before);
+    });
+
+    it('but the artifact hash does move when versions change', () => {
+      const file = traceFiles()[0]!;
+      const json = readFileSync(join(TRACES_DIR, file), 'utf8');
+      const before = artifactHash(json);
+      const changed = json.replace(/"python": "[^"]+"/, '"python": "3.99.0"');
+      expect(changed, 'the fixture must actually contain a python version').not.toBe(json);
+      expect(artifactHash(changed)).not.toBe(before);
+    });
+
+    it('moves for every change that is actually scientific', () => {
+      const trace = sample();
+      const before = semanticHash(trace);
+      const circuit = trace.inputCircuit;
+
+      // Circuit.
+      expect(
+        semanticHash({
+          ...trace,
+          inputCircuit: { ...circuit, instructions: circuit.instructions.slice(0, -1) },
+        }),
+        'input circuit',
+      ).not.toBe(before);
+      // Compiled circuit.
+      expect(
+        semanticHash({
+          ...trace,
+          compiledCircuit: {
+            ...trace.compiledCircuit!,
+            instructions: trace.compiledCircuit!.instructions.slice(0, -1),
+          },
+        }),
+        'compiled circuit',
+      ).not.toBe(before);
+      // Layouts.
+      expect(
+        semanticHash({ ...trace, initialLayout: [...trace.initialLayout!].reverse() }),
+        'initial layout',
+      ).not.toBe(before);
+      expect(
+        semanticHash({
+          ...trace,
+          finalLayout: [...(trace.finalLayout ?? [0])].reverse().concat(9),
+        }),
+        'final layout',
+      ).not.toBe(before);
+      // Metrics.
+      expect(
+        semanticHash({
+          ...trace,
+          metrics: trace.metrics.map((m, i) => (i === 0 ? { ...m, depth: m.depth + 9999 } : m)),
+        }),
+        'metrics',
+      ).not.toBe(before);
+      // Results.
+      expect(
+        semanticHash({
+          ...trace,
+          results: {
+            ...trace.results,
+            idealCounts: {
+              ...trace.results.idealCounts!,
+              counts: { ...trace.results.idealCounts!.counts, '11111': 7 },
+            },
+          },
+        }),
+        'results',
+      ).not.toBe(before);
+      // Events.
+      expect(semanticHash({ ...trace, events: trace.events.slice(0, -1) }), 'events').not.toBe(
+        before,
+      );
+      // Run configuration.
+      expect(semanticHash({ ...trace, seed: 'other-seed' }), 'seed').not.toBe(before);
+      expect(semanticHash({ ...trace, shots: trace.shots + 1 }), 'shots').not.toBe(before);
+      expect(semanticHash({ ...trace, deviceId: 'other-device' }), 'deviceId').not.toBe(before);
+    });
+  });
+
   it('compiled circuits respect the declared basis gates', () => {
     for (const file of traceFiles()) {
       const trace = parseTraceJson(readFileSync(join(TRACES_DIR, file), 'utf8'));

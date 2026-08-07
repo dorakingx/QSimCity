@@ -1,6 +1,12 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import AxeBuilder from '@axe-core/playwright';
-import { runBellFromLab } from './helpers.js';
+import { pauseReplay, runBellFromLab, skipOnboarding } from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 /**
  * Automated accessibility checks (spec §16): axe scans on every major
@@ -32,7 +38,7 @@ test('accessible 2D mode passes axe before and after a run', async ({ page }) =>
   await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
     timeout: 20_000,
   });
-  await page.getByRole('button', { name: 'Pause replay' }).click();
+  await pauseReplay(page);
   await expectNoViolations(page);
 });
 
@@ -83,7 +89,13 @@ test('keyboard-only entry: skip link, navigation, palette, and run', async ({
 });
 
 test('charts expose complete table alternatives', async ({ page }) => {
-  await page.goto('/');
+  // 64 shots, not the default 1024. This test is about the table
+  // alternatives beside each chart, not about sampling: the assertions
+  // below hold for any shot count. On a loaded CI runner the default run
+  // was consuming most of the 60-second budget before the test reached
+  // what it is actually checking. Raising the timeout would have hidden
+  // that; doing less unnecessary work fixes it.
+  await page.goto('/?sample=bell&shots=64&seed=a11y-tables&device=linear-5');
   await runBellFromLab(page);
   await page
     .getByRole('navigation', { name: 'Modes' })

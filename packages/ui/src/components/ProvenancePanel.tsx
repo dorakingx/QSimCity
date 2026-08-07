@@ -1,6 +1,8 @@
 import type { ReactElement } from 'react';
-import type { Trace } from 'qsimcity-trace';
-import { CertaintyBadge, CERTAINTY_DESCRIPTIONS, SOURCE_DESCRIPTIONS } from './CertaintyBadge.js';
+import type { CertaintyLabel, Trace } from 'qsimcity-trace';
+import { CertaintyBadge } from './CertaintyBadge.js';
+import { CERTAINTY_GLOSSARY, SOURCE_GLOSSARY } from '../content/explanations.js';
+import { useAppStore } from '../store/appStore.js';
 
 /**
  * Provenance and simplification disclosure (spec §10): what produced the
@@ -35,6 +37,7 @@ export const ACTIVE_SIMPLIFICATIONS: readonly { id: string; text: string }[] = [
 ];
 
 export function ProvenancePanel({ trace }: { trace: Trace | null }): ReactElement {
+  const level = useAppStore((s) => s.settings.explanationLevel);
   return (
     <section className="provenance-panel" aria-label="Provenance and simplifications">
       <h3 className="panel-caption">Provenance</h3>
@@ -69,7 +72,7 @@ export function ProvenancePanel({ trace }: { trace: Trace | null }): ReactElemen
             <dd>
               <ul>
                 {[...new Set(trace.events.map((e) => e.source))].map((source) => (
-                  <li key={source}>{SOURCE_DESCRIPTIONS[source]}</li>
+                  <li key={source}>{SOURCE_GLOSSARY[source][level]}</li>
                 ))}
               </ul>
             </dd>
@@ -80,12 +83,12 @@ export function ProvenancePanel({ trace }: { trace: Trace | null }): ReactElemen
       )}
       <h3 className="panel-caption">Certainty legend</h3>
       <dl className="certainty-legend">
-        {Object.entries(CERTAINTY_DESCRIPTIONS).map(([label, description]) => (
+        {(Object.keys(CERTAINTY_GLOSSARY) as CertaintyLabel[]).map((label) => (
           <div key={label} className="certainty-legend-row">
             <dt>
-              <CertaintyBadge certainty={label as keyof typeof CERTAINTY_DESCRIPTIONS} />
+              <CertaintyBadge certainty={label} />
             </dt>
-            <dd>{description}</dd>
+            <dd>{CERTAINTY_GLOSSARY[label][level]}</dd>
           </div>
         ))}
       </dl>

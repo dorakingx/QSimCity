@@ -111,7 +111,8 @@ export const SCENARIOS: readonly Scenario[] = [
   {
     id: 'teleportation',
     title: 'Quantum Teleportation',
-    purpose: 'Move a quantum state using entanglement plus two classical bits.',
+    purpose:
+      'Reconstruct a qubit state at another qubit using shared entanglement plus two classical bits. Nothing carrying the state travels between them; the state is destroyed at the sender and rebuilt at the receiver.',
     seed: 'scenario-teleport',
     kind: 'pipeline',
     config: {

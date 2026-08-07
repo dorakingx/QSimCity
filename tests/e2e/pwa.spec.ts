@@ -1,5 +1,10 @@
-import { expect, test } from '@playwright/test';
-import { trackConsoleErrors } from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { trackConsoleErrors, skipOnboarding } from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 /** PWA behavior (spec §17): manifest, service worker, offline startup. */
 

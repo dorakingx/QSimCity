@@ -91,12 +91,45 @@ schema parsing rather than ignored.
 
 ## Determinism and hashing
 
-`traceContentHash(trace)` is an FNV-1a 64 hash over canonical JSON with
-recursively sorted keys, excluding `traceId` and `createdAt`. Python and
-TypeScript implementations produce byte-identical canonical JSON — including
+Two hashes, because one cannot do both jobs.
+
+**`semanticHash` — what the trace says about the science.** An FNV-1a 64
+hash over canonical JSON of the *semantic view*: schema version, seed,
+input hash, device, shots, noise, input and compiled circuits, initial and
+final layouts, metrics, results, and events with observational telemetry
+stripped. It is stable across independent runs, processes, machines and
+interpreter versions. Regenerating a sample from the same inputs reproduces
+it exactly, and that is what "reproducible" means in this repository.
+
+What it deliberately excludes, and why:
+
+| Excluded | Reason |
+| --- | --- |
+| `traceId` | Derived identity, not a computation result |
+| `createdAt` | Generation timestamp; varies by definition |
+| `telemetry` | Qiskit's pass list genuinely varies between identical runs |
+| `packageVersions` | Provenance about the environment, not about the science |
+
+The last one is load-bearing and was learned the hard way. `packageVersions`
+records `platform.python_version()`. While it sat inside the semantic view,
+a trace generated on Python 3.12.12 and regenerated on 3.12.3 hashed
+differently *even though every circuit, layout, metric, result and event was
+identical* — the hash was reporting on the interpreter rather than on the
+computation, which is precisely what it promises not to do. Excluding it
+costs nothing: a library change that genuinely alters the science alters
+results, metrics or events, and all three are hashed.
+
+**`artifactHash` — the exact bytes.** An FNV-1a 64 hash of the serialized
+document, timestamps, telemetry, versions and all. Any byte-level change
+moves it, so it detects tampering with a distributed artifact. Traces are
+therefore *not* byte-identical between runs, by design; their science is.
+
+Python and TypeScript produce byte-identical canonical JSON — including
 ECMAScript number formatting rules — so the committed sample traces in
 `examples/traces/` are verified from both languages against
-`examples/traces/manifest.json`.
+`examples/traces/manifest.json`, and parity tests in both languages assert
+that version-only changes preserve `semanticHash` while changing
+`artifactHash`.
 
 ## Migration
 

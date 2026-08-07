@@ -1,64 +1,76 @@
 # Visual Quality Rubric
 
 Scoring 1–5 per category. **Every category must score at least 4** and there
-must be zero blocking defects.
+must be zero blocking defects. This rubric is the project's own assessment;
+the independent scores that gate the WISER release come from four external
+adversarial reviewers and are recorded in
+`docs/audits/wiser-adversarial-reviews.md` with machine-checked thresholds
+(minimum 4.5 per category, zero open blockers or majors — see
+`tools/wiser/record-reviews.ts`).
 
-Evidence: the 11 committed baselines in
-`tests/e2e/visual.spec.ts-snapshots/`, inspected as images (not merely
-generated) during review passes on 2026-07-30 and 2026-07-31.
+Evidence: the 12 committed Playwright baselines in
+`tests/e2e/visual.spec.ts-snapshots/` and the 15 evidence screenshots in
+`release-evidence/wiser-screenshots/` (desktop and mobile at day, golden
+hour, and night, at overview and street level, plus the Lab results,
+City Legend, and Assignment Hall interior exhibits), inspected as images
+during review passes through 2026-08-05.
 
 ## Scores
 
 | Category | Score | Justification |
 | --- | --- | --- |
-| Composition | 4 | Camera frames the full 490-unit city span with no district cut off; the pipeline reads west→east, left→right, matching data flow. Fixed from 2 after the first review found the eastern half off-screen. |
-| Visual hierarchy | 4 | Landmarks dominate their districts; labels float above the silhouette; the Scheduling Tower reads as the tallest structure; HUD sits at the edges and no longer occludes the QPU Grid. |
-| Originality | 5 | Every mesh, icon, and the logo are generated procedurally from source in this repository. No third-party art, no game assets, no resemblance to protected branding. |
-| District legibility | 4 | Twelve distinct accent colors paired with names, icons, and different architectural kits; districts are separable at skyline, street, and walking distance. |
-| Semantic animation | 4 | Motion is meaningful: the job token tracks the pipeline stage, district plates pulse on activity, QPU pylons and bridges light for active qubits and gates, noise weather appears only with noise. Nothing decorative moves. |
-| Interaction clarity | 4 | Camera-mode buttons show their shortcut keys; consoles prompt "press E" at walking distance; picking aligns with visible geometry; the Inspector opens on selection. |
-| Typography | 4 | One family, consistent scale, strong contrast on dark and light backgrounds; labels are stroked for legibility against any district color. |
-| Responsive quality | 4 | Mobile portrait and landscape baselines are clean; panels reflow to full width below 760px; the 2D grid collapses to one column below 1100px. |
-| Polish | 4 | Consistent radii, spacing, and focus treatment; no clipped text, no texture or shader failures, no empty placeholders; console output clean across four browsers. |
-| Scientific honesty | 5 | Certainty labels appear beside every number; the Provenance panel lists active simplifications; nothing animates quantum amplitudes as transported objects. |
+| Composition | 4.5 | The overview frames a coastal city with a real skyline cluster, harbor, and farmland fringe; the pipeline still reads west→east along the Processing Boulevard. Street level frames a boulevard with lane markings, median trees, and lamps leading toward the tower cluster. |
+| Visual hierarchy | 4.5 | The downtown cluster, Scheduling Tower, and Observatory dominate their skylines; district accent glow is subtle by day and legible at night; HUD chips sit at the frame edges. |
+| Originality | 5 | Every mesh and texture is generated procedurally from source in this repository (hash-deterministic facades, computed starfield). No third-party art and no resemblance to protected branding. |
+| District legibility | 4.5 | Districts differ by massing recipe (podium towers, office slabs, row blocks, industrial halls, tank farms, warehouses) and hand-authored landmarks, separable without reading a single label. |
+| Urban coherence | 4.5 | A real road graph (arterials, collectors, local streets) subdivides blocks into parcels; buildings meet sidewalks; outskirts fade through housing, groves, and hedgerowed fields to the terrain — no floating geometry, no empty districts. |
+| Semantic animation | 4.5 | Motion is meaningful and legend-documented: the convoy carries the job between stages, couriers carry classical messages, logical-qubit banners ride their physical pylons through SWAPs, harbor count stacks grow with measured shots, and weather appears only with noise. Ambient traffic is explicitly labeled ambience in the City Legend. |
+| Interaction clarity | 4.5 | Camera chips show shortcut keys; consoles prompt at walking distance and rotate their screens toward the room door; the interior is genuinely enterable through its doorway; missions give immediate feedback; the Legend explains every moving class. |
+| Typography | 4 | One family, consistent scale, stroked labels legible against any district color, dark and light backgrounds. |
+| Responsive quality | 4.5 | Mobile portrait and landscape baselines are clean; the touch joystick and wrapped camera chips keep controls reachable; the Legend moved to the top-right on narrow screens after a reviewer flagged the overlap. |
+| Polish | 4.5 | Terrain skirt and fog close the horizon; interiors are lit; no clipped text, placeholder boxes, or shader failures; console output clean across four browsers; a ten-minute production soak drives every mode without errors. |
+| Scientific honesty | 5 | Certainty labels beside every number, partial mid-replay counts marked, the City Legend states what each moving thing represents and what it does not (nothing animates amplitudes or quantum states), and the ideal-vs-noisy comparison is reproducible against Qiskit. |
 
 **Minimum score: 4. No category is below 4.**
 
 ## Blocking defects
 
-**Zero remaining.** Defects found by review and repaired:
+**Zero remaining.** Defects found by review passes on the real-city rebuild
+and repaired:
 
 | Defect | Severity | Resolution |
 | --- | --- | --- |
-| Eastern half of the city cut off; half the frame empty sky | Blocking | Reframed the default camera on the city centroid at a distance that fits the full span |
-| Buildings read as tiny placeholder boxes against oversized district plates | Blocking | Scaled the architectural kits 2× (collision follows), tightened filler placement |
-| Night sky rendered as flat black void | Blocking | Added starfield, ground survey grid, and deterministic window lights; raised night ambient |
-| Day mode rendered almost entirely black | Blocking | The ground plane kept its night color; it now responds to time of day |
-| Walk mode placed the camera outside the city facing away from it | Blocking | Entering first-person/fly now positions the viewer inside the city facing the current view |
-| Inspector panel occluded the QPU Grid on arrival | Major | Inspector now opens on selection instead of by default |
+| Glass towers rendered near-black in daylight | Blocking | Lowered glass metalness, lightened palettes, raised hemisphere and environment light |
+| Roads invisible from overview | Blocking | Fixed ribbon triangle winding that produced downward-facing normals |
+| Horizon showed the terrain plate edge against sky | Major | Terrain skirt to ±2300 with fog matched to the horizon color per time of day |
+| Night city too dark to read | Major | Raised night hemisphere light, window glow, lamp pools, and star size |
+| Golden hour crushed the foreground | Major | Raised golden exposure and rebalanced fog to the horizon tint |
+| Walk mode spawned inside facades | Major | Spawn snaps to the nearest arterial driving lane facing along the road |
+| Mobile Legend button overlapped camera controls | Major | Legend moves to the top-right below 760 px; camera chips wrap |
+| Interior rooms read unlit; console showed its back to the door | Major | Doorway-biased warm room light; interior consoles rotate toward the door |
+| 3D remounts leaked ~11.5 MiB per view switch | Blocking (soak) | Input listeners abort on dispose and the WebGL context is force-released, so detached canvases no longer retain disposed engines |
 
 ## Adversarial visual review
 
-A second pass, taken from the stance of a skeptical reviewer looking for
-reasons to reject:
+The binding adversarial pass is run by AI agents, not by human or external
+reviewers (see [`AI_USAGE.md`](AI_USAGE.md)): four separated reviewer stances
+(art direction, quantum accuracy, child UX and accessibility, performance)
+score the same five categories with cited screenshots in
+`docs/audits/wiser-adversarial-reviews.md`, and `pnpm wiser:reviews` fails
+the release gate if any category falls below 4.5 or any blocker or major
+stays open. Questions a skeptical reviewer asks, answered from the current
+evidence:
 
-- *"Is this just colored boxes?"* — Partly, at the filler level: the kits are
-  built from primitives. But each district uses a **different** part
-  vocabulary (chimneys, cracking columns, cranes, domes, dishes, gantries,
-  rail bridges) and a distinct named landmark, so districts are
-  distinguishable without labels. Accepted at 4, not 5.
-- *"Do the labels survive a busy skyline?"* — Labels are stroked, depth-test
-  disabled, and positioned above the tallest structure per district. Verified
-  in the night, day, and mobile-landscape baselines.
-- *"Does anything mislead scientifically?"* — The only object that travels is
-  the job token, which tracks the pipeline **stage**, not any amplitude. Noise
-  is weather over the QPU district, not a substance flowing along roads.
-  Confirmed in the adversarial scientific review (P8).
-- *"Is the first impression competitive with the benchmark?"* — The night
-  skyline with window lights, starfield, and district glow is comparable in
-  ambition. QSimCity does not match a mature project's asset depth, which is
-  why composition and legibility score 4 rather than 5. The claim made in
-  `docs/reference-benchmark.md` is parity on first impression, not superiority.
-- *"Any resemblance to protected branding?"* — None. No logotype, character,
-  map, or interface element resembles any commercial game. The mark is an
-  original circuit-triangle glyph.
+- *"Is this just colored boxes?"* — Massing is still primitive-based, but
+  parcels carry varied recipes with procedural facades (lit-window bays,
+  mullions, banding), landmarks are hand-authored, and the street level
+  holds up with lane markings, crosswalks, lamps, trees, and interiors.
+- *"Does anything mislead scientifically?"* — Everything that moves is
+  classical: the convoy is the compiled job, couriers are classical
+  messages, banners are logical-qubit identities. The City Legend states
+  each mapping with source and certainty, on screen, one click away.
+- *"Does it hold up on a phone?"* — Mobile baselines and evidence
+  screenshots show the same city with a touch joystick, reachable chips,
+  and 30+ FPS under 4x CPU throttle.
+- *"Any resemblance to protected branding?"* — None. No logotype,
+  character, map, or interface element resembles any commercial game.

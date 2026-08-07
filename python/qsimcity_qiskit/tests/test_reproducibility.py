@@ -171,6 +171,56 @@ class TestSemanticChangesAreDetected:
         assert semantic_hash(trace) != before
 
 
+class TestEnvironmentVersionsAreNotSemantic:
+    """The contract that made CI red while the local gate said 33/33.
+
+    `packageVersions` records `platform.python_version()`. It used to sit
+    inside the semantic view, so a trace generated on Python 3.12.12 could
+    not be reproduced on a runner with 3.12.3 even though every circuit,
+    layout, metric, result and event was identical — the hash was reporting
+    on the interpreter, not on the science.
+    """
+
+    def test_package_versions_do_not_affect_the_semantic_hash(self) -> None:
+        trace = _bell()
+        before = semantic_hash(trace)
+        trace.packageVersions = {
+            **trace.packageVersions,
+            "python": "3.99.0",
+            "qiskit": "99.0.0",
+            "qiskit-aer": "99.0.0",
+        }
+        assert semantic_hash(trace) == before
+
+    def test_python_patch_version_alone_does_not_affect_the_semantic_hash(self) -> None:
+        """The exact CI-versus-local difference, pinned as a regression test."""
+        trace = _bell()
+        trace.packageVersions = {**trace.packageVersions, "python": "3.12.12"}
+        local = semantic_hash(trace)
+        trace.packageVersions = {**trace.packageVersions, "python": "3.12.3"}
+        assert semantic_hash(trace) == local
+
+    def test_package_versions_still_affect_the_artifact_hash(self) -> None:
+        trace = _bell()
+        before = artifact_hash(trace.to_json())
+        trace.packageVersions = {**trace.packageVersions, "python": "3.99.0"}
+        assert artifact_hash(trace.to_json()) != before
+
+    def test_package_versions_are_still_recorded_as_provenance(self) -> None:
+        trace = _bell()
+        document = json.loads(trace.to_json())
+        assert "python" in document["packageVersions"]
+        assert "qiskit" in document["packageVersions"]
+        assert "qiskit-aer" in document["packageVersions"]
+
+    def test_identity_and_timestamp_do_not_affect_the_semantic_hash(self) -> None:
+        trace = _bell()
+        before = semantic_hash(trace)
+        trace.traceId = "t-something-else"
+        trace.createdAt = "2000-01-01T00:00:00.000Z"
+        assert semantic_hash(trace) == before
+
+
 class TestArtifactIntegrity:
     def test_any_byte_tampering_changes_the_artifact_hash(self) -> None:
         serialized = _bell().to_json()

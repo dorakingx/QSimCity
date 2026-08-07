@@ -1,6 +1,7 @@
 {
   "name": "@qsimcity/world",
   "version": "1.0.0",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -11,6 +12,7 @@
   },
   "devDependencies": {
     "@qsimcity/domain": "workspace:*",
+    "@qsimcity/reference-compiler": "workspace:*",
     "@qsimcity/simulator": "workspace:*"
   }
 }

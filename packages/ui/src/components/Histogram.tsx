@@ -39,7 +39,10 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
     0.0001,
     ...shownKeys.flatMap((k) => series.map((s, i) => (s.counts[k] ?? 0) / totals[i]!)),
   );
-  const barGroupW = 34;
+  // Few outcomes get wide bar groups so a two-bar Bell histogram fills its
+  // panel instead of stranding two slivers at the left edge (art review):
+  // groups stretch toward a ~460px plot, clamped for many-outcome charts.
+  const barGroupW = Math.max(34, Math.min(200, Math.floor(440 / shownKeys.length)));
   const chartW = 60 + shownKeys.length * barGroupW;
   const chartH = 170;
   const plotH = 120;
@@ -62,6 +65,11 @@ export function Histogram({ title, series, maxBars = 16 }: HistogramProps): Reac
         <svg
           width={chartW}
           height={chartH}
+          // Scale down inside narrow containers (phone mission panel)
+          // instead of overflowing them: the chart must never push its
+          // panel wider than the viewport (child-UX review regression).
+          viewBox={`0 0 ${chartW} ${chartH}`}
+          style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
           role="img"
           aria-label={`Histogram: ${title}. A data table alternative follows.`}
         >

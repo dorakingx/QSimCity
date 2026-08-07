@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CITY_BOUNDS, generateBuildings } from '@qsimcity/world';
+import { CITY_BOUNDS, generateBuildings, terrainHeight } from '@qsimcity/world';
 import { CameraRig } from '../src/cameras.js';
 
 /**
  * Camera rig tests: pure math, no WebGL. Covers all four modes, input
- * handling, collision resolution, and city clamping (spec §14).
+ * handling, damping, collision resolution, and city clamping (W5.1).
  */
 
 const buildings = generateBuildings();
@@ -15,6 +15,11 @@ beforeEach(() => {
 
 function rig(): CameraRig {
   return new CameraRig(16 / 9, buildings);
+}
+
+/** Advance the damped rig several frames so goals settle. */
+function settle(r: CameraRig, frames = 30): void {
+  for (let i = 0; i < frames; i++) r.update(1 / 30);
 }
 
 describe('default framing', () => {
@@ -38,11 +43,12 @@ describe('default framing', () => {
 });
 
 describe('mode switching', () => {
-  it('first-person places the walker inside the city at eye height', () => {
+  it('first-person places the walker inside the city at 1.7 m above ground', () => {
     const r = rig();
     r.setMode('first-person');
     expect(r.mode).toBe('first-person');
-    expect(r.position.y).toBeCloseTo(1.7, 5);
+    const ground = terrainHeight(r.position.x, r.position.z);
+    expect(r.position.y).toBeCloseTo(ground + 1.7, 5);
     expect(r.position.x).toBeGreaterThan(CITY_BOUNDS.minX);
     expect(r.position.x).toBeLessThan(CITY_BOUNDS.maxX);
   });
@@ -68,12 +74,13 @@ describe('mode switching', () => {
 });
 
 describe('pointer and wheel input', () => {
-  it('dragging rotates the orbit camera', () => {
+  it('dragging rotates the orbit camera (damped)', () => {
     const r = rig();
     const before = r.position.clone();
     r.onPointerDown(100, 100);
     r.onPointerMove(200, 140);
     r.onPointerUp();
+    settle(r);
     expect(r.position.distanceTo(before)).toBeGreaterThan(1);
   });
 
@@ -84,14 +91,17 @@ describe('pointer and wheel input', () => {
     expect(r.position.distanceTo(before)).toBe(0);
   });
 
-  it('wheel zooms within clamped bounds', () => {
+  it('wheel zooms within clamped bounds (damped)', () => {
     const r = rig();
     const start = r.position.length();
     r.onWheel(500);
+    settle(r);
     expect(r.position.length()).toBeGreaterThan(start);
     for (let i = 0; i < 200; i++) r.onWheel(-500);
+    settle(r, 60);
     const closest = r.position.length();
     for (let i = 0; i < 200; i++) r.onWheel(500);
+    settle(r, 60);
     expect(r.position.length()).toBeGreaterThan(closest);
   });
 
@@ -120,6 +130,7 @@ describe('touch input', () => {
     r.onTouchStart([{ x: 100, y: 100 }]);
     r.onTouchMove([{ x: 220, y: 130 }]);
     r.onTouchEnd();
+    settle(r);
     expect(r.position.distanceTo(before)).toBeGreaterThan(1);
   });
 
@@ -135,6 +146,7 @@ describe('touch input', () => {
       { x: 180, y: 100 },
     ]);
     r.onTouchEnd();
+    settle(r);
     expect(r.position.length()).not.toBeCloseTo(before, 3);
   });
 });
@@ -157,7 +169,7 @@ describe('movement, collision, and bounds', () => {
     const r = rig();
     const before = r.position.clone();
     r.onKeyDown('ArrowRight');
-    r.update(0.3);
+    for (let i = 0; i < 10; i++) r.update(0.1);
     expect(r.position.distanceTo(before)).toBeGreaterThan(0.5);
   });
 
@@ -180,10 +192,10 @@ describe('movement, collision, and bounds', () => {
     r.setMode('fly');
     r.onKeyDown('KeyW');
     for (let i = 0; i < 2000; i++) r.update(0.1);
-    expect(r.position.x).toBeGreaterThanOrEqual(CITY_BOUNDS.minX - 41);
-    expect(r.position.x).toBeLessThanOrEqual(CITY_BOUNDS.maxX + 41);
-    expect(r.position.z).toBeGreaterThanOrEqual(CITY_BOUNDS.minZ - 41);
-    expect(r.position.z).toBeLessThanOrEqual(CITY_BOUNDS.maxZ + 41);
+    expect(r.position.x).toBeGreaterThanOrEqual(CITY_BOUNDS.minX - 81);
+    expect(r.position.x).toBeLessThanOrEqual(CITY_BOUNDS.maxX + 81);
+    expect(r.position.z).toBeGreaterThanOrEqual(CITY_BOUNDS.minZ - 81);
+    expect(r.position.z).toBeLessThanOrEqual(CITY_BOUNDS.maxZ + 81);
   });
 
   it('fly mode ascends and descends with Q and E', () => {
@@ -228,6 +240,7 @@ describe('flyTo transitions', () => {
     r.setMode('first-person');
     r.flyTo(70, -10);
     expect(r.position.x).toBeCloseTo(70, 3);
-    expect(r.position.y).toBeCloseTo(1.7, 3);
+    const ground = terrainHeight(r.position.x, r.position.z);
+    expect(r.position.y).toBeCloseTo(ground + 1.7, 3);
   });
 });

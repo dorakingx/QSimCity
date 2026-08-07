@@ -1,8 +1,16 @@
 import { useEffect, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 
-/** Transient status message; polite live region, auto-dismisses. */
-export function Toast(): ReactElement | null {
+/**
+ * Transient status message; polite live region, auto-dismisses.
+ *
+ * The live region is mounted for the whole session and only its text
+ * changes. Mounting a `role="status"` element that already contains its
+ * message is the unreliable pattern: assistive technology has to observe
+ * the region before the change to announce it, so an earlier version that
+ * returned `null` when idle announced nothing at all in several readers.
+ */
+export function Toast(): ReactElement {
   const toast = useAppStore((s) => s.toast);
   const { clearToast } = useAppStore.getState();
 
@@ -12,13 +20,19 @@ export function Toast(): ReactElement | null {
     return () => clearTimeout(timer);
   }, [toast, clearToast]);
 
-  if (!toast) return null;
   return (
-    <div className="toast" role="status" aria-live="polite">
+    <div
+      className={toast ? 'toast' : 'toast toast-idle'}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {toast}
-      <button type="button" aria-label="Dismiss message" onClick={clearToast}>
-        ×
-      </button>
+      {toast && (
+        <button type="button" aria-label="Dismiss message" onClick={clearToast}>
+          ×
+        </button>
+      )}
     </div>
   );
 }

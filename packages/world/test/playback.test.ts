@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { getSampleCircuit, parseQasm } from '@qsimcity/domain';
 import { runExperiment } from '@qsimcity/simulator';
-import { TraceBuilder, deriveTraceId } from 'qsimcity-trace';
+import { TraceBuilder, deriveTraceId, type Trace } from 'qsimcity-trace';
 import {
   activityAtTick,
+  countsAtTick,
   eventsAt,
   eventsUpTo,
   maxTickOf,
+  swapExchangesAt,
   tickDurationMs,
   BASE_TICK_MS,
 } from '../src/playback.js';
+import { convoyAt, couriersAt, districtActivityAt } from '../src/agents.js';
+import { logicalToPhysicalAt } from '../src/mapping.js';
+import { weatherAt } from '../src/weather.js';
+import { compiledPipelineTrace, loadSampleTrace } from './fixtures.js';
 
 async function bellTrace() {
   const qasm = getSampleCircuit('bell').qasm;
@@ -147,5 +153,176 @@ describe('playback model', () => {
     expect(tickDurationMs(2)).toBe(BASE_TICK_MS / 2);
     expect(tickDurationMs(0.01)).toBe(BASE_TICK_MS / 0.1);
     expect(tickDurationMs(50)).toBe(BASE_TICK_MS / 5);
+  });
+});
+
+function measurementBuilder(seed: string): TraceBuilder {
+  return new TraceBuilder({
+    traceId: deriveTraceId(seed, 'fixture'),
+    seed,
+    generator: 'test',
+    generatorVersion: '1.0.0',
+    packageVersions: {},
+    programSource: 'fixture',
+    deviceId: null,
+    shots: 4,
+    noise: null,
+  });
+}
+
+function measure(builder: TraceBuilder, clbit: number, outcome: 0 | 1, phase: string): void {
+  builder.emit({
+    eventType: 'measurement.sampled',
+    stage: 'measurement',
+    source: 'sampled_simulation',
+    logicalQubits: [clbit],
+    payload: { clbit, outcome, phase },
+  });
+}
+
+function buildMeasurementTrace(builder: TraceBuilder, numClbits: number): Trace {
+  return builder.build({
+    inputCircuit: {
+      name: 'fixture',
+      numQubits: numClbits,
+      numClbits,
+      cregs: [],
+      instructions: [],
+    },
+  });
+}
+
+describe('countsAtTick (W4.4)', () => {
+  it('accumulates the representative record bit by bit, then per phase', () => {
+    // Ideal phase measures c0=1, c1=0; noisy phase measures c0=0, c1=1.
+    const builder = measurementBuilder('counts');
+    measure(builder, 0, 1, 'ideal');
+    measure(builder, 1, 0, 'ideal');
+    measure(builder, 0, 0, 'noisy');
+    measure(builder, 1, 1, 'noisy');
+    const trace = buildMeasurementTrace(builder, 2);
+    // clbit 0 is rightmost; positions not yet measured render as '?'.
+    expect(countsAtTick(trace, 0)).toEqual(new Map());
+    expect(countsAtTick(trace, 1)).toEqual(new Map([['?1', 1]]));
+    expect(countsAtTick(trace, 2)).toEqual(new Map([['01', 1]]));
+    expect(countsAtTick(trace, 3)).toEqual(
+      new Map([
+        ['01', 1],
+        ['?0', 1],
+      ]),
+    );
+    expect(countsAtTick(trace, 4)).toEqual(
+      new Map([
+        ['01', 1],
+        ['10', 1],
+      ]),
+    );
+  });
+
+  it('starts a new record when a clbit is measured again in the same phase', () => {
+    const builder = measurementBuilder('counts-mid-circuit');
+    measure(builder, 0, 1, 'ideal');
+    measure(builder, 0, 0, 'ideal');
+    const trace = buildMeasurementTrace(builder, 1);
+    expect(countsAtTick(trace, maxTickOf(trace))).toEqual(
+      new Map([
+        ['1', 1],
+        ['0', 1],
+      ]),
+    );
+  });
+
+  it('counts identical records into the same bitstring', () => {
+    const builder = measurementBuilder('counts-equal');
+    measure(builder, 0, 1, 'ideal');
+    measure(builder, 0, 1, 'ideal');
+    const trace = buildMeasurementTrace(builder, 1);
+    expect(countsAtTick(trace, maxTickOf(trace))).toEqual(new Map([['1', 2]]));
+  });
+
+  it('matches the representative outcomes of a real simulator run at the final tick', async () => {
+    const qasm = getSampleCircuit('bell').qasm;
+    const { trace } = await runExperiment(parseQasm(qasm), {
+      shots: 50,
+      seed: 'world-counts',
+      programSource: qasm,
+    });
+    const counts = countsAtTick(trace, maxTickOf(trace));
+    // One representative record per pass (ideal only: noise is off), fully
+    // measured, and its bitstring must be one the aggregate results contain.
+    let total = 0;
+    for (const [bits, count] of counts) {
+      total += count;
+      expect(bits).not.toContain('?');
+      expect(trace.results.idealCounts!.counts[bits]).toBeGreaterThan(0);
+    }
+    expect(total).toBe(1);
+  });
+});
+
+describe('swapExchangesAt', () => {
+  it('reports exactly the pairwise SWAP events at the tick', () => {
+    const builder = measurementBuilder('swaps');
+    builder.emit({
+      eventType: 'routing.swap_inserted',
+      stage: 'routing',
+      source: 'reference_compiler',
+      physicalQubits: [1, 2],
+      payload: { physicalQubits: [1, 2] },
+    });
+    builder.emit({
+      eventType: 'routing.swap_inserted',
+      stage: 'routing',
+      source: 'reference_compiler',
+      physicalQubits: [0, 1],
+      payload: { physicalQubits: [0, 1] },
+    });
+    const trace = buildMeasurementTrace(builder, 1);
+    const [first, second] = trace.events;
+    expect(swapExchangesAt(trace, first!.logicalTick)).toEqual([[1, 2]]);
+    expect(swapExchangesAt(trace, second!.logicalTick)).toEqual([[0, 1]]);
+    expect(swapExchangesAt(trace, second!.logicalTick + 1)).toEqual([]);
+  });
+
+  it('excludes the Qiskit bridge aggregate permutation summary', () => {
+    const trace = loadSampleTrace('swap-storm');
+    const summary = trace.events.find((e) => e.eventType === 'routing.swap_inserted')!;
+    expect(Array.isArray(summary.payload['finalLayout'])).toBe(true);
+    expect(swapExchangesAt(trace, summary.logicalTick)).toEqual([]);
+  });
+});
+
+describe('scrub determinism (W4.5)', () => {
+  /** Every semantic derivation the city renders from, evaluated at a tick. */
+  function citySnapshot(trace: Trace, tick: number) {
+    return {
+      activity: activityAtTick(trace, tick),
+      counts: countsAtTick(trace, tick),
+      swaps: swapExchangesAt(trace, tick),
+      mapping: logicalToPhysicalAt(trace, tick),
+      weather: weatherAt(trace, tick),
+      convoy: convoyAt(trace, tick),
+      couriers: couriersAt(trace, tick),
+      districtActivity: districtActivityAt(trace, tick),
+    };
+  }
+
+  it('reproduces identical state after scrubbing away and back', async () => {
+    const traces = [
+      loadSampleTrace('swap-storm'),
+      loadSampleTrace('bell'),
+      (await compiledPipelineTrace({ sampleId: 'swap-storm', layoutMethod: 'trivial' })).trace,
+    ];
+    for (const trace of traces) {
+      const maxTick = maxTickOf(trace);
+      for (const tick of [0, Math.floor(maxTick / 2), maxTick]) {
+        const before = citySnapshot(trace, tick);
+        // Scrub elsewhere, including out-of-range ticks, then return.
+        for (const elsewhere of [maxTick, 0, -3, maxTick + 10, Math.floor(maxTick / 3)]) {
+          citySnapshot(trace, elsewhere);
+        }
+        expect(citySnapshot(trace, tick)).toEqual(before);
+      }
+    }
   });
 });

@@ -1,0 +1,179 @@
+{
+  "commitSha": "d7609fc26d6c407d47ed59af22e20677fa8f9443",
+  "sourceTreeHash": "2d85dcc67da479c1",
+  "worktreeDirty": false,
+  "generatedAt": "2026-08-07T13:39:39.460Z",
+  "tool": "wiser-fps-benchmark",
+  "toolVersion": "4.0.0",
+  "command": "pnpm wiser:fps",
+  "exitStatus": 0,
+  "inputHash": "2b198494c4abf65b",
+  "thresholds": {
+    "minDesktopMedianFps": 50,
+    "minMobileMedianFps": 30,
+    "maxDesktopP95Ms": 33,
+    "maxMobileP95Ms": 50,
+    "minUncappedDesktopMedianFps": 120,
+    "maxUncappedDesktopP95Ms": 12,
+    "minStressedMedianFps": 30
+  },
+  "measurements": {
+    "desktopMedianFps": 120.5,
+    "desktopP50Ms": 8.3,
+    "desktopP95Ms": 10.8,
+    "desktopP99Ms": 11.3,
+    "desktopWorstFrameMs": 12.6,
+    "desktopLongFrames": 0,
+    "desktopDroppedFrames": 0,
+    "desktopRefreshCapped": true,
+    "mobileEmulatedMedianFps": 120.5,
+    "mobileEmulatedP50Ms": 8.3,
+    "mobileEmulatedP95Ms": 9.9,
+    "mobileEmulatedP99Ms": 10.6,
+    "mobileEmulatedWorstFrameMs": 19.5,
+    "mobileEmulatedLongFrames": 0,
+    "mobileEmulatedDroppedFrames": 1,
+    "mobileEmulatedRefreshCapped": true,
+    "displayRefreshIntervalMs": 8.3,
+    "desktopDrawCalls": 178,
+    "desktopTriangles": 399266,
+    "mobileCpuThrottle": 4,
+    "segments": 7,
+    "uncappedDesktopMedianFps": 344.8,
+    "uncappedDesktopP95Ms": 3.1
+  },
+  "passed": true,
+  "detail": {
+    "desktopSegments": [
+      {
+        "name": "overview-replay",
+        "frames": 580,
+        "p50Ms": 8.3,
+        "p95Ms": 10.9,
+        "p99Ms": 11.4,
+        "worstMs": 12.1,
+        "medianFps": 120.5,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": true
+      },
+      {
+        "name": "orbit-drag-replay",
+        "frames": 581,
+        "p50Ms": 8.3,
+        "p95Ms": 9.8,
+        "p99Ms": 10.9,
+        "worstMs": 11.7,
+        "medianFps": 120.5,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": true
+      },
+      {
+        "name": "street-walk-replay",
+        "frames": 665,
+        "p50Ms": 8.3,
+        "p95Ms": 10.9,
+        "p99Ms": 12.1,
+        "worstMs": 12.6,
+        "medianFps": 120.5,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": true
+      }
+    ],
+    "mobileSegments": [
+      {
+        "name": "mobile-replay-static",
+        "frames": 581,
+        "p50Ms": 8.3,
+        "p95Ms": 10,
+        "p99Ms": 10.4,
+        "worstMs": 10.7,
+        "medianFps": 120.5,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": true
+      },
+      {
+        "name": "mobile-replay-drag",
+        "frames": 594,
+        "p50Ms": 8.3,
+        "p95Ms": 9.9,
+        "p99Ms": 10.6,
+        "worstMs": 11.1,
+        "medianFps": 120.5,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": true
+      }
+    ],
+    "stressSegments": [
+      {
+        "name": "desktop-cpu-throttled-6x-vsync-disabled",
+        "frames": 1317,
+        "p50Ms": 3.7,
+        "p95Ms": 4.8,
+        "p99Ms": 5.7,
+        "worstMs": 7.9,
+        "medianFps": 270.3,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": false
+      }
+    ],
+    "uncappedSegments": [
+      {
+        "name": "desktop-overview-vsync-disabled",
+        "frames": 1721,
+        "p50Ms": 2.9,
+        "p95Ms": 3.1,
+        "p99Ms": 3.8,
+        "worstMs": 5.2,
+        "medianFps": 344.8,
+        "longFrames": 0,
+        "droppedFrames": 0,
+        "discardedSamples": 0,
+        "refreshCapped": false
+      }
+    ],
+    "environment": {
+      "desktop": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+        "devicePixelRatio": 1,
+        "viewport": {
+          "width": 1920,
+          "height": 1080
+        },
+        "hardwareConcurrency": 12,
+        "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Pro, Unspecified Version)",
+        "webglVendor": "Google Inc. (Apple)"
+      },
+      "mobileEmulated": {
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+        "devicePixelRatio": 2,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "hardwareConcurrency": 12,
+        "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2 Pro, Unspecified Version)",
+        "webglVendor": "Google Inc. (Apple)"
+      },
+      "qualityPreset": "high (application default)",
+      "warmupFramesDiscarded": 20
+    },
+    "interpretation": {
+      "desktop": "Every desktop segment sat at the display refresh interval. The desktop figure is a floor (\"at least this fast\"), not a ceiling; true headroom is unmeasured on this display.",
+      "mobile": "Chromium device emulation at 390x844 with DPR 2 and a 4x CPU throttle, rendering on the host GPU. This is NOT real-device performance: it constrains CPU only, and a real phone GPU has far less fill rate.",
+      "stress": "A supplementary 6x CPU-throttled desktop pass is recorded to show behaviour when the main thread is starved.",
+      "uncapped": "A final pass runs in a browser launched with --disable-gpu-vsync and --disable-frame-rate-limit, so requestAnimationFrame is not paced by the display. This is the only figure here that measures the renderer ceiling rather than the display cadence."
+    }
+  }
+}

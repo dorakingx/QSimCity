@@ -339,6 +339,16 @@ def semantic_view_of_document(data: dict[str, Any]) -> dict[str, Any]:
     Operates on the document rather than the dataclass so a committed
     `*.qsimcity.json` file can be verified exactly as it sits on disk.
     Must match `semanticView` in packages/trace/src/hashing-contract.ts.
+
+    `packageVersions` is deliberately absent. It is provenance about the
+    environment that produced the trace, not about the science in it, and
+    including it broke the promise this hash exists to make: a trace
+    generated on Python 3.12.12 and regenerated on 3.12.3 hashed
+    differently while every circuit, layout, metric, result and event was
+    identical. Excluding it costs nothing, because a library change that
+    actually alters the science alters results, metrics or events — and
+    those are hashed. The versions stay in the document as provenance and
+    in `artifact_hash`.
     """
     events = []
     for event in data["events"]:
@@ -371,7 +381,6 @@ def semantic_view_of_document(data: dict[str, Any]) -> dict[str, Any]:
         "finalLayout": data["finalLayout"],
         "metrics": data["metrics"],
         "results": data["results"],
-        "packageVersions": data["packageVersions"],
         "events": events,
     }
 

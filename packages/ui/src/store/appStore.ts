@@ -3,8 +3,16 @@ import { getSampleCircuit, DEVICES } from '@qsimcity/domain';
 import type { NoiseModel } from '@qsimcity/simulator';
 import { maxTickOf, type InteractiveAction } from '@qsimcity/world';
 import { parseTraceJson, serializeTrace, traceFileName, type Trace } from 'qsimcity-trace';
+import type { ExplanationLevel } from '../content/explanations.js';
+import {
+  clearProgressStorage,
+  DEFAULT_PROGRESS,
+  loadProgress,
+  persistProgress,
+  type LearningProgress,
+} from './progress.js';
 
-export type AppMode = 'home' | 'explore' | 'lab' | 'compare' | 'accessible-2d' | 'tour';
+export type AppMode = 'home' | 'learn' | 'explore' | 'lab' | 'compare' | 'accessible-2d' | 'tour';
 
 export type SelectionTarget =
   | { kind: 'district'; districtId: string }
@@ -25,14 +33,23 @@ export interface RunConfig {
   optimize: boolean;
 }
 
+export type TimeOfDaySetting = 'day' | 'golden' | 'night';
+
 export interface Settings {
   quality: 'high' | 'balanced' | 'low';
   audioEnabled: boolean;
   audioVolume: number;
   reducedMotion: boolean;
-  dayNight: 'day' | 'night';
+  /**
+   * Whether unmodified single-character keyboard shortcuts are active.
+   * WCAG 2.1.4 (Level A) requires a way to turn them off; this is it.
+   */
+  singleKeyShortcuts: boolean;
+  timeOfDay: TimeOfDaySetting;
   particles: boolean;
   labels: boolean;
+  /** How much prior knowledge the narration assumes (spec section 7.4). */
+  explanationLevel: ExplanationLevel;
 }
 
 export interface RunError {
@@ -61,14 +78,31 @@ export const DEFAULT_CONFIG: RunConfig = {
   optimize: true,
 };
 
+/**
+ * The operating system's motion preference, read once at module load.
+ *
+ * The CSS `prefers-reduced-motion` block in `styles.css` cannot reach a
+ * requestAnimationFrame loop, so the 3D city kept its traffic, strollers
+ * and camera damping running for a user who had asked the OS for
+ * stillness — and the Settings checkbox they would have had to find
+ * manually rendered unchecked, contradicting their stated preference.
+ * Seeding the default from the media query fixes both. An explicit choice
+ * stored in localStorage still wins over it.
+ */
+export function prefersReducedMotion(): boolean {
+  return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   quality: 'balanced',
   audioEnabled: false,
   audioVolume: 0.5,
-  reducedMotion: false,
-  dayNight: 'night',
+  reducedMotion: prefersReducedMotion(),
+  singleKeyShortcuts: true,
+  timeOfDay: 'day',
   particles: true,
   labels: true,
+  explanationLevel: 'beginner',
 };
 
 const SETTINGS_KEY = 'qsimcity.settings.v1';
@@ -93,12 +127,18 @@ interface AppState {
   selection: SelectionTarget | null;
   tourChapter: number;
   activeScenarioId: string | null;
+  activeMissionId: string | null;
+  /** Which program-input tab the Quantum Lab shows (spec section 7.2). */
+  labInputTab: 'blocks' | 'code';
+  /** Local learning progress: onboarding, missions, shots, assessments. */
+  progress: LearningProgress;
   settings: Settings;
   paletteOpen: boolean;
   helpOpen: boolean;
   inspectorOpen: boolean;
   scheduleOpen: boolean;
   toast: string | null;
+  toastsSuppressed: boolean;
   runner: PipelineRunner | null;
 
   setMode(mode: AppMode): void;
@@ -119,12 +159,17 @@ interface AppState {
   select(target: SelectionTarget | null): void;
   setTourChapter(index: number): void;
   setActiveScenario(id: string | null): void;
+  setActiveMission(id: string | null): void;
+  setLabInputTab(tab: 'blocks' | 'code'): void;
+  updateProgress(partial: Partial<LearningProgress>): void;
   updateSettings(partial: Partial<Settings>): void;
   setPaletteOpen(open: boolean): void;
   setHelpOpen(open: boolean): void;
   setInspectorOpen(open: boolean): void;
   setScheduleOpen(open: boolean): void;
   showToast(message: string): void;
+  /** Test-only: stop transient messages from appearing at all. */
+  suppressToasts(): void;
   clearToast(): void;
   clearLocalData(): void;
   applyInteractiveAction(action: InteractiveAction): void;
@@ -134,8 +179,34 @@ export function loadSettings(): Settings {
   try {
     const raw = globalThis.localStorage?.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
-    const parsed = JSON.parse(raw) as Partial<Settings>;
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    const parsed = JSON.parse(raw) as Partial<Settings> & { dayNight?: 'day' | 'night' };
+    // Migrate the old two-state day/night setting to the three lighting
+    // presets; a stored preference keeps its meaning.
+    const migrated: Partial<Settings> = { ...parsed };
+    if (parsed.timeOfDay === undefined && parsed.dayNight !== undefined) {
+      migrated.timeOfDay = parsed.dayNight === 'night' ? 'night' : 'day';
+    }
+    if (
+      migrated.timeOfDay !== undefined &&
+      !['day', 'golden', 'night'].includes(migrated.timeOfDay)
+    ) {
+      delete migrated.timeOfDay;
+    }
+    if (
+      migrated.explanationLevel !== undefined &&
+      !['child', 'beginner', 'expert'].includes(migrated.explanationLevel)
+    ) {
+      delete migrated.explanationLevel;
+    }
+    delete (migrated as { dayNight?: unknown }).dayNight;
+    const settings = { ...DEFAULT_SETTINGS, ...migrated };
+    // An OS-level motion preference is an accessibility signal, not a
+    // preference the app may quietly override with a value it wrote
+    // itself: every settings change persists the whole object, so a
+    // stored `reducedMotion: false` is usually a default rather than a
+    // decision. The checkbox still turns motion back on for the session.
+    if (prefersReducedMotion()) settings.reducedMotion = true;
+    return settings;
   } catch {
     return { ...DEFAULT_SETTINGS };
   }
@@ -164,6 +235,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   selection: null,
   tourChapter: 0,
   activeScenarioId: null,
+  activeMissionId: null,
+  labInputTab: 'code',
+  progress: loadProgress(),
   settings: loadSettings(),
   paletteOpen: false,
   helpOpen: false,
@@ -172,6 +246,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   inspectorOpen: false,
   scheduleOpen: false,
   toast: null,
+  toastsSuppressed: false,
   runner: null,
 
   setMode: (mode) => set({ mode }),
@@ -194,6 +269,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ running: true, runProgress: 0, runError: null });
     try {
       const trace = await runner.run(config, (fraction) => set({ runProgress: fraction }));
+      // Record the completed run's shot count for the statistics mission.
+      const progress = get().progress;
+      const nextProgress: LearningProgress = {
+        ...progress,
+        shotsHistory: [...progress.shotsHistory, config.shots].slice(-50),
+      };
+      persistProgress(nextProgress);
       set({
         trace,
         traceImported: false,
@@ -201,7 +283,15 @@ export const useAppStore = create<AppState>((set, get) => ({
         runProgress: 1,
         playbackTick: 0,
         playbackPlaying: true,
+        progress: nextProgress,
       });
+      // The only announcement a screen-reader user gets that the run they
+      // started has finished. Without it the replay simply begins moving.
+      const gates =
+        trace.compiledCircuit?.instructions.length ?? trace.inputCircuit.instructions.length;
+      get().showToast(
+        `Run finished: ${gates} operations on the compiled circuit, ${maxTickOf(trace) + 1} replay steps. Replay started.`,
+      );
     } catch (e) {
       const err = e as RunError & Error;
       if (err.message === 'cancelled') {
@@ -285,6 +375,14 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   setTourChapter: (index) => set({ tourChapter: index }),
   setActiveScenario: (id) => set({ activeScenarioId: id }),
+  setActiveMission: (id) => set({ activeMissionId: id }),
+  setLabInputTab: (tab) => set({ labInputTab: tab }),
+
+  updateProgress: (partial) => {
+    const next = { ...get().progress, ...partial };
+    persistProgress(next);
+    set({ progress: next });
+  },
 
   updateSettings: (partial) => {
     const next = { ...get().settings, ...partial };
@@ -296,7 +394,16 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHelpOpen: (open) => set({ helpOpen: open }),
   setInspectorOpen: (open) => set({ inspectorOpen: open }),
   setScheduleOpen: (open) => set({ scheduleOpen: open }),
-  showToast: (message) => set({ toast: message }),
+  showToast: (message) => {
+    // A suppressed run shows no transient messages at all. Visual
+    // baselines otherwise capture whichever toast happened to be alive,
+    // and a five-second status message is not part of a surface's
+    // identity — the service worker's "ready to work offline" notice was
+    // being baked into the WebGL-fallback baseline.
+    if (get().toastsSuppressed) return;
+    set({ toast: message });
+  },
+  suppressToasts: () => set({ toastsSuppressed: true, toast: null }),
   clearToast: () => set({ toast: null }),
 
   clearLocalData: () => {
@@ -305,7 +412,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     } catch {
       // Ignore storage failures; state below still resets.
     }
-    set({ settings: { ...DEFAULT_SETTINGS } });
+    clearProgressStorage();
+    set({
+      settings: { ...DEFAULT_SETTINGS },
+      progress: { ...DEFAULT_PROGRESS },
+      activeMissionId: null,
+    });
   },
 
   applyInteractiveAction: (action) => {

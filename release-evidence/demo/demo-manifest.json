@@ -1,0 +1,18 @@
+{
+  "file": "release-evidence/demo/qsimcity-demo.mp4",
+  "captions": "release-evidence/demo/qsimcity-demo.srt",
+  "sourceTreeHash": "2d85dcc67da479c1",
+  "commitSha": "d7609fc26d6c407d47ed59af22e20677fa8f9443",
+  "sha256": "2930cbf8773df3e5eacc432a8a28863740cad5a5a07ada373cbdd4db3f772eb5",
+  "bytes": 22317118,
+  "recordedDurationMs": 314892,
+  "captionCount": 38,
+  "probe": [
+    "width=1920",
+    "height=1080",
+    "duration=316.400000"
+  ],
+  "uploaded": false,
+  "publicUrl": null,
+  "note": "Recorded from the production build by pnpm demo:record. Not uploaded anywhere; no public URL exists."
+}

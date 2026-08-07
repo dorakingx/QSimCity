@@ -66,7 +66,11 @@ describe('App shell', () => {
     useAppStore.setState({ mode: 'explore' });
     render(<App />);
     expect(useAppStore.getState().webglAvailable).toBe(false);
-    expect(screen.getByRole('status').textContent).toContain('Accessible 2D Mode');
+    // The session-long Toast live region is also role=status, so match the
+    // fallback notice specifically rather than assuming a single one.
+    expect(
+      screen.getAllByRole('status').some((el) => el.textContent?.includes('Accessible 2D Mode')),
+    ).toBe(true);
     expect(screen.getAllByLabelText(/OpenQASM 2.0 program/).length).toBeGreaterThan(0);
   });
 
@@ -100,10 +104,41 @@ describe('global keyboard map', () => {
   it('T starts the tour, I toggles the inspector, ? opens help', () => {
     fireEvent.keyDown(window, { key: 't' });
     expect(useAppStore.getState().mode).toBe('tour');
+    // The tour selects its opening district, which opens the Inspector, so
+    // assert the toggle rather than a fixed direction.
+    const before = useAppStore.getState().inspectorOpen;
     fireEvent.keyDown(window, { key: 'i' });
-    expect(useAppStore.getState().inspectorOpen).toBe(true);
+    expect(useAppStore.getState().inspectorOpen).toBe(!before);
+    fireEvent.keyDown(window, { key: 'i' });
+    expect(useAppStore.getState().inspectorOpen).toBe(before);
     fireEvent.keyDown(window, { key: '?' });
     expect(useAppStore.getState().helpOpen).toBe(true);
+  });
+
+  it('single-key shortcuts can be switched off, but Escape and Ctrl+K survive', () => {
+    act(() => {
+      useAppStore.getState().updateSettings({ singleKeyShortcuts: false });
+    });
+    fireEvent.keyDown(window, { key: 't' });
+    expect(useAppStore.getState().mode).not.toBe('tour');
+    fireEvent.keyDown(window, { key: '?' });
+    expect(useAppStore.getState().helpOpen).toBe(false);
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+    expect(useAppStore.getState().paletteOpen).toBe(true);
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(useAppStore.getState().paletteOpen).toBe(false);
+  });
+
+  it('Space stays available to whatever control has focus', () => {
+    const button = document.createElement('button');
+    document.body.appendChild(button);
+    act(() => {
+      useAppStore.setState({ playbackPlaying: false });
+    });
+    fireEvent.keyDown(button, { key: ' ' });
+    // Playback must not steal Space from a focused button.
+    expect(useAppStore.getState().playbackPlaying).toBe(false);
+    button.remove();
   });
 
   it('Escape closes overlays', () => {

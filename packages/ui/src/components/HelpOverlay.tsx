@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 import { DISTRICTS } from '@qsimcity/world';
+import { useFocusTrap } from '../hooks/useFocusTrap.js';
 
 /** Help overlay: keyboard map, controls, and the semantic legend. */
 
@@ -12,18 +13,25 @@ export const KEYBOARD_MAP: readonly { keys: string; action: string }[] = [
   { keys: 'Space', action: 'Play or pause the replay' },
   { keys: '. and ,', action: 'Step forward / backward one tick' },
   { keys: 'Ctrl+K or /', action: 'Open the command palette' },
+  { keys: 'E', action: 'Operate the nearby city console (first-person)' },
   { keys: 'T', action: 'Open the Guided Tour' },
   { keys: 'I', action: 'Toggle the Inspector' },
   { keys: '?', action: 'Open this help overlay' },
   { keys: 'Escape', action: 'Close dialogs and menus' },
   { keys: 'Tab / Shift+Tab', action: 'Move keyboard focus' },
   { keys: 'Enter or Space on a highlighted object', action: 'Select / operate it' },
+  {
+    keys: 'Settings → Single-key shortcuts',
+    action: 'Turn the unmodified letter and punctuation shortcuts off',
+  },
 ];
 
 export function HelpOverlay(): ReactElement | null {
   const open = useAppStore((s) => s.helpOpen);
   const { setHelpOpen } = useAppStore.getState();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => closeRef.current?.focus());
@@ -38,6 +46,7 @@ export function HelpOverlay(): ReactElement | null {
       }}
     >
       <div
+        ref={dialogRef}
         className="help-overlay"
         role="dialog"
         aria-modal="true"
@@ -95,6 +104,14 @@ export function HelpOverlay(): ReactElement | null {
           Moving objects are jobs, instructions, classical messages, and measurement samples.
           Quantum state itself never travels on roads — that would misrepresent the physics. Every
           number on screen carries a certainty label; open the Provenance panel for the full legend.
+        </p>
+        <h3>About this project</h3>
+        <p className="help-disclaimer">
+          QSimCity is an unofficial, independent, open-source educational and research visualization
+          project, released under the Apache License 2.0. It is not produced, endorsed, sponsored,
+          or approved by Electronic Arts, Maxis, IBM, or any quantum-hardware vendor. No real
+          quantum processor is used: every result comes from a simulator running in your browser. No
+          account, no upload, no telemetry.
         </p>
       </div>
     </div>

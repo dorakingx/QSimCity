@@ -8,8 +8,14 @@ import { getDevice } from '@qsimcity/domain';
 
 export interface CouplingMapProps {
   readonly deviceId: string;
-  /** Logical -> physical assignment to display, if known. */
+  /**
+   * Logical -> physical assignment to display, if known. Pass the
+   * tick-aware mapping (see logicalToPhysicalAt) so this figure always
+   * agrees with the 3D banners about where each logical qubit lives.
+   */
   readonly layout?: readonly number[] | null;
+  /** Describes which moment `layout` reflects, e.g. "at tick 6 of 16". */
+  readonly layoutMoment?: string | undefined;
   readonly activeQubits?: readonly number[];
   readonly activeCouplings?: readonly (readonly [number, number])[];
   readonly onSelectQubit?: (physicalQubit: number) => void;
@@ -19,6 +25,7 @@ export interface CouplingMapProps {
 export function CouplingMap({
   deviceId,
   layout,
+  layoutMoment,
   activeQubits = [],
   activeCouplings = [],
   onSelectQubit,
@@ -89,7 +96,7 @@ export function CouplingMap({
                     },
                     tabIndex: 0,
                     role: 'button',
-                    'aria-label': `Physical qubit ${i}${logical !== null ? `, holding logical qubit ${logical}` : ''}`,
+                    'aria-label': `Physical qubit ${i}${logical !== null ? `, holding logical qubit ${logical}${layoutMoment ? ` ${layoutMoment}` : ''}` : ''}`,
                   }
                 : {})}
             >
@@ -124,8 +131,19 @@ export function CouplingMap({
           {device.displayName}: {device.numQubits} physical qubits. Coupling edges:{' '}
           {device.edges.map(([a, b]) => `${a}-${b}`).join(', ')}.
         </p>
+        {/* Saying nothing when the compiler has not chosen a layout yet
+            makes the panel look identical before and after the layout
+            stage, which is the confusion this figure exists to remove. */}
+        {!layout && layoutMoment && <p>Layout {layoutMoment}.</p>}
         {layout && (
-          <p>Layout: {layout.map((p, l) => `logical ${l} on physical ${p}`).join('; ')}.</p>
+          <p>
+            Layout{layoutMoment ? ` ${layoutMoment}` : ''}:{' '}
+            {layout
+              .map((p, l) => (p >= 0 ? `logical ${l} on physical ${p}` : null))
+              .filter((line): line is string => line !== null)
+              .join('; ')}
+            .
+          </p>
         )}
       </details>
     </figure>

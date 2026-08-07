@@ -54,12 +54,39 @@ titles, IBM, or any other third party are used anywhere in this project.
 | happy-dom | 20.11.1 | MIT | DOM environment for component tests |
 | tsx | 4.23.1 | MIT | TypeScript execution for tooling scripts |
 | @types/node, @types/react, @types/react-dom, @types/three | pinned | MIT | Type definitions |
+| @eslint/js | 10.0.1 | MIT | ESLint's own recommended rule sets |
+| lighthouse | 13.4.1 | Apache-2.0 | Accessibility and performance auditing |
+| chrome-launcher | 1.2.1 | Apache-2.0 | Launching Chrome for Lighthouse runs |
+| tslib | 2.8.1 | 0BSD | TypeScript helper runtime |
+
+### Transitive licences worth naming
+
+Two build-time transitive packages are not MIT or Apache-2.0 and are named
+here so no reader has to discover them:
+
+| Package | Licence | Reached through |
+| --- | --- | --- |
+| lightningcss (and its platform binaries) | MPL-2.0 | Vite's CSS pipeline |
+| axe-core | MPL-2.0 | @axe-core/playwright |
+| hypothesis | MPL-2.0 | the optional Python test suite |
+
+MPL-2.0 is file-level copyleft: it obliges anyone who *modifies those
+files* to publish the modifications. This project modifies none of them
+and ships none of them in the browser bundle — lightningcss and axe-core
+run only at build and test time — so the obligation is not triggered by
+distributing QSimCity. No package in the tree carries GPL, LGPL, or AGPL.
 
 ### Dependency overrides
 
-`brace-expansion` is forced to 5.0.8 (see `pnpm-workspace.yaml`) to clear
-GHSA-mh99-v99m-4gvg, a high-severity ReDoS advisory reachable only through
-build-time tooling. `pnpm audit` reports no known vulnerabilities.
+Two build-time transitive packages are pinned in `pnpm-workspace.yaml`:
+
+- `brace-expansion` is forced to **5.0.9**, clearing both
+  GHSA-mh99-v99m-4gvg and GHSA-rgw5-rvv9-x895 (the second bypasses the
+  first fix in releases before 5.0.9, so 5.0.8 is *not* sufficient).
+- `fast-uri` is forced to **3.1.5**, clearing GHSA-7p8r-x3mc-p8w7.
+
+Both reach the tree only through build tooling and never the shipped
+bundle. `pnpm audit` reports no known vulnerabilities.
 
 ## Python bridge dependencies (optional, never shipped to the browser)
 
@@ -67,7 +94,7 @@ build-time tooling. `pnpm audit` reports no known vulnerabilities.
 | --- | --- | --- | --- |
 | qiskit | 2.5.1 | Apache-2.0 | Transpiler capture and circuit handling |
 | qiskit-aer | 0.17.2 | Apache-2.0 | Ideal and noisy simulation for cross-validation |
-| pytest | 8.4.2 | MIT | Test runner |
+| pytest | 9.0.3 | MIT | Test runner |
 | hypothesis | 6.140.3 | MPL-2.0 | Property-based testing |
 | ruff | 0.14.5 | MIT | Linting |
 | pyright | 1.1.407 | MIT | Type checking |

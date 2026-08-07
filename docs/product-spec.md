@@ -39,10 +39,11 @@ models — not by decorative animation alone.
 | Mode | Purpose |
 | --- | --- |
 | Guided Tour | 16-chapter narrated walkthrough of the pipeline |
-| Explore | Free navigation of the city with inspector |
-| Quantum Lab | Author/import circuits, configure runs, replay traces |
+| Missions | Seven guided, machine-checked learning missions with the block builder |
+| Explore | Free navigation of the city with inspector and City Legend |
+| Quantum Lab | Author/import circuits (code or blocks), configure runs, replay traces |
 | Compare | Side-by-side ideal/noisy and pre/post-compilation |
-| Accessible 2D | Full workflow without 3D rendering |
+| Accessible 2D | Full workflow without 3D rendering, including missions |
 
 ## The 12 districts
 

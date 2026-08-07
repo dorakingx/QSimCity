@@ -171,6 +171,7 @@ export async function runPipeline(config: PipelineConfig): Promise<PipelineOutpu
   emitExecutionEvents(builder, (physicalNoisy ?? physicalIdeal).representativeEvents, {
     phase: physicalNoisy ? 'physical-noisy' : 'physical-ideal',
     space: 'physical',
+    noisy: physicalNoisy !== null,
     logicalOrigin,
   });
 

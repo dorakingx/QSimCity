@@ -1,6 +1,26 @@
 import { expect, type Page } from '@playwright/test';
 
 /**
+ * Seed the returning-user state so the first-run onboarding overlay does
+ * not intercept the flow under test. Onboarding itself has its own spec
+ * that exercises the genuine first run. Must run before page.goto.
+ */
+export async function skipOnboarding(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const key = 'qsimcity.progress.v1';
+    let progress: Record<string, unknown> = {};
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) progress = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      progress = {};
+    }
+    progress['onboardingSeen'] = true;
+    localStorage.setItem(key, JSON.stringify(progress));
+  });
+}
+
+/**
  * Console-error tracking: uncaught exceptions, unhandled rejections, and
  * unexpected console errors fail the test (spec §18.5).
  */
@@ -74,7 +94,19 @@ export async function expectCityRendered(page: Page): Promise<void> {
   );
 }
 
-/** Runs the default Bell sample from the Lab and waits for the timeline. */
+/**
+ * Runs the default Bell sample from the Lab, waits for the timeline, and
+ * pauses the replay.
+ *
+ * The pause is not cosmetic. A completed run starts playing immediately,
+ * so the results section re-renders on every tick — and Playwright's
+ * actionability protocol waits for an element to be *stable* before
+ * clicking it. A details summary inside a continuously re-rendering panel
+ * may never settle, which is how "charts expose complete table
+ * alternatives" spent 60 seconds trying to open a disclosure and failed on
+ * CI while passing locally. Every test built on this helper is about
+ * content, not about playback.
+ */
 export async function runBellFromLab(page: Page): Promise<void> {
   await page
     .getByRole('navigation', { name: 'Modes' })
@@ -84,6 +116,81 @@ export async function runBellFromLab(page: Page): Promise<void> {
   await expect(page.getByRole('toolbar', { name: 'Replay timeline' })).toBeVisible({
     timeout: 20_000,
   });
+  await pauseReplay(page);
+}
+
+/**
+ * Stops the replay if it is running, and does nothing if it has already
+ * finished.
+ *
+ * Bounded and state-independent on purpose. A bare
+ * `getByRole('button', { name: 'Pause replay' }).click()` loses a race that
+ * only shows up on a slow machine: the replay can reach its last tick
+ * between the locator resolving and the click landing, at which point the
+ * button relabels to "Play replay" and the click waits the full test
+ * timeout for an element that will never appear. Branching on
+ * `isVisible()` does not help — it does not wait, so it loses the same
+ * race. Either way the desired end state is the same: playback stopped.
+ */
+export async function pauseReplay(page: Page): Promise<void> {
+  // Prefer the store. Clicking the control means waiting for it to be
+  // "stable", and it lives in a dock that re-renders on every playback
+  // tick — a trace from CI showed this click exhausting its budget without
+  // landing, after which the page never settled and a later header click
+  // burned 33 seconds. Setting the flag directly cannot race.
+  const stopped = await page
+    .evaluate('!!window.__qsimcityTest && (window.__qsimcityTest.setTick(0), true)')
+    .catch(() => false);
+  if (stopped === true) return;
+  await page
+    .getByRole('button', { name: 'Pause replay' })
+    .click({ timeout: 3_000 })
+    .catch(() => undefined);
+}
+
+/**
+ * Loads a page with the deterministic-frame contract enabled, waits for the
+ * 3D city to be genuinely ready, pins every source of motion, and renders
+ * one frame.
+ *
+ * This replaces `page.waitForTimeout(6500)`. A sleep is a bet on machine
+ * speed: it passed on a laptop with a GPU and produced nine 60-second
+ * timeouts on a CI runner drawing WebGL in software. Waiting for a promise
+ * the app resolves, then freezing, is a synchronisation primitive.
+ *
+ * `animTime` is pinned so ambient traffic, strollers, clouds, the
+ * scheduling beacon and the refinery steam — all pure functions of it —
+ * land in the same phase on every machine.
+ */
+export async function freezeCity(page: Page, options: { tick?: number } = {}): Promise<void> {
+  await page.waitForFunction(
+    '!!window.__qsimcityTest && window.__qsimcityTest.isCityMounted()',
+    undefined,
+    { timeout: 60_000 },
+  );
+  await page.evaluate('window.__qsimcityTest.cityReady');
+  if (options.tick !== undefined) {
+    await page.evaluate(`window.__qsimcityTest.setTick(${options.tick})`);
+  }
+  // Transient status messages have a five-second life and are not part of
+  // any surface's identity. Suppressing rather than clearing matters: the
+  // service worker's "ready to work offline" notice fires on activation,
+  // which can land *after* a clear and did get baked into the
+  // WebGL-fallback baseline. Toast behaviour has its own spec.
+  await page.evaluate('window.__qsimcityTest.suppressToasts()');
+  await page.evaluate('window.__qsimcityTest.freeze(12)');
+  await page.evaluate('window.__qsimcityTest.renderFrame()');
+}
+
+/** Settles a 2D-only surface: no engine, just the transient toast. */
+export async function settle2d(page: Page): Promise<void> {
+  await page.waitForFunction('!!window.__qsimcityTest', undefined, { timeout: 30_000 });
+  await page.evaluate('window.__qsimcityTest.suppressToasts()');
+}
+
+/** Adds the test-contract flag to a path. */
+export function e2eUrl(path: string): string {
+  return path.includes('?') ? `${path}&e2e=1` : `${path}?e2e=1`;
 }
 
 /** Disables WebGL2 before app scripts run (fallback testing). */

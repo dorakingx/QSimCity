@@ -1,41 +1,41 @@
 {
-  "commitSha": "ffd9874facadd374944dd5ecfc78b475a44a6dd1",
-  "sourceTreeHash": "fdf89a31945594bf",
+  "commitSha": "d7609fc26d6c407d47ed59af22e20677fa8f9443",
+  "sourceTreeHash": "2d85dcc67da479c1",
   "worktreeDirty": false,
-  "generatedAt": "2026-07-31T09:30:23.034Z",
+  "generatedAt": "2026-08-07T13:37:30.069Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "966815077bd1e9d4",
+  "inputHash": "e169c7e5e1060d60",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 126669,
-    "totalJsGzipBytes": 305294,
-    "eagerChunks": 3,
+    "initialJsGzipBytes": 162798,
+    "totalJsGzipBytes": 358631,
+    "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 126669,
-    "totalJsGzipBytes": 305294,
+    "initialJsGzipBytes": 162798,
+    "totalJsGzipBytes": 358631,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
       {
-        "name": "three-bAKDV79k.js",
-        "gzipBytes": 135194
+        "name": "three-q9RKXkIj.js",
+        "gzipBytes": 136194
       },
       {
-        "name": "pipeline.worker-Bs6_6sSe.js",
-        "gzipBytes": 33177
+        "name": "pipeline.worker-CpbPGLVa.js",
+        "gzipBytes": 33194
       },
       {
-        "name": "CityView-BM3-fVoi.js",
-        "gzipBytes": 7995
+        "name": "CityView-CUPOR0He.js",
+        "gzipBytes": 24186
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -44,12 +44,16 @@
     ],
     "eagerChunks": [
       {
-        "name": "index-CBtTkRaZ.js",
-        "gzipBytes": 67340
-      },
-      {
         "name": "react-VZnIVrcg.js",
         "gzipBytes": 58969
+      },
+      {
+        "name": "testHooks-BJr752n6.js",
+        "gzipBytes": 58944
+      },
+      {
+        "name": "index-De6Idt5r.js",
+        "gzipBytes": 44525
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -57,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-07-31T09:30:22.987Z"
+    "generatedAt": "2026-08-07T13:37:30.031Z"
   }
 }

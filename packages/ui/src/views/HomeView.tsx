@@ -1,9 +1,12 @@
 import type { ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
+import { Onboarding } from '../components/Onboarding.js';
 
 /**
- * First visit (spec §7.1): purpose understandable in seconds, three clear
- * entry points, no login, no dialog stack.
+ * First visit (spec §7.1): purpose understandable in seconds, clear entry
+ * points, no login, no dialog stack. First-time visitors additionally get
+ * the picture-based onboarding overlay (spec section 7.1), which never
+ * returns once dismissed unless local data is cleared.
  */
 export function HomeView(): ReactElement {
   const { setMode } = useAppStore.getState();
@@ -11,6 +14,7 @@ export function HomeView(): ReactElement {
 
   return (
     <section className="home-view" aria-label="Welcome">
+      <Onboarding />
       <div className="home-hero">
         <h1>
           <span className="brand-mark" aria-hidden="true">
@@ -26,6 +30,9 @@ export function HomeView(): ReactElement {
         <div className="home-actions">
           <button type="button" className="primary" onClick={() => setMode('tour')}>
             Guided Tour
+          </button>
+          <button type="button" onClick={() => setMode('learn')}>
+            Missions
           </button>
           <button type="button" onClick={() => setMode('explore')}>
             Explore

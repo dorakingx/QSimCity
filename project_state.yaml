@@ -120,14 +120,19 @@ visual_evidence:
   benchmark_minimum_score: 4
 scientific_review_status: complete-zero-blocking-findings
 accessibility_status: wcag-2.2-aa-zero-axe-violations
-performance_status: within-budget-122.9KiB-initial-js-gzip
+performance_status: >-
+  within budget: 153.7 KiB initial JS gzip of a 320 KiB budget, 347.5 KiB
+  total JS of a 600 KiB budget (release-evidence/performance.json)
 license_status: Apache-2.0 (owner selected 2026-07-31; see docs/adr/adr-0004-apache-2-0-license.md)
 deployment_status: >-
-  deployed to Vercel production at https://qsimcity.vercel.app (project
-  doraking/qsimcity); source is the public GitHub repository
-  dorakingx/QSimCity, which auto-deploys on push to main
+  main is deployed to Vercel production at https://qsimcity.vercel.app
+  (project doraking/qsimcity); source is the public GitHub repository
+  dorakingx/QSimCity, which auto-deploys on push to main. The WISER review
+  branch claude/qsimcity-real-city-wiser-444293 is NOT deployed: the live
+  bundle hash differs from this branch's build, and deploying it is a human
+  action deliberately left untaken.
 completion_gate_status: >-
   enforced by `pnpm goal:check`, which derives every mandatory verdict from an
   evidence envelope bound to the source tree it measured; the recorded run is
   in release-evidence/goal-check.txt
-last_updated: 2026-07-31
+last_updated: 2026-08-07

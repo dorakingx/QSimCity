@@ -3,6 +3,68 @@
 All notable changes to QSimCity are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.0] — 2026-08-05
+
+The real city. The stylized district diorama becomes a believable coastal
+city, and a child-friendly learning path arrives — specified and gated by
+`docs/WISER_REAL_CITY_SPEC.md` and its machine-checkable acceptance matrix.
+
+### Added
+
+- **A real urban world model**: deterministic terrain with two coasts and
+  the Observatory hill; a hierarchical road network (boulevard, collectors,
+  avenues, quays, generated local streets) with lane markings, sidewalks,
+  and crosswalks; blocks and parcels per district; parcel-driven procedural
+  architecture with six facade families; outskirt housing, groves, and
+  hedgerowed farmland; piers, ships, street furniture, and a fenced QPU
+  campus. Everything procedural, deterministic, and tested for grounding,
+  connectivity, variation, and non-overlap.
+- **Three lighting presets** — day, golden hour, night — with sun shadows,
+  a procedural sky dome feeding an environment map (water and glass reflect
+  the real sky), fog-closed horizons, drifting clouds, stars, lit windows,
+  street-lamp pools, and vehicle headlights.
+- **A living semantic layer**: the job convoy truck carries the program
+  between stages; courier vans deliver measured bits for feed-forward;
+  persistent logical-qubit banners fly between pylons on SWAPs; harbor
+  container stacks grow into the live counts histogram; noise renders as
+  weather derived from the configured model; stage set pieces (arriving
+  ship, refinery steam, scheduling beacon, observatory beam) fire with
+  their stages. The City Legend classifies every animated entity with
+  source and certainty; ambient traffic and pedestrians are explicitly
+  ILLUSTRATIVE. All derivations are pure functions of (trace, tick).
+- **The learning path**: picture-first onboarding, seven missions with
+  machine-checked completion and contextual pause/step/rewind/undo, a
+  pointer-event drag-and-drop circuit builder (mouse, touch, keyboard) with
+  a one-tap Bell template, child/beginner/expert explanation levels across
+  narration, tour, glossary, and missions, and an optional growth-framed
+  pre/post assessment — all available in Accessible 2D Mode.
+- **Cameras**: damped orbit/top/fly plus a 1.7 m walk with doorway-aware
+  collision, lane-snapped spawning, three enterable furnished interiors,
+  and on-screen touch movement controls.
+- **Procedural audio**: a fully synthesized WebAudio engine (ambient beds
+  per time of day, rain layer, semantic cues), off by default and
+  gesture-gated.
+- **Evidence tooling**: an FPS benchmark (desktop and throttled mobile
+  emulation), a hash-bound screenshot manifest with honesty exhibits, and
+  an adversarial-review recorder requiring four stances, per-category
+  rationale with cited screenshots, and zero open blockers or majors — all
+  enforced by new `goal:check` criteria alongside the WISER acceptance
+  matrix.
+
+### Changed
+
+- The day preset is the default view; the two-state day/night setting
+  migrated to three presets.
+- Visual regression baselines regenerated for the real city under the
+  app's reduced-motion contract; a golden-hour surface joined the set.
+- The comparative visual benchmark was re-scored against the reference for
+  the new city.
+
+### Security
+
+- `brace-expansion` forced to 5.0.9 and `fast-uri` to 3.1.5 to clear two
+  newly published high-severity advisories in build-time tooling.
+
 ## [1.1.0] — 2026-07-31
 
 Scientific integration. The pipeline now executes the circuit it compiled.

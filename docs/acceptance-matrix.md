@@ -1,7 +1,10 @@
 # Acceptance Matrix
 
-Status values: `PASS`. Every required row below is `PASS`; the deployment row
-is no longer an authorized exception because the application is deployed.
+Status values: `PASS`. Every required row below is `PASS`.
+
+**The deployment row refers to `main`, which is deployed. The branch under
+WISER review is not**: deploying it is a human action that has deliberately
+not been taken, and `docs/WISER_SUBMISSION.md` records it as not done.
 
 Verified on branch `main`. The commit each measurement was taken against is
 recorded inside the evidence itself — every envelope in `release-evidence/`
@@ -110,7 +113,7 @@ matrix from drifting away from the code.
 | Exactly one main landmark per mode | PASS | Asserted for all six modes in `packages/ui/test/app.test.tsx` |
 | Canonical and social metadata | PASS | Canonical, Open Graph, and card metadata served from this origin only, asserted in `tools/test/vercel-config.test.ts` |
 | Sample traces regenerable | PASS | 12 independent processes agree on `semanticHash`; 5/5 committed samples reproduce the Python manifest from TypeScript — `release-evidence/trace-reproducibility/reproducibility.json` |
-| Fresh-clone reproduction passes | PASS | `pnpm verify:fresh-clone` clones at HEAD and runs 15 steps inside the clone, including the coverage, security, and reproducibility gates and the full browser matrix — `release-evidence/fresh-clone/fresh-clone.json` |
+| Fresh-clone reproduction passes | PASS | `pnpm verify:fresh-clone` clones at HEAD and runs 16 steps inside the clone, including the coverage, security, and reproducibility gates and the full browser matrix — `release-evidence/fresh-clone/fresh-clone.json` |
 | `pnpm goal:check` passes | PASS | Every mandatory verdict derived from a content-bound evidence envelope — `release-evidence/goal-check.txt` |
 | Ten-minute production soak passes | PASS | Full 600 s across 8 rotating workloads, every criterion met — `release-evidence/soak/soak-report.json` |
 | Lighthouse thresholds met | PASS | Median of 3 runs on each of 4 targets, every threshold met — `release-evidence/lighthouse/lighthouse-report.json` |
@@ -130,7 +133,7 @@ matrix from drifting away from the code.
 | Cache behavior verified | PASS | Immutable hashed assets; must-revalidate HTML and service worker |
 | PWA verified in a Vercel-compatible environment | PASS | Manifest, registration, offline startup, offline run |
 | Production-equivalent local smoke test passes | PASS | `tools/serve-production.ts` + `tools/test/vercel-config.test.ts` |
-| Live deployment smoke test | PASS | Live at https://qsimcity.vercel.app: `/` 200, `/explore` and deep links return the shell, `sw.js` and `manifest.webmanifest` 200, every security header present on the real response |
+| Live deployment smoke test | PASS | Live at https://qsimcity.vercel.app (serving `main`, not the branch under review): `/` 200, `/explore` and deep links return the shell, `sw.js` and `manifest.webmanifest` 200, every security header present on the real response |
 
 ## 24.8 Documentation
 

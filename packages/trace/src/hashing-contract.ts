@@ -9,7 +9,9 @@ import type { Trace } from './types.js';
  * - **semanticHash** protects the scientifically meaningful result: the input
  *   circuit, device, seed, compiled circuit, layouts, metrics, and results.
  *   It is stable across independent runs and machines, so committed sample
- *   traces can be regenerated and compared.
+ *   traces can be regenerated and compared. "Across machines" is a promise
+ *   that has to be kept literally: it must not move because an interpreter
+ *   reports a different patch version.
  *
  * - **artifactHash** protects the exact serialized bytes. Any change at all —
  *   including timestamps and observational telemetry — changes it, so it
@@ -31,6 +33,13 @@ export const SEMANTIC_EXCLUSIONS: Readonly<Record<string, string>> = {
   traceId: 'Derived identity, not a computation result',
   createdAt: 'Generation timestamp; varies by definition',
   telemetry: 'Observational, may vary between identical runs (see the type docs)',
+  packageVersions:
+    'Provenance about the environment that produced the trace, not about the science in it. ' +
+    'Including it broke the very promise semanticHash makes: a trace generated on Python ' +
+    '3.12.12 and regenerated on 3.12.3 hashed differently while every circuit, layout, ' +
+    'metric, result and event was identical. Excluding it costs nothing, because a library ' +
+    'change that actually alters the science alters results, metrics or events — and those ' +
+    'are hashed. The versions remain in the document as provenance and in artifactHash.',
 };
 
 /** Event payload keys treated as observational telemetry, not semantics. */
@@ -55,14 +64,14 @@ interface SemanticView {
   readonly finalLayout: readonly number[] | null;
   readonly metrics: Trace['metrics'];
   readonly results: Trace['results'];
-  readonly packageVersions: Readonly<Record<string, string>>;
   readonly events: readonly Record<string, unknown>[];
 }
 
 /**
  * Projects a trace onto the fields whose values are a deterministic function
- * of (program, device, seed, versions). Event payload keys listed in
- * TELEMETRY_PAYLOAD_KEYS are stripped.
+ * of (program, device, seed) — the science, not the environment that ran it.
+ * Event payload keys listed in TELEMETRY_PAYLOAD_KEYS are stripped, and so
+ * is every field in SEMANTIC_EXCLUSIONS.
  */
 export function semanticView(trace: Trace): SemanticView {
   return {
@@ -78,7 +87,6 @@ export function semanticView(trace: Trace): SemanticView {
     finalLayout: trace.finalLayout,
     metrics: trace.metrics,
     results: trace.results,
-    packageVersions: trace.packageVersions,
     events: trace.events.map((event) => {
       const payload: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(event.payload)) {

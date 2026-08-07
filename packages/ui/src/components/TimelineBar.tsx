@@ -27,17 +27,24 @@ export function TimelineBar(): ReactElement | null {
       </button>
       <button
         type="button"
-        onClick={stepBackward}
+        onClick={() => {
+          if (tick > 0) stepBackward();
+        }}
         aria-label="Step backward one tick"
-        disabled={tick <= 0}
+        // aria-disabled rather than disabled: Chromium blurs a focused
+        // control the moment it becomes disabled, so stepping back to tick 0
+        // used to drop a keyboard user at document.body with no announcement.
+        aria-disabled={tick <= 0}
       >
         ◀ Step
       </button>
       <button
         type="button"
-        onClick={stepForward}
+        onClick={() => {
+          if (tick < max) stepForward();
+        }}
         aria-label="Step forward one tick"
-        disabled={tick >= max}
+        aria-disabled={tick >= max}
       >
         Step ▶
       </button>
@@ -53,7 +60,7 @@ export function TimelineBar(): ReactElement | null {
           aria-valuetext={`Tick ${tick} of ${max}`}
         />
       </label>
-      <output className="timeline-position" aria-live="off">
+      <output className="timeline-position" aria-live="polite">
         {tick} / {max}
       </output>
       <label className="timeline-speed">

@@ -16,6 +16,8 @@ import { TourOverlay } from './tour/TourOverlay.js';
 import { ScenarioPanel } from './scenarios/ScenarioPanel.js';
 import { Toast } from './components/Toast.js';
 import { SettingsMenu } from './components/SettingsMenu.js';
+import { MissionPanel } from './missions/MissionPanel.js';
+import { installTestHooks } from './testHooks.js';
 
 /** 3D city is code-split so 2D users never download three.js (spec §19). */
 const CityView = lazy(() => import('./views/CityView.js'));
@@ -23,6 +25,7 @@ const CityView = lazy(() => import('./views/CityView.js'));
 const MODE_LABELS: Record<AppMode, string> = {
   home: 'Home',
   tour: 'Guided Tour',
+  learn: 'Missions',
   explore: 'Explore',
   lab: 'Quantum Lab',
   compare: 'Compare',
@@ -38,6 +41,32 @@ function detectWebgl(): boolean {
   }
 }
 
+/**
+ * Whether WebGL2 exists but is being served by a software rasterizer.
+ *
+ * A blocklisted GPU, a virtual machine, or a remote desktop gives a page a
+ * WebGL2 context that works and is roughly a hundred times too slow — this
+ * build measured a p50 of 314 ms per frame, about 3 fps, on SwiftShader.
+ * `detectWebgl` returns true in that case, so the learner is dropped into
+ * the 3D city with nothing steering them to the complete 2D path that
+ * would serve them far better. School and lab hardware is exactly where
+ * this happens.
+ */
+function detectSoftwareRenderer(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2');
+    if (!gl) return false;
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = info
+      ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL))
+      : String(gl.getParameter(gl.RENDERER));
+    return /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(renderer);
+  } catch {
+    return false;
+  }
+}
+
 export function App(): ReactElement {
   const mode = useAppStore((s) => s.mode);
   const webglAvailable = useAppStore((s) => s.webglAvailable);
@@ -47,7 +76,20 @@ export function App(): ReactElement {
   useEffect(() => {
     const s = useAppStore.getState();
     s.setRunner(createRunner());
+    // No-op unless the page was loaded with ?e2e=1.
+    installTestHooks({
+      clearToast: () => useAppStore.getState().clearToast(),
+      suppressToasts: () => useAppStore.getState().suppressToasts(),
+      showToast: (message: string) => useAppStore.getState().showToast(message),
+      setTick: (tick) => useAppStore.getState().setTick(tick),
+      pause: () => useAppStore.getState().pause(),
+    });
     s.setWebglAvailable(detectWebgl());
+    if (detectWebgl() && detectSoftwareRenderer()) {
+      s.showToast(
+        'This device is drawing 3D in software, which will be very slow. Accessible 2D Mode has the whole workflow and runs smoothly here.',
+      );
+    }
     const search = globalThis.location?.search ?? '';
     const shared = decodeShareUrl(search);
     const sharedMode = decodeShareMode(search);
@@ -60,20 +102,46 @@ export function App(): ReactElement {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
       const s = useAppStore.getState();
-      const target = e.target as HTMLElement | null;
+      // The event target is the Window itself when nothing is focused, so
+      // narrow before reaching for DOM methods.
+      const target = e.target instanceof Element ? e.target : null;
       const inField =
         target instanceof HTMLInputElement ||
         target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement;
-      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !inField)) {
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+      // Space and Enter belong to whatever control has focus. Calling
+      // preventDefault on a focused button suppresses the browser's
+      // synthetic click, so an earlier version silently broke Space as a
+      // button activation key across the whole product the moment a trace
+      // existed — while the Help overlay still promised it worked.
+      const onControl =
+        target !== null &&
+        target.closest(
+          'button, a[href], summary, [role="button"], [role="radio"], [role="checkbox"], [role="switch"], [role="tab"], [role="menuitem"], [role="option"]',
+        ) !== null;
+      // WCAG 2.1.4 Character Key Shortcuts: every unmodified single-key
+      // shortcut below can be switched off in Settings. Escape and the
+      // modified Ctrl/Cmd+K are exempt (Escape is not a character key, and
+      // Ctrl+K carries a modifier), so the app is never left without a way
+      // to dismiss a dialog or reach the command palette.
+      const singleKey = s.settings.singleKeyShortcuts;
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !inField && singleKey)) {
         e.preventDefault();
         s.setPaletteOpen(!s.paletteOpen);
         return;
       }
+      if (e.key === 'Escape') {
+        s.setPaletteOpen(false);
+        s.setHelpOpen(false);
+        s.setScheduleOpen(false);
+        return;
+      }
       if (inField) return;
+      if (!singleKey) return;
       switch (e.key) {
         case ' ':
-          if (s.trace) {
+          if (s.trace && !onControl) {
             e.preventDefault();
             if (s.playbackPlaying) s.pause();
             else s.play();
@@ -95,11 +163,6 @@ export function App(): ReactElement {
           break;
         case '?':
           s.setHelpOpen(true);
-          break;
-        case 'Escape':
-          s.setPaletteOpen(false);
-          s.setHelpOpen(false);
-          s.setScheduleOpen(false);
           break;
       }
     };
@@ -156,6 +219,11 @@ export function App(): ReactElement {
 
       <main id="main-content" className="app-main">
         {mode === 'home' && <HomeView />}
+        {mode === 'learn' && (
+          <div className="learn-layout">
+            <MissionPanel />
+          </div>
+        )}
         {mode === 'accessible-2d' && <Accessible2DView />}
         {mode === 'compare' && <CompareView />}
         {wants3d && !canUse3d && (
@@ -167,6 +235,10 @@ export function App(): ReactElement {
                   complete product without WebGL.
                 </p>
                 <Accessible2DView />
+                {/* The tour is plain DOM; rendering it only inside the
+                    WebGL branch meant a learner without a GPU chose Guided
+                    Tour and got nothing. */}
+                {mode === 'tour' && <TourOverlay />}
               </>
             ) : (
               <p role="status">Checking 3D support…</p>

@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanProhibitedNames } from './check-prohibited-names.js';
@@ -104,6 +105,16 @@ const REQUIRED_FILES = [
   'docs/deployment-vercel.md',
   'docs/visual-quality-rubric.md',
   'docs/acceptance-matrix.md',
+  'docs/WISER_REAL_CITY_SPEC.md',
+  'docs/wiser-acceptance-matrix.md',
+  'docs/USER_GUIDE.md',
+  'docs/EDUCATOR_GUIDE.md',
+  'docs/limitations.md',
+  'docs/DEMO_SCRIPT.md',
+  'docs/AI_USAGE.md',
+  'docs/WISER_SUBMISSION.md',
+  'docs/ATTRIBUTIONS.md',
+  'docs/LEARNING_EVALUATION.md',
   'docs/audits/current-state.md',
   'docs/audits/final-release-audit.md',
   'docs/audits/visual-benchmark-final.md',
@@ -132,6 +143,7 @@ check('Required scripts declared', () => {
     'coverage:check',
     'lighthouse',
     'soak',
+    'remount:check',
     'python:verify',
     'lint',
     'typecheck',
@@ -309,6 +321,63 @@ check('Python bridge verification evidence', () => {
   );
 });
 
+check('Demo recording matches the tree it depicts', () => {
+  // The demo was the one piece of release evidence with no tree binding,
+  // and it went stale exactly the way the bindings exist to prevent: a
+  // change to the golden-hour palette left a recording showing a product
+  // that no longer looked like that, while the submission described it as
+  // a recording of the build. A video is evidence, and it expires.
+  //
+  // Deliberately not routed through readEvidence: the manifest is written
+  // by the recorder rather than the evidence helper and has its own shape.
+  const manifestPath = join(ROOT, 'release-evidence', 'demo', 'demo-manifest.json');
+  if (!existsSync(manifestPath)) throw new Error('no demo manifest; run pnpm demo:record');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+    sourceTreeHash?: string;
+    sha256?: string;
+    captionCount?: number;
+    recordedDurationMs?: number;
+    uploaded?: boolean;
+    publicUrl?: string | null;
+  };
+  if (!manifest.sourceTreeHash) {
+    throw new Error('demo manifest records no source tree; re-record with pnpm demo:record');
+  }
+  const tree = sourceTreeHash();
+  if (manifest.sourceTreeHash !== tree) {
+    throw new Error(
+      `demo recorded against source tree ${manifest.sourceTreeHash} but the tree is ${tree}; ` +
+        're-record with pnpm demo:record',
+    );
+  }
+  // The checksum in the docs must be the checksum of the file on disk.
+  const mp4 = join(ROOT, 'release-evidence', 'demo', 'qsimcity-demo.mp4');
+  if (!existsSync(mp4)) throw new Error('demo manifest exists but the video does not');
+  const actual = createHash('sha256').update(readFileSync(mp4)).digest('hex');
+  if (actual !== manifest.sha256) {
+    throw new Error(`demo video sha256 ${actual} does not match the manifest`);
+  }
+  // The published checksum lives in the sidecar, not in prose. A document
+  // that inlines it cannot be corrected without changing the source tree,
+  // which would invalidate the very recording it describes — the checksum
+  // and the tree binding would deadlock each other. The sidecar sits under
+  // release-evidence/, outside the hashed tree, so it can carry the value.
+  const sidecar = readFileSync(
+    join(ROOT, 'release-evidence', 'demo', 'qsimcity-demo.sha256'),
+    'utf8',
+  );
+  if (!sidecar.includes(actual)) {
+    throw new Error('the demo checksum sidecar does not match the video on disk');
+  }
+  // No public URL may be claimed while the video has not been uploaded.
+  if (manifest.uploaded !== false || manifest.publicUrl !== null) {
+    throw new Error('demo manifest claims an upload that this process did not perform');
+  }
+  const seconds = Math.round((manifest.recordedDurationMs ?? 0) / 1000);
+  if (seconds < 300) throw new Error(`demo is ${seconds}s; the submission requires at least 5 min`);
+  return `${Math.floor(seconds / 60)}m ${seconds % 60}s, ${manifest.captionCount} captions, tree ${tree}, not uploaded`;
+});
+
 check('Meaningful test count (>= 300)', () => {
   const count = countTests();
   if (count < 300) throw new Error(`only ${count} tests found`);
@@ -441,13 +510,55 @@ check('Ten-minute soak evidence', () => {
   );
 });
 
+check('Remount safety evidence (fixed-count 3D/2D cycles)', () => {
+  const evidence = readEvidence('release-evidence/remount/remount-report.json', {
+    requiredMeasurements: [
+      'cyclesCompleted',
+      'heapGrowthRatio',
+      'heapGrowthBytes',
+      'worstMountLatencyMs',
+      'heapSlopeBytesPerCycle',
+      'peakLiveWebglContexts',
+      'consoleErrors',
+    ],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  const cycles = Number(m['cyclesCompleted']);
+  // 60, not 25: the run length was itself deciding the verdict. At 25
+  // cycles this gate passed at ratio 1.183 while the same experiment at 60
+  // failed at 1.443, with post-GC heap rising on every single transition.
+  if (cycles < 60) throw new Error(`only ${cycles} remount cycles; 60 are required`);
+  const slope = Number(m['heapSlopeBytesPerCycle']);
+  if (slope > 160 * 1024)
+    throw new Error(`post-GC heap rising ${(slope / 1024).toFixed(1)} KiB per cycle`);
+  if (Number(m['peakLiveWebglContexts']) > 4)
+    throw new Error(`${m['peakLiveWebglContexts']} live WebGL contexts accumulated`);
+  if (Number(m['consoleErrors']) > 0) throw new Error(`${m['consoleErrors']} console errors`);
+  return (
+    `${cycles} cycles, heap slope ${(slope / 1024).toFixed(1)} KiB/cycle, ` +
+    `growth ratio ${m['heapGrowthRatio']} ` +
+    `(${(Number(m['heapGrowthBytes']) / 1048576).toFixed(1)} MiB), ` +
+    `worst in-page mount ${m['worstMountLatencyMs']}ms, ` +
+    `peak live WebGL contexts ${m['peakLiveWebglContexts']}`
+  );
+});
+
 check('Performance budget evidence', () => {
   const evidence = readEvidence('release-evidence/performance.json', {
     requiredMeasurements: ['initialJsGzipBytes', 'totalJsGzipBytes'],
     ...evidenceOptions,
   });
   const m = evidence.measurements;
-  return `initial JS ${(Number(m['initialJsGzipBytes']) / 1024).toFixed(1)} KiB gzip`;
+  const t = evidence.thresholds as Record<string, unknown>;
+  // Both figures with their own budgets: quoting the initial-load number
+  // against the total-JS budget roughly doubled the apparent headroom.
+  return (
+    `initial JS ${(Number(m['initialJsGzipBytes']) / 1024).toFixed(1)} KiB gzip ` +
+    `of ${(Number(t['initialJsGzipBytes']) / 1024).toFixed(0)} KiB, ` +
+    `total JS ${(Number(m['totalJsGzipBytes']) / 1024).toFixed(1)} KiB ` +
+    `of ${(Number(t['totalJsGzipBytes']) / 1024).toFixed(0)} KiB`
+  );
 });
 
 check('Security audit evidence', () => {
@@ -504,6 +615,7 @@ check('Visual regression snapshots exist', () => {
     'home',
     'city-night',
     'city-day',
+    'city-golden',
     'city-first-person',
     'lab-results',
     'compare',
@@ -515,7 +627,25 @@ check('Visual regression snapshots exist', () => {
   ];
   const missing = required.filter((r) => !shots.some((s) => s.startsWith(r)));
   if (missing.length > 0) throw new Error(`missing snapshots: ${missing.join(', ')}`);
-  return `${shots.length} snapshots covering all required surfaces`;
+
+  // Baselines are per-platform, and a baseline that exists only for the
+  // developer's platform is not a baseline — it is a test that silently
+  // does nothing on the machine that gates the pull request. CI runs on
+  // Linux; the branch is developed on macOS. Both must be present for
+  // every required surface, or the visual suite is only half a suite.
+  const platforms = ['darwin', 'linux'];
+  const gaps: string[] = [];
+  for (const surface of required) {
+    for (const platform of platforms) {
+      if (!shots.some((s) => s.startsWith(surface) && s.endsWith(`-${platform}.png`))) {
+        gaps.push(`${surface} (${platform})`);
+      }
+    }
+  }
+  if (gaps.length > 0) {
+    throw new Error(`baselines missing for the platforms CI uses: ${gaps.join(', ')}`);
+  }
+  return `${shots.length} snapshots covering all required surfaces on ${platforms.join(' and ')}`;
 });
 
 check('Sample traces validate and match committed hashes', () =>
@@ -525,6 +655,75 @@ check('Sample traces validate and match committed hashes', () =>
     'trace hash verification',
   ),
 );
+
+// ------------------------------------------------------ WISER real city
+
+check('WISER frame-rate evidence', () => {
+  // The key is `mobileEmulatedMedianFps`, not `mobileMedianFps`: the name
+  // carries the emulation caveat with the number so it cannot be quoted as
+  // a real-device figure. This check asked for the shorter name the tool
+  // never writes, so it could not pass with the evidence the tool produces.
+  const evidence = readEvidence(join(ROOT, 'release-evidence', 'wiser-fps', 'fps-report.json'), {
+    requiredMeasurements: [
+      'desktopMedianFps',
+      'mobileEmulatedMedianFps',
+      'uncappedDesktopMedianFps',
+    ],
+    ...evidenceOptions,
+  });
+  const desktop = Number(evidence.measurements['desktopMedianFps']);
+  const mobile = Number(evidence.measurements['mobileEmulatedMedianFps']);
+  const uncapped = Number(evidence.measurements['uncappedDesktopMedianFps']);
+  // The capped figures are floors on a display-limited measurement; the
+  // uncapped pass is the one with discriminating power, so it is checked
+  // too rather than merely recorded.
+  if (!Number.isFinite(desktop) || desktop < 50)
+    throw new Error(`desktop median ${desktop} fps below 50`);
+  if (!Number.isFinite(mobile) || mobile < 30)
+    throw new Error(`emulated mobile median ${mobile} fps below 30`);
+  if (!Number.isFinite(uncapped) || uncapped < 120)
+    throw new Error(`uncapped desktop median ${uncapped} fps below 120`);
+  return `desktop ${desktop} fps and emulated mobile ${mobile} fps (both display-capped floors), uncapped ceiling ${uncapped} fps`;
+});
+
+check('WISER screenshot evidence', () => {
+  const evidence = readEvidence(
+    join(ROOT, 'release-evidence', 'wiser-screenshots', 'manifest.json'),
+    { requiredMeasurements: ['imageCount'], ...evidenceOptions },
+  );
+  const detail = evidence.detail as {
+    shots: { file: string; sha256: string; viewport: string; timeOfDay: string }[];
+  };
+  if (detail.shots.length < 12) throw new Error(`only ${detail.shots.length} screenshots`);
+  const times = new Set(detail.shots.map((s) => s.timeOfDay));
+  for (const t of ['day', 'golden', 'night']) {
+    if (!times.has(t)) throw new Error(`no ${t} screenshots`);
+  }
+  for (const shot of detail.shots) {
+    const path = join(ROOT, shot.file);
+    if (!existsSync(path)) throw new Error(`screenshot missing on disk: ${shot.file}`);
+    const digest = createHash('sha256').update(readFileSync(path)).digest('hex');
+    if (digest !== shot.sha256) {
+      throw new Error(`screenshot drifted from manifest: ${shot.file}`);
+    }
+  }
+  return `${detail.shots.length} screenshots across day/golden/night, all hash-bound`;
+});
+
+check('WISER adversarial reviews', () => {
+  const evidence = readEvidence(join(ROOT, 'release-evidence', 'wiser-reviews', 'reviews.json'), {
+    requiredMeasurements: ['reviewers', 'openBlockers', 'openMajors', 'minCategoryScore'],
+    ...evidenceOptions,
+  });
+  const m = evidence.measurements;
+  if (Number(m['reviewers']) < 4) throw new Error('fewer than four reviewer stances');
+  if (Number(m['openBlockers']) > 0) throw new Error(`${m['openBlockers']} open blocking findings`);
+  if (Number(m['openMajors']) > 0) throw new Error(`${m['openMajors']} open major findings`);
+  if (Number(m['minCategoryScore']) < 4.5) {
+    throw new Error(`minimum category score ${m['minCategoryScore']} below 4.5`);
+  }
+  return `${m['reviewers']} reviewers, min category ${m['minCategoryScore']}/5, zero open blockers or majors`;
+});
 
 check('Accessibility evidence recorded', () => {
   const spec = readFileSync(join(ROOT, 'tests', 'e2e', 'accessibility.spec.ts'), 'utf8');
@@ -555,14 +754,29 @@ check('Production build output present', () => {
 // -------------------------------------------------------------- matrix
 
 check('Acceptance matrix has no unmet required rows', () => {
-  const matrix = readFileSync(join(ROOT, 'docs', 'acceptance-matrix.md'), 'utf8');
-  const unmetStatuses = ['FAIL', 'BLOCKED', 'UNVERIFIED', 'NOT RUN', 'PARTIAL', 'PLACE' + 'HOLDER'];
+  // PENDING is an unmet status too: the WISER matrix starts every row as
+  // PENDING and flips to PASS only when the cited evidence exists, so the
+  // gate fails until the real-city work is genuinely complete.
+  const unmetStatuses = [
+    'FAIL',
+    'BLOCKED',
+    'UNVERIFIED',
+    'NOT RUN',
+    'PARTIAL',
+    'PENDING',
+    'PLACE' + 'HOLDER',
+  ];
   const unmetPattern = new RegExp(`\\|\\s*(${unmetStatuses.join('|')})\\s*\\|`);
-  const unmet = matrix.split('\n').filter((line) => unmetPattern.test(line));
-  if (unmet.length > 0) {
-    throw new Error(`${unmet.length} unmet row(s), first: ${unmet[0]!.trim().slice(0, 90)}`);
+  for (const file of ['docs/acceptance-matrix.md', 'docs/wiser-acceptance-matrix.md']) {
+    const matrix = readFileSync(join(ROOT, file), 'utf8');
+    const unmet = matrix.split('\n').filter((line) => unmetPattern.test(line));
+    if (unmet.length > 0) {
+      throw new Error(
+        `${file}: ${unmet.length} unmet row(s), first: ${unmet[0]!.trim().slice(0, 90)}`,
+      );
+    }
   }
-  return 'every row is PASS or an authorized exception';
+  return 'every row in both matrices is PASS or an authorized exception';
 });
 
 check('Project state does not declare an unresolved blocker', () => {

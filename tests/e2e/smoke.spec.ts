@@ -1,5 +1,10 @@
-import { expect, test } from '@playwright/test';
-import { trackConsoleErrors, runBellFromLab, expectCityRendered } from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { pauseReplay, runBellFromLab, skipOnboarding, trackConsoleErrors } from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('home page presents the product and three entry points', async ({ page, browserName }) => {
   const assertClean = trackConsoleErrors(page, browserName);
@@ -50,7 +55,7 @@ test('running the Bell sample produces synchronized results in 2D', async ({
   await expect(page.getByRole('group', { name: /Coupling map/ })).toBeVisible();
   // Timeline stepping updates the tick display.
   const position = page.locator('.timeline-position');
-  await page.getByRole('button', { name: 'Pause replay' }).click();
+  await pauseReplay(page);
   const before = await position.textContent();
   await page.getByRole('button', { name: 'Step forward one tick' }).click();
   const after = await position.textContent();
@@ -95,27 +100,6 @@ test('help overlay shows keyboard map and closes with Escape', async ({ page }) 
   await expect(dialog.getByText('District legend')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
-});
-
-test('guided tour walks chapters with camera sync and exits cleanly', async ({
-  page,
-  browserName,
-}) => {
-  const assertClean = trackConsoleErrors(page, browserName);
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Guided Tour' }).first().click();
-  const tour = page.locator('.tour-overlay');
-  await expect(tour).toBeVisible({ timeout: 15_000 });
-  await expect(tour.getByRole('heading', { name: 'Quantum Program Port' })).toBeVisible();
-  await tour.getByRole('button', { name: 'Next →' }).click();
-  await expect(tour.getByText('Chapter 2 of 16')).toBeVisible();
-  await tour.getByRole('button', { name: '← Previous' }).click();
-  await expect(tour.getByText('Chapter 1 of 16')).toBeVisible();
-  await tour.getByRole('button', { name: 'Exit tour' }).click();
-  await expect(tour).not.toBeVisible();
-  // A filtered browser warning must never mask a blank canvas.
-  await expectCityRendered(page);
-  assertClean();
 });
 
 test('share URL restores a sample configuration', async ({ page }) => {

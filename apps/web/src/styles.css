@@ -53,6 +53,16 @@ kbd {
   padding: 0 0.35em;
 }
 
+/* Keyboard hints are reading noise on touch-first devices: hide the keycap
+   chips (camera-mode digits, Ctrl K) where there is no keyboard-first
+   pointer. The Help overlay keeps its full keyboard map for hybrids. */
+@media (pointer: coarse) {
+  .camera-controls kbd,
+  .header-tools kbd {
+    display: none;
+  }
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -302,6 +312,12 @@ figure {
   padding: 0.5rem;
 }
 
+/* Charts narrower than their panel sit centered, not left-stranded. */
+.histogram .circuit-scroll svg {
+  display: block;
+  margin: 0 auto;
+}
+
 .table-alternative {
   margin-top: 0.4rem;
 }
@@ -313,12 +329,16 @@ figure {
 
 /* Circuit diagram */
 .wire {
-  stroke: #55617f;
+  /* 4.0:1 on the #1a2032 diagram ground (SC 1.4.11 needs 3:1). The wire is
+     what tells you which qubit a gate acts on, so it is a graphical object
+     required to understand the content, not decoration. */
+  stroke: #727e9e;
   stroke-width: 1.6;
 }
 
 .wire-classical {
-  stroke: #4a5068;
+  /* 3.8:1; kept a shade below the quantum wire so the two stay distinct. */
+  stroke: #6f7b9b;
   stroke-width: 1;
 }
 
@@ -457,7 +477,8 @@ figure {
 
 /* Coupling map */
 .coupling-edge {
-  stroke: #55617f;
+  /* 4.0:1 — the edges are the device topology the figure exists to show. */
+  stroke: #727e9e;
   stroke-width: 2.5;
 }
 
@@ -737,6 +758,81 @@ figure {
   z-index: 5;
 }
 
+/* Walk/fly movement pad. Sits beside the centered desktop playback strip;
+   on phones the dock is full-width and tall, so the pad moves up above it
+   to stay fully visible and reachable (child-UX review finding). */
+.touch-joystick {
+  left: 18px;
+  bottom: 86px;
+}
+
+@media (max-width: 760px) {
+  .touch-joystick {
+    left: 12px;
+    bottom: 232px;
+  }
+
+  /* Compact chrome: on a phone the header stack was eating 40% of the
+     viewport before any city appeared (child-UX, art, and performance
+     reviews). Two rows: brand + tools, then one horizontally scrollable
+     mode strip. Touch targets stay >= 40px tall. */
+  .app-header {
+    gap: 0.3rem 0.6rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .brand {
+    font-size: 1.05rem;
+    order: 1;
+  }
+
+  .header-tools {
+    order: 2;
+  }
+
+  .app-header nav {
+    order: 3;
+    width: 100%;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    /* Fade the trailing edge so off-screen modes (Compare, Accessible 2D)
+       are discoverably "more to scroll", not silently hidden. Trailing
+       padding keeps the LAST chip clear of the fade zone at scroll end,
+       so the active label never dims (child-UX review). */
+    mask-image: linear-gradient(to right, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, black 90%, transparent);
+    padding-right: 3rem;
+  }
+
+  .app-header nav button {
+    flex: 0 0 auto;
+  }
+
+  .app-header nav button,
+  .header-tools button,
+  .camera-controls button {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.88rem;
+    /* Child-friendly touch height (44px), not just the WCAG minimum. */
+    min-height: 2.75rem;
+  }
+
+  /* Camera chips scroll in one row too — a wrapped orphan chip reads as a
+     layout accident (performance review). */
+  .camera-controls {
+    max-width: calc(100% - 6.5rem);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .camera-controls button {
+    flex: 0 0 auto;
+  }
+}
+
 .lab-drawer {
   position: absolute;
   top: 0.8rem;
@@ -808,6 +904,17 @@ figure {
   align-items: flex-end;
   gap: 0.5rem;
   margin-right: 360px;
+}
+
+/* Accessible 2D has no canvas to float over: the dock is absolutely
+   positioned for the 3D city, and in the 2D document it landed on top of
+   the WebGL-fallback status message, obscuring "the complete product
+   without WebGL". In 2D it belongs in normal flow. */
+.view-2d .scenario-dock {
+  position: static;
+  margin-right: 0;
+  align-items: stretch;
+  margin-bottom: 0.8rem;
 }
 
 .scenario-list {
@@ -946,9 +1053,15 @@ figure {
 }
 
 /* Toast */
+/* Sits clear of the timeline dock and never intercepts a click. A run now
+   announces itself here on every run, and at the old bottom: 1rem it landed
+   squarely on top of the replay controls: the soak caught it failing to
+   press Step for 30 s because the toast was swallowing the click. A status
+   message must not be able to block the thing it is reporting on. */
 .toast {
   position: fixed;
-  bottom: 1rem;
+  bottom: 5.5rem;
+  pointer-events: none;
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg-panel);
@@ -1003,11 +1116,584 @@ figure {
   gap: 1rem;
 }
 
+/* Learning path: onboarding (spec 7.1) */
+.onboarding-backdrop {
+  z-index: 60;
+}
+
+.onboarding {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem 1.25rem;
+  max-width: 44rem;
+  width: calc(100% - 2rem);
+  text-align: center;
+}
+
+.onboarding h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+
+.onboarding-tagline {
+  color: var(--text-dim);
+  margin: 0 0 1.25rem;
+}
+
+.onboarding-level {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+}
+
+.onboarding-level-label {
+  color: var(--text-dim);
+}
+
+.onboarding-level-choice {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-raised);
+  padding: 0.45rem 1rem;
+  font-size: 1rem;
+}
+
+.onboarding-level-choice.active {
+  border-color: var(--accent);
+  background: var(--accent-soft, rgba(45, 212, 191, 0.15));
+  font-weight: 600;
+}
+
+.onboarding-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+
+.onboarding-choice {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  padding: 1.25rem 1rem;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  min-height: 10rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.onboarding-choice:hover {
+  border-color: var(--accent);
+}
+
+.onboarding-illustration {
+  width: 5.5rem;
+  height: 5.5rem;
+  color: var(--text);
+}
+
+.onboarding-arrow {
+  position: absolute;
+  top: -1.4rem;
+  right: 0.6rem;
+  color: var(--focus);
+  font-size: 1.5rem;
+  animation: onboarding-point 1.2s ease-in-out infinite;
+}
+
+@keyframes onboarding-point {
+  0%,
+  100% {
+    transform: translateY(0) rotate(90deg);
+  }
+  50% {
+    transform: translateY(0.4rem) rotate(90deg);
+  }
+}
+
+.onboarding-skip {
+  margin-top: 1rem;
+}
+
+/* Learning path: circuit builder (spec 7.2) */
+.circuit-builder {
+  display: grid;
+  gap: 0.6rem;
+  touch-action: none;
+}
+
+.builder-hint {
+  margin: 0;
+}
+
+.builder-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.builder-palette-tile {
+  min-width: 2.8rem;
+  min-height: 2.8rem;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: grab;
+}
+
+.builder-palette-tile.armed {
+  border-color: var(--accent);
+  background: var(--bg-panel);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.builder-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.builder-qubits-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.builder-grid {
+  display: grid;
+  gap: 2px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  overflow-x: auto;
+}
+
+.builder-cell-slot {
+  position: relative;
+  display: block;
+}
+
+.builder-cell-slot .builder-tile-remove {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  z-index: 1;
+}
+
+.builder-cell {
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  color: var(--text-dim);
+  min-height: 2.6rem;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  position: relative;
+}
+
+.builder-cell.filled {
+  border-style: solid;
+  border-color: var(--accent-2);
+  background: var(--bg-panel);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.builder-cell.pending-column {
+  border-color: var(--focus);
+}
+
+.builder-cell.pending-origin {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px var(--focus);
+}
+
+.builder-tile {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.builder-tile-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.builder-tile-remove:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.builder-status {
+  min-height: 1.2rem;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.builder-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.builder-qasm-preview {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.builder-qasm-preview pre {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+/* Learning path: missions (spec 7.3) */
+.learn-layout {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.learn-layout .mission-panel {
+  max-width: 52rem;
+  width: 100%;
+}
+
+.mission-panel {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.mission-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mission-panel-header h2 {
+  margin: 0;
+}
+
+.mission-overall {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.mission-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.mission-card {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  cursor: pointer;
+}
+
+.mission-card:hover {
+  border-color: var(--accent);
+}
+
+.mission-card.done {
+  border-color: var(--ok);
+}
+
+.mission-card-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  font-weight: 700;
+}
+
+.mission-card.done .mission-card-mark {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.mission-card-body {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.mission-active {
+  display: grid;
+  gap: 0.8rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.mission-active h3 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.mission-briefing {
+  margin: 0;
+  color: var(--text-dim);
+}
+
+.mission-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.mission-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+}
+
+.mission-steps li.current {
+  background: var(--bg-panel);
+  outline: 2px solid var(--accent);
+}
+
+.mission-steps li.done {
+  color: var(--text-dim);
+}
+
+.mission-step-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.mission-steps li.done .mission-step-mark {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.mission-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mission-run {
+  justify-self: start;
+  font-size: 1.05rem;
+  padding: 0.5rem 1.6rem;
+}
+
+.mission-celebration {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--bg-panel);
+  border: 2px solid var(--ok);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+}
+
+.mission-celebration-mark {
+  font-size: 1.8rem;
+  color: var(--focus);
+  animation: celebration-pop 0.9s ease-in-out;
+}
+
+@keyframes celebration-pop {
+  0% {
+    transform: scale(0.4) rotate(-20deg);
+  }
+  60% {
+    transform: scale(1.25) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.mission-celebration p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.missions-2d {
+  margin-top: 1rem;
+}
+
+.missions-2d > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Mission step target highlight (spec W6.6) */
+.mission-highlight {
+  animation: mission-pulse 1.4s ease-in-out infinite;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* The pulse must not touch `outline`: :focus-visible uses the same property,
+   so animating outline-color to transparent made the focus indicator fade
+   to invisible on exactly the control the mission had just told a keyboard
+   user to press. Pulsing a box-shadow keeps the ring solid throughout. */
+@keyframes mission-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 6px rgb(255 209 102 / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgb(255 209 102 / 0);
+  }
+}
+
+/* Learning path: assessment (spec 7.5) */
+.assessment {
+  display: grid;
+  gap: 0.7rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.assessment h3 {
+  margin: 0;
+}
+
+.assessment-figure {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.assessment-figure svg {
+  width: min(18rem, 100%);
+  height: auto;
+  color: var(--text);
+}
+
+.assessment-prompt {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.assessment-options {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.assessment-option {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-panel);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.assessment-option:hover {
+  border-color: var(--accent);
+}
+
+.assessment-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* Lab program-input tabs (Blocks | Code) */
+.lab-input-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.2rem;
+  align-self: start;
+}
+
+.lab-input-tabs button {
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.lab-input-tabs button.active {
+  background: var(--bg-panel);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.tour-leveled {
+  font-size: 1.02rem;
+  border-left: 3px solid var(--accent);
+  padding-left: 0.7rem;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001s !important;
     transition-duration: 0.001s !important;
+  }
+
+  .onboarding-arrow,
+  .mission-highlight,
+  .mission-celebration-mark {
+    animation: none !important;
   }
 }
 
@@ -1018,13 +1704,160 @@ figure {
     width: calc(100% - 1.6rem);
   }
 
+  /* Clear of the playback dock, which on a phone is full-width and about
+     232px tall — the same clearance the movement pad above already uses.
+     At 5.6rem the Scenarios button sat inside the dock: the screenshot
+     evidence showed it half-covered by the speed row, so the control that
+     opens the scenario list was partly unreachable on every phone. */
   .scenario-dock {
     margin-right: 0;
     top: auto;
-    bottom: 5.6rem;
+    bottom: 232px;
   }
 
   .field-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* City Legend                                                         */
+/* ------------------------------------------------------------------ */
+
+.legend-toggle {
+  position: absolute;
+  top: 12px;
+  right: 118px;
+  z-index: 5;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.legend-toggle:hover {
+  border-color: var(--accent);
+}
+
+.city-legend {
+  max-width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.legend-entry {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--bg-raised);
+}
+
+.legend-entry-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.legend-entry-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.legend-source {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+.legend-entry p {
+  margin: 6px 0 0;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.legend-trigger {
+  color: var(--text-dim);
+}
+
+/* Narrow screens: the Legend button drops below the camera controls so it
+   can never overlap them, and district labels leave the header room. */
+@media (max-width: 760px) {
+  /* The scenario dock sits at the bottom on phones, so the top-right
+     corner is free for the Legend; camera chips wrap below the header. */
+  .legend-toggle {
+    top: 0.8rem;
+    right: 0.8rem;
+  }
+
+  .camera-controls {
+    flex-wrap: wrap;
+    max-width: calc(100% - 7rem);
+  }
+}
+
+/* Explanatory note under a settings control. */
+.field-note {
+  margin: 0.15rem 0 0 1.6rem;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  max-width: 34ch;
+}
+
+/* aria-disabled controls stay focusable (so a keyboard user is never blurred
+   to document.body when a control disables under them) but must read as
+   unavailable. `disabled` remains correct for controls that are never the
+   focused target when they flip. */
+button[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The status live region is mounted for the whole session; when idle it must
+   occupy no space and take no clicks. */
+.toast button {
+  pointer-events: auto;
+}
+
+.toast-idle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+/* Accessible 2D renders the Inspector inline in its third column rather than
+   as a floating overlay over a canvas that does not exist here. */
+.inspector-inline .inspector {
+  position: static;
+  width: auto;
+  max-height: none;
+  margin-bottom: 0.8rem;
+}
+
+.view-2d-tools {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+/* The disclaimer must be reachable from every view, not only Home: a shared
+   link opens straight into the Lab or the city, where Home is never seen. */
+.help-disclaimer {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  border-left: 3px solid var(--border);
+  padding-left: 0.7rem;
 }

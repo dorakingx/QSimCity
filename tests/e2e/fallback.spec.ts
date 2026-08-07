@@ -1,5 +1,10 @@
-import { expect, test } from '@playwright/test';
-import { disableWebgl, trackConsoleErrors } from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { disableWebgl, trackConsoleErrors, skipOnboarding } from './helpers.js';
+
+// Every flow here models a returning user; onboarding has its own spec.
+test.beforeEach(async ({ page }) => {
+  await skipOnboarding(page);
+});
 
 test('WebGL failure never blanks the page: 2D fallback carries the full workflow', async ({
   page,
