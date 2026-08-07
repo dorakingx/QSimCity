@@ -135,6 +135,8 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
   const [pendingPair, setPendingPair] = useState<PendingPair | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [status, setStatus] = useState('');
+  /** The single tab stop inside the placement grid (roving tabindex). */
+  const [rovingCell, setRovingCell] = useState<CellRef>({ column: 0, qubit: 0 });
   const gridRef = useRef<HTMLDivElement>(null);
   const { state } = builder;
   const palette = paletteForLevel(level);
@@ -207,6 +209,7 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
     const grid = e.currentTarget.closest('.builder-grid');
     const focusCell = (column: number, qubit: number): void => {
       const target = grid?.querySelector<HTMLButtonElement>(`[data-cell="${column}-${qubit}"]`);
+      setRovingCell({ column, qubit });
       target?.focus();
     };
     switch (e.key) {
@@ -462,6 +465,12 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
                 <button
                   type="button"
                   data-cell={`${column}-${qubit}`}
+                  // Roving tabindex: the grid is one tab stop, not
+                  // numQubits x 12. Arrow keys move within it. Without this
+                  // a keyboard learner needed 31 Tab presses to get from the
+                  // gate palette to Run.
+                  tabIndex={rovingCell.column === column && rovingCell.qubit === qubit ? 0 : -1}
+                  onFocus={() => setRovingCell({ column, qubit })}
                   className={`builder-cell${placed ? ' filled' : ''}${
                     isPendingOrigin ? ' pending-origin' : isPendingColumn ? ' pending-column' : ''
                   }`}
@@ -516,9 +525,13 @@ export function CircuitBuilder({ builder }: { builder: CircuitBuilderApi }): Rea
         <button
           type="button"
           className="primary"
-          disabled={running || state.placements.length === 0}
+          // Keeps focus on Run while the run is in flight. Disabling it
+          // reactively blurred the learner to document.body at the single
+          // most important moment in the product.
+          aria-disabled={running || state.placements.length === 0}
           data-mission-target="builder-run"
           onClick={() => {
+            if (running || state.placements.length === 0) return;
             useAppStore.getState().updateConfig({
               qasm: compileBuilderQasm(state),
               sampleId: null,

@@ -761,7 +761,9 @@ export class CityEngine {
         material,
         160,
       );
-      this.countStacks.name = 'count-stacks';
+      // Named for its City Legend entry: a legend test derives its required
+      // coverage from the names the engine gives the objects it animates.
+      this.countStacks.name = 'harbor-stacks';
       this.countStacks.count = 0;
       this.countStacks.castShadow = true;
       this.scene.add(this.countStacks);

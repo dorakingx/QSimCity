@@ -62,20 +62,46 @@ export function App(): ReactElement {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
       const s = useAppStore.getState();
-      const target = e.target as HTMLElement | null;
+      // The event target is the Window itself when nothing is focused, so
+      // narrow before reaching for DOM methods.
+      const target = e.target instanceof Element ? e.target : null;
       const inField =
         target instanceof HTMLInputElement ||
         target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement;
-      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !inField)) {
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+      // Space and Enter belong to whatever control has focus. Calling
+      // preventDefault on a focused button suppresses the browser's
+      // synthetic click, so an earlier version silently broke Space as a
+      // button activation key across the whole product the moment a trace
+      // existed — while the Help overlay still promised it worked.
+      const onControl =
+        target !== null &&
+        target.closest(
+          'button, a[href], summary, [role="button"], [role="radio"], [role="checkbox"], [role="switch"], [role="tab"], [role="menuitem"], [role="option"]',
+        ) !== null;
+      // WCAG 2.1.4 Character Key Shortcuts: every unmodified single-key
+      // shortcut below can be switched off in Settings. Escape and the
+      // modified Ctrl/Cmd+K are exempt (Escape is not a character key, and
+      // Ctrl+K carries a modifier), so the app is never left without a way
+      // to dismiss a dialog or reach the command palette.
+      const singleKey = s.settings.singleKeyShortcuts;
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !inField && singleKey)) {
         e.preventDefault();
         s.setPaletteOpen(!s.paletteOpen);
         return;
       }
+      if (e.key === 'Escape') {
+        s.setPaletteOpen(false);
+        s.setHelpOpen(false);
+        s.setScheduleOpen(false);
+        return;
+      }
       if (inField) return;
+      if (!singleKey) return;
       switch (e.key) {
         case ' ':
-          if (s.trace) {
+          if (s.trace && !onControl) {
             e.preventDefault();
             if (s.playbackPlaying) s.pause();
             else s.play();
@@ -97,11 +123,6 @@ export function App(): ReactElement {
           break;
         case '?':
           s.setHelpOpen(true);
-          break;
-        case 'Escape':
-          s.setPaletteOpen(false);
-          s.setHelpOpen(false);
-          s.setScheduleOpen(false);
           break;
       }
     };
@@ -174,6 +195,10 @@ export function App(): ReactElement {
                   complete product without WebGL.
                 </p>
                 <Accessible2DView />
+                {/* The tour is plain DOM; rendering it only inside the
+                    WebGL branch meant a learner without a GPU chose Guided
+                    Tour and got nothing. */}
+                {mode === 'tour' && <TourOverlay />}
               </>
             ) : (
               <p role="status">Checking 3D support…</p>

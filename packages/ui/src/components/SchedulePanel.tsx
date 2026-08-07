@@ -1,4 +1,4 @@
-import { useRef, type ReactElement } from 'react';
+import { useEffect, useRef, type ReactElement } from 'react';
 import { useAppStore } from '../store/appStore.js';
 import { CertaintyBadge } from './CertaintyBadge.js';
 import { instructionDescription } from './CircuitDiagram.js';
@@ -14,7 +14,14 @@ export function SchedulePanel(): ReactElement | null {
   const trace = useAppStore((s) => s.trace);
   const { setScheduleOpen } = useAppStore.getState();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   useFocusTrap(dialogRef, open);
+
+  // A dialog that opens without moving focus into itself gives a
+  // screen-reader user no indication it appeared.
+  useEffect(() => {
+    if (open) closeRef.current?.focus();
+  }, [open]);
 
   if (!open) return null;
   const scheduled = trace
@@ -42,7 +49,12 @@ export function SchedulePanel(): ReactElement | null {
           <h2>
             Instruction schedule <CertaintyBadge certainty="ESTIMATED" />
           </h2>
-          <button type="button" aria-label="Close schedule" onClick={() => setScheduleOpen(false)}>
+          <button
+            type="button"
+            ref={closeRef}
+            aria-label="Close schedule"
+            onClick={() => setScheduleOpen(false)}
+          >
             ×
           </button>
         </div>

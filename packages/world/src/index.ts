@@ -28,7 +28,7 @@ export {
   type WorldActivity,
   type DistrictActivity,
 } from './playback.js';
-export { logicalToPhysicalAt, physicalToLogicalAt } from './mapping.js';
+export { hasLayoutAssignment, logicalToPhysicalAt, physicalToLogicalAt } from './mapping.js';
 export { weatherAt, type WeatherState } from './weather.js';
 export {
   ambientVehiclesAt,

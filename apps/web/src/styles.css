@@ -329,12 +329,16 @@ figure {
 
 /* Circuit diagram */
 .wire {
-  stroke: #55617f;
+  /* 4.0:1 on the #1a2032 diagram ground (SC 1.4.11 needs 3:1). The wire is
+     what tells you which qubit a gate acts on, so it is a graphical object
+     required to understand the content, not decoration. */
+  stroke: #727e9e;
   stroke-width: 1.6;
 }
 
 .wire-classical {
-  stroke: #4a5068;
+  /* 3.8:1; kept a shade below the quantum wire so the two stay distinct. */
+  stroke: #6f7b9b;
   stroke-width: 1;
 }
 
@@ -473,7 +477,8 @@ figure {
 
 /* Coupling map */
 .coupling-edge {
-  stroke: #55617f;
+  /* 4.0:1 — the edges are the device topology the figure exists to show. */
+  stroke: #727e9e;
   stroke-width: 2.5;
 }
 
@@ -1560,13 +1565,17 @@ figure {
   border-radius: 4px;
 }
 
+/* The pulse must not touch `outline`: :focus-visible uses the same property,
+   so animating outline-color to transparent made the focus indicator fade
+   to invisible on exactly the control the mission had just told a keyboard
+   user to press. Pulsing a box-shadow keeps the ring solid throughout. */
 @keyframes mission-pulse {
   0%,
   100% {
-    outline-color: var(--focus);
+    box-shadow: 0 0 0 6px rgb(255 209 102 / 0.35);
   }
   50% {
-    outline-color: transparent;
+    box-shadow: 0 0 0 10px rgb(255 209 102 / 0);
   }
 }
 
@@ -1771,4 +1780,49 @@ figure {
     flex-wrap: wrap;
     max-width: calc(100% - 7rem);
   }
+}
+
+/* Explanatory note under a settings control. */
+.field-note {
+  margin: 0.15rem 0 0 1.6rem;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  max-width: 34ch;
+}
+
+/* aria-disabled controls stay focusable (so a keyboard user is never blurred
+   to document.body when a control disables under them) but must read as
+   unavailable. `disabled` remains correct for controls that are never the
+   focused target when they flip. */
+button[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* The status live region is mounted for the whole session; when idle it must
+   occupy no space and take no clicks. */
+.toast-idle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+/* Accessible 2D renders the Inspector inline in its third column rather than
+   as a floating overlay over a canvas that does not exist here. */
+.inspector-inline .inspector {
+  position: static;
+  width: auto;
+  max-height: none;
+  margin-bottom: 0.8rem;
+}
+
+.view-2d-tools {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
 }

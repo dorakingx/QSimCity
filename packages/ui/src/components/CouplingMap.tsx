@@ -15,7 +15,7 @@ export interface CouplingMapProps {
    */
   readonly layout?: readonly number[] | null;
   /** Describes which moment `layout` reflects, e.g. "at tick 6 of 16". */
-  readonly layoutMoment?: string;
+  readonly layoutMoment?: string | undefined;
   readonly activeQubits?: readonly number[];
   readonly activeCouplings?: readonly (readonly [number, number])[];
   readonly onSelectQubit?: (physicalQubit: number) => void;
@@ -134,7 +134,11 @@ export function CouplingMap({
         {layout && (
           <p>
             Layout{layoutMoment ? ` ${layoutMoment}` : ''}:{' '}
-            {layout.map((p, l) => `logical ${l} on physical ${p}`).join('; ')}.
+            {layout
+              .map((p, l) => (p >= 0 ? `logical ${l} on physical ${p}` : null))
+              .filter((line): line is string => line !== null)
+              .join('; ')}
+            .
           </p>
         )}
       </details>

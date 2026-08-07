@@ -20,7 +20,16 @@ export function EventLog({ trace }: { trace: Trace }): ReactElement {
   const level = useAppStore((s) => s.settings.explanationLevel);
   const activity = activityAtTick(trace, tick);
   return (
-    <section className="event-log" aria-label="Events at the current timeline position">
+    <section
+      className="event-log"
+      aria-label="Events at the current timeline position"
+      // This is 2D mode's narration of the replay: the tick heading and the
+      // event list are the only place a screen-reader user learns that the
+      // run advanced. Without a live region it changed silently.
+      role="log"
+      aria-live="polite"
+      aria-relevant="additions text"
+    >
       <h3 className="panel-caption">
         Tick {activity.tick} of {activity.maxTick}
       </h3>

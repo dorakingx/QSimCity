@@ -202,7 +202,15 @@ export function CircuitDiagram({
                       },
                       tabIndex: 0,
                       role: 'button',
-                      'aria-label': instructionDescription(instr),
+                      // Executed / executing / selected were conveyed by
+                      // stroke colour alone (1.03:1 and 1.25:1 apart), so
+                      // assistive technology and anyone not distinguishing
+                      // those hues got no state at all. SC 1.4.1, SC 4.1.2.
+                      'aria-current': isCurrent ? ('step' as const) : undefined,
+                      'aria-pressed': isSelected,
+                      'aria-label': `${instructionDescription(instr)}${
+                        isCurrent ? ', executing now' : executed ? ', already executed' : ''
+                      }`,
                     }
                   : {})}
               >

@@ -62,7 +62,17 @@ function MissionList({ onStart }: { onStart: (mission: Mission) => void }): Reac
   );
 }
 
-export function MissionPanel(): ReactElement {
+export interface MissionPanelProps {
+  /**
+   * Hide the replay and results blocks because the surrounding view already
+   * renders them. Accessible 2D embeds this panel beside its own timeline,
+   * event log and results, and two identically named landmarks and controls
+   * on one page leave a screen-reader user no way to tell them apart.
+   */
+  readonly embedded?: boolean;
+}
+
+export function MissionPanel({ embedded = false }: MissionPanelProps = {}): ReactElement {
   const activeMissionId = useAppStore((s) => s.activeMissionId);
   const config = useAppStore((s) => s.config);
   const trace = useAppStore((s) => s.trace);
@@ -298,14 +308,14 @@ export function MissionPanel(): ReactElement {
             </>
           )}
 
-          {trace && (
+          {trace && !embedded && (
             <div data-mission-target="timeline-play" className="mission-timeline">
               <TimelineBar />
               <EventLog trace={trace} />
             </div>
           )}
 
-          {trace && (
+          {trace && !embedded && (
             <div data-mission-target="results" className="mission-results">
               <ResultsSection trace={trace} compare={Boolean(trace.results.noisyCounts)} />
             </div>

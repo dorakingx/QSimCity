@@ -40,6 +40,11 @@ export interface Settings {
   audioEnabled: boolean;
   audioVolume: number;
   reducedMotion: boolean;
+  /**
+   * Whether unmodified single-character keyboard shortcuts are active.
+   * WCAG 2.1.4 (Level A) requires a way to turn them off; this is it.
+   */
+  singleKeyShortcuts: boolean;
   timeOfDay: TimeOfDaySetting;
   particles: boolean;
   labels: boolean;
@@ -73,11 +78,27 @@ export const DEFAULT_CONFIG: RunConfig = {
   optimize: true,
 };
 
+/**
+ * The operating system's motion preference, read once at module load.
+ *
+ * The CSS `prefers-reduced-motion` block in `styles.css` cannot reach a
+ * requestAnimationFrame loop, so the 3D city kept its traffic, strollers
+ * and camera damping running for a user who had asked the OS for
+ * stillness — and the Settings checkbox they would have had to find
+ * manually rendered unchecked, contradicting their stated preference.
+ * Seeding the default from the media query fixes both. An explicit choice
+ * stored in localStorage still wins over it.
+ */
+export function prefersReducedMotion(): boolean {
+  return globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   quality: 'balanced',
   audioEnabled: false,
   audioVolume: 0.5,
-  reducedMotion: false,
+  reducedMotion: prefersReducedMotion(),
+  singleKeyShortcuts: true,
   timeOfDay: 'day',
   particles: true,
   labels: true,
@@ -175,7 +196,14 @@ export function loadSettings(): Settings {
       delete migrated.explanationLevel;
     }
     delete (migrated as { dayNight?: unknown }).dayNight;
-    return { ...DEFAULT_SETTINGS, ...migrated };
+    const settings = { ...DEFAULT_SETTINGS, ...migrated };
+    // An OS-level motion preference is an accessibility signal, not a
+    // preference the app may quietly override with a value it wrote
+    // itself: every settings change persists the whole object, so a
+    // stored `reducedMotion: false` is usually a default rather than a
+    // decision. The checkbox still turns motion back on for the session.
+    if (prefersReducedMotion()) settings.reducedMotion = true;
+    return settings;
   } catch {
     return { ...DEFAULT_SETTINGS };
   }
@@ -253,6 +281,13 @@ export const useAppStore = create<AppState>((set, get) => ({
         playbackPlaying: true,
         progress: nextProgress,
       });
+      // The only announcement a screen-reader user gets that the run they
+      // started has finished. Without it the replay simply begins moving.
+      const gates =
+        trace.compiledCircuit?.instructions.length ?? trace.inputCircuit.instructions.length;
+      get().showToast(
+        `Run finished: ${gates} operations on the compiled circuit, ${maxTickOf(trace) + 1} replay steps. Replay started.`,
+      );
     } catch (e) {
       const err = e as RunError & Error;
       if (err.message === 'cancelled') {

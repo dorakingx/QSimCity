@@ -2,6 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { LEGEND_ENTRIES } from '../src/content/legend.js';
 import { CityLegend } from '../src/components/CityLegend.js';
 
@@ -25,12 +27,42 @@ describe('city legend content', () => {
       'ambient-car',
       'sidewalk-stroller',
       'pedestrian',
+      'program-ship',
+      'refinery-steam',
+      'scheduling-beacon',
+      'observatory-beam',
       'district-pulse',
       'city-ambience',
     ];
     const ids = LEGEND_ENTRIES.map((e) => e.id);
     for (const id of required) {
       expect(ids, id).toContain(id);
+    }
+  });
+
+  // The list above is hand-maintained, so on its own it only enforces what
+  // the Legend says — not what the city does. This derives the requirement
+  // from the renderer instead: the engine names every object it animates,
+  // and an adversarial review found four named set pieces (the program
+  // ship, refinery steam, the scheduling beacon and the observatory beam)
+  // moving from trace data while the Legend asserted nothing moves that it
+  // does not list. Naming a new animated object now fails this test until
+  // it is explained.
+  it('lists every object the engine names in its scene graph', () => {
+    // happy-dom rewrites import.meta.url, so resolve from the working
+    // directory, which vitest sets to either the package or the repo root.
+    const candidates = [
+      resolve(process.cwd(), '../visual-engine/src/engine.ts'),
+      resolve(process.cwd(), 'packages/visual-engine/src/engine.ts'),
+    ];
+    const enginePath = candidates.find((c) => existsSync(c));
+    expect(enginePath, 'engine source not found').toBeDefined();
+    const source = readFileSync(enginePath!, 'utf8');
+    const named = [...source.matchAll(/\.name = '([a-z0-9-]+)'/g)].map((m) => m[1]!);
+    expect(named.length).toBeGreaterThan(3);
+    const ids = new Set(LEGEND_ENTRIES.map((e) => e.id));
+    for (const name of named) {
+      expect(ids, `engine object "${name}" has no City Legend entry`).toContain(name);
     }
   });
 

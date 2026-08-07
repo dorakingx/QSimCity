@@ -138,7 +138,7 @@ export const LEGEND_ENTRIES: readonly LegendEntry[] = [
       'Background city life so streets read as inhabited. It carries no scientific meaning at all.',
     childRepresents: 'Just city cars driving around. They mean nothing about your program.',
     trigger:
-      'Deterministic loops on the arterial roads; paused entirely when reduced motion is on.',
+      'Deterministic loops on the arterial roads; removed entirely when reduced motion is on, leaving the streets empty rather than holding cars still.',
     childTrigger: 'They drive in loops all day, that is all.',
     source: 'illustrative',
     certainty: 'ILLUSTRATIVE',
@@ -162,10 +162,58 @@ export const LEGEND_ENTRIES: readonly LegendEntry[] = [
       'People walking the pavements of the main roads so the streets you can walk down read as inhabited. Their number carries no signal whatsoever.',
     childRepresents: 'People out walking. They are just going about their day.',
     trigger:
-      'Fixed walkers pacing each arterial pavement on deterministic paths; frozen entirely when reduced motion is on.',
+      'Fixed walkers pacing each arterial pavement on deterministic paths; removed entirely when reduced motion is on, leaving the pavements empty rather than holding figures still.',
     childTrigger: 'They walk up and down the street all day.',
     source: 'illustrative',
     certainty: 'ILLUSTRATIVE',
+  },
+  {
+    id: 'program-ship',
+    name: 'Arriving program ship',
+    represents:
+      'Your program reaching the city. The ship stands off in open water until the run starts, then sails in and berths at the Program Port pier.',
+    childRepresents:
+      'A ship brings your program into the city. It docks when your program arrives.',
+    trigger:
+      'Its position interpolates toward the pier once the trace reaches the input and parse stages, and sails back out when you scrub before them.',
+    childTrigger: 'It sails in when your program starts, and back out when you rewind.',
+    source: 'reference_compiler',
+    certainty: 'COMPUTED',
+  },
+  {
+    id: 'refinery-steam',
+    name: 'Refinery steam',
+    represents:
+      'The Basis Refinery working. Steam rises from the stacks while your gates are being rewritten into the machine’s own gate set.',
+    childRepresents:
+      'Steam puffs from the factory while your gates are being changed into the machine’s gates.',
+    trigger: 'Rises while translation-stage events fire at the current tick; still otherwise.',
+    childTrigger: 'It puffs while the gate factory is busy.',
+    source: 'reference_compiler',
+    certainty: 'COMPUTED',
+  },
+  {
+    id: 'scheduling-beacon',
+    name: 'Scheduling Tower beacon',
+    represents:
+      'The Scheduling Tower deciding when each operation runs. The beacon sweeps while scheduling is in progress.',
+    childRepresents: 'The tower’s light spins while the city works out the timing.',
+    trigger:
+      'Rotates while scheduling-stage events fire at the current tick; held still under reduced motion.',
+    childTrigger: 'It spins when the timing is being worked out.',
+    source: 'reference_compiler',
+    certainty: 'COMPUTED',
+  },
+  {
+    id: 'observatory-beam',
+    name: 'Observatory beam',
+    represents:
+      'The Results Observatory reporting that the run finished. The beam appears once the result stage is reached.',
+    childRepresents: 'A beam of light switches on when your answers are ready.',
+    trigger: 'Appears once the trace reaches the result stage at or before the current tick.',
+    childTrigger: 'It lights up when the results arrive.',
+    source: 'reference_compiler',
+    certainty: 'COMPUTED',
   },
   {
     id: 'district-pulse',

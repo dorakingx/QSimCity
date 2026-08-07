@@ -57,9 +57,15 @@ titles, IBM, or any other third party are used anywhere in this project.
 
 ### Dependency overrides
 
-`brace-expansion` is forced to 5.0.8 (see `pnpm-workspace.yaml`) to clear
-GHSA-mh99-v99m-4gvg, a high-severity ReDoS advisory reachable only through
-build-time tooling. `pnpm audit` reports no known vulnerabilities.
+Two build-time transitive packages are pinned in `pnpm-workspace.yaml`:
+
+- `brace-expansion` is forced to **5.0.9**, clearing both
+  GHSA-mh99-v99m-4gvg and GHSA-rgw5-rvv9-x895 (the second bypasses the
+  first fix in releases before 5.0.9, so 5.0.8 is *not* sufficient).
+- `fast-uri` is forced to **3.1.5**, clearing GHSA-7p8r-x3mc-p8w7.
+
+Both reach the tree only through build tooling and never the shipped
+bundle. `pnpm audit` reports no known vulnerabilities.
 
 ## Python bridge dependencies (optional, never shipped to the browser)
 
@@ -67,7 +73,7 @@ build-time tooling. `pnpm audit` reports no known vulnerabilities.
 | --- | --- | --- | --- |
 | qiskit | 2.5.1 | Apache-2.0 | Transpiler capture and circuit handling |
 | qiskit-aer | 0.17.2 | Apache-2.0 | Ideal and noisy simulation for cross-validation |
-| pytest | 8.4.2 | MIT | Test runner |
+| pytest | 9.0.3 | MIT | Test runner |
 | hypothesis | 6.140.3 | MPL-2.0 | Property-based testing |
 | ruff | 0.14.5 | MIT | Linting |
 | pyright | 1.1.407 | MIT | Type checking |

@@ -13,12 +13,17 @@ export const KEYBOARD_MAP: readonly { keys: string; action: string }[] = [
   { keys: 'Space', action: 'Play or pause the replay' },
   { keys: '. and ,', action: 'Step forward / backward one tick' },
   { keys: 'Ctrl+K or /', action: 'Open the command palette' },
+  { keys: 'E', action: 'Operate the nearby city console (first-person)' },
   { keys: 'T', action: 'Open the Guided Tour' },
   { keys: 'I', action: 'Toggle the Inspector' },
   { keys: '?', action: 'Open this help overlay' },
   { keys: 'Escape', action: 'Close dialogs and menus' },
   { keys: 'Tab / Shift+Tab', action: 'Move keyboard focus' },
   { keys: 'Enter or Space on a highlighted object', action: 'Select / operate it' },
+  {
+    keys: 'Settings → Single-key shortcuts',
+    action: 'Turn the unmodified letter and punctuation shortcuts off',
+  },
 ];
 
 export function HelpOverlay(): ReactElement | null {

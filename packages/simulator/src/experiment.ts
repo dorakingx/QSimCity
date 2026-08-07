@@ -60,6 +60,17 @@ export interface EventEmissionOptions {
   readonly phase: string;
   readonly space: QubitSpace;
   /**
+   * Whether these events came from a noise-model trajectory. It decides the
+   * certainty label on every emitted gate: an ideal run replays the exact
+   * schedule the engine executed, while a noisy run is one sampled
+   * trajectory out of many. Passed explicitly rather than inferred from
+   * `phase`, because `phase` is a free-form display string — an earlier
+   * version compared it against the literal `'ideal'` and so labelled the
+   * web pipeline's `'physical-ideal'` runs SAMPLED, contradicting the City
+   * Legend's EXACT for the QPU lights.
+   */
+  readonly noisy: boolean;
+  /**
    * For a physical run, the logical qubit each physical qubit held when
    * execution began (the inverse of the initial layout). It is reported as
    * `logicalOrigin` in the payload rather than as `logicalQubits`, because
@@ -74,7 +85,7 @@ export function emitExecutionEvents(
   events: readonly EngineEvent[],
   options: EventEmissionOptions,
 ): void {
-  const { phase, space } = options;
+  const { phase, space, noisy } = options;
   const physical = space === 'physical';
   const originOf = (qubits: readonly number[]): Record<string, unknown> => {
     if (!physical || options.logicalOrigin === undefined) return {};
@@ -85,13 +96,14 @@ export function emitExecutionEvents(
   const qubitFields = (qubits: readonly number[]): Record<string, readonly number[]> =>
     physical ? { physicalQubits: qubits } : { logicalQubits: qubits };
 
-  emitEngineEvents(builder, events, phase, physical, qubitFields, originOf);
+  emitEngineEvents(builder, events, phase, noisy, physical, qubitFields, originOf);
 }
 
 function emitEngineEvents(
   builder: TraceBuilder,
   events: readonly EngineEvent[],
   phase: string,
+  noisy: boolean,
   physical: boolean,
   qubitFields: (qubits: readonly number[]) => Record<string, readonly number[]>,
   originOf: (qubits: readonly number[]) => Record<string, unknown>,
@@ -104,7 +116,7 @@ function emitEngineEvents(
             eventType: 'gate.executed',
             stage: 'execution',
             source: 'exact_simulation',
-            certainty: phase === 'ideal' ? 'EXACT' : 'SAMPLED',
+            certainty: noisy ? 'SAMPLED' : 'EXACT',
             instructionId: ev.instructionId,
             ...qubitFields(ev.qubits),
             payload: { gate: ev.name, params: ev.params, phase, ...originOf(ev.qubits) },
@@ -221,7 +233,11 @@ export async function runExperiment(
     ...(options.shouldCancel ? { shouldCancel: options.shouldCancel } : {}),
     onProgress: (done, total) => options.onProgress?.((hasNoise ? 0.5 : 1) * (done / total)),
   });
-  emitExecutionEvents(builder, ideal.representativeEvents, { phase: 'ideal', space: 'logical' });
+  emitExecutionEvents(builder, ideal.representativeEvents, {
+    phase: 'ideal',
+    space: 'logical',
+    noisy: false,
+  });
 
   let noisy: SimulationResult | null = null;
   if (hasNoise) {
@@ -232,7 +248,11 @@ export async function runExperiment(
       ...(options.shouldCancel ? { shouldCancel: options.shouldCancel } : {}),
       onProgress: (done, total) => options.onProgress?.(0.5 + 0.5 * (done / total)),
     });
-    emitExecutionEvents(builder, noisy.representativeEvents, { phase: 'noisy', space: 'logical' });
+    emitExecutionEvents(builder, noisy.representativeEvents, {
+      phase: 'noisy',
+      space: 'logical',
+      noisy: true,
+    });
   }
 
   builder.emit({

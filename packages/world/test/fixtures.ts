@@ -88,6 +88,7 @@ export async function compiledPipelineTrace(options: {
   emitExecutionEvents(builder, sim.representativeEvents, {
     phase: 'physical-ideal',
     space: 'physical',
+    noisy: false,
   });
   builder.emit({
     eventType: 'execution.completed',

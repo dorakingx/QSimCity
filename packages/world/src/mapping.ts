@@ -70,6 +70,19 @@ export function logicalToPhysicalAt(trace: Trace, tick: number): ReadonlyMap<num
   return map;
 }
 
+/**
+ * Whether the trace ever records a layout decision at all.
+ *
+ * Traces produced by the reference compiler or the Qiskit bridge always
+ * emit `layout.assigned`; a hand-authored or partial trace may carry only
+ * a header `initialLayout`. Surfaces use this to tell "the compiler has
+ * not chosen a layout yet at this tick" (show nothing) apart from "this
+ * trace records no layout stage" (the header value is all there is).
+ */
+export function hasLayoutAssignment(trace: Trace): boolean {
+  return trace.events.some((event) => event.eventType === 'layout.assigned');
+}
+
 /** Inverse view: physical qubit -> logical qubit at the tick. */
 export function physicalToLogicalAt(trace: Trace, tick: number): ReadonlyMap<number, number> {
   const inverse = new Map<number, number>();
