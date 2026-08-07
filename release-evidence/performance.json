@@ -1,27 +1,27 @@
 {
-  "commitSha": "088eab8daecfe12c795a087893e7bd85e0e0ba07",
-  "sourceTreeHash": "c64c696180c7e83f",
+  "commitSha": "8ea3c13dd3f6e55502194a9e86cdfd56ffa4a4e5",
+  "sourceTreeHash": "5da6e60118feeb9e",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T11:37:33.234Z",
+  "generatedAt": "2026-08-07T13:07:12.227Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "814b7bbe8f180a79",
+  "inputHash": "e169c7e5e1060d60",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
     "initialJsGzipBytes": 162798,
-    "totalJsGzipBytes": 358619,
+    "totalJsGzipBytes": 358631,
     "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
     "initialJsGzipBytes": 162798,
-    "totalJsGzipBytes": 358619,
+    "totalJsGzipBytes": 358631,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
@@ -34,8 +34,8 @@
         "gzipBytes": 33194
       },
       {
-        "name": "CityView-MdAMur91.js",
-        "gzipBytes": 24174
+        "name": "CityView-CUPOR0He.js",
+        "gzipBytes": 24186
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -52,7 +52,7 @@
         "gzipBytes": 58944
       },
       {
-        "name": "index-Czqdzan2.js",
+        "name": "index-De6Idt5r.js",
         "gzipBytes": 44525
       },
       {
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-07T11:37:33.191Z"
+    "generatedAt": "2026-08-07T13:07:12.176Z"
   }
 }

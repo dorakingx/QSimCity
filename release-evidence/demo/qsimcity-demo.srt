@@ -1,193 +1,193 @@
 1
-00:00:00,195 --> 00:00:06,199
+00:00:00,139 --> 00:00:06,143
 QSimCity: see what actually happens to a quantum program
 between writing a circuit and getting results.
 
 2
-00:00:06,199 --> 00:00:12,201
+00:00:06,143 --> 00:00:12,146
 Everything runs in the browser. No account, no upload, no
 telemetry. This is the real application, recorded live.
 
 3
-00:00:12,201 --> 00:00:17,243
+00:00:12,146 --> 00:00:17,177
 A first-time learner picks a door. We take the mission path,
 which is the one designed for beginners.
 
 4
-00:00:17,243 --> 00:00:23,269
+00:00:17,177 --> 00:00:23,201
 Mission 1 asks for a Bell pair. The numbered steps are the
 only instructions a learner needs.
 
 5
-00:00:23,269 --> 00:00:28,293
+00:00:23,201 --> 00:00:28,225
 We build the circuit ourselves. First a Hadamard: select the
 gate, then place it on qubit zero.
 
 6
-00:00:28,293 --> 00:00:32,351
+00:00:28,225 --> 00:00:32,283
 Placed. The grid compiles to OpenQASM 2.0 as we edit.
 
 7
-00:00:32,351 --> 00:00:38,425
+00:00:32,283 --> 00:00:38,356
 Then a CX linking qubit zero to qubit one. Two gates: that is
 the whole circuit we wrote.
 
 8
-00:00:38,425 --> 00:00:42,941
+00:00:38,356 --> 00:00:42,883
 Two measurements, so we can see what the machine returns.
 
 9
-00:00:42,941 --> 00:00:49,943
+00:00:42,883 --> 00:00:49,885
 Run sends it through the whole pipeline: parse, layout, route,
 translate, optimise, schedule, execute, measure.
 
 10
-00:00:49,943 --> 00:01:00,770
+00:00:49,885 --> 00:01:00,717
 The replay is now driving every surface. Watch the step tick
 off as the run completes.
 
 11
-00:01:00,770 --> 00:01:07,773
+00:01:00,717 --> 00:01:07,720
 This is the same run, in the city. The geography IS the
 pipeline: each district is one compiler stage.
 
 12
-00:01:07,773 --> 00:01:15,778
+00:01:07,720 --> 00:01:15,723
 West to east along the boulevard: Program Port, IR Foundry,
 Layout Exchange, Routing Transit, Translation Refinery,
 Optimization Works, Scheduling Tower.
 
 13
-00:01:15,778 --> 00:01:22,796
+00:01:15,723 --> 00:01:22,734
 Then the QPU Grid where it executes, the Measurement Harbor
 where shots land, and the Classical Control Center for
 feedback.
 
 14
-00:01:22,796 --> 00:01:36,765
+00:01:22,734 --> 00:01:36,692
 Everything derives from the trace and the current tick, so we
 can rewind and watch causality again.
 
 15
-00:01:36,765 --> 00:01:43,295
+00:01:36,692 --> 00:01:43,220
 The convoy carries the compiled job. It arrives at each
 district exactly when that stage emits its events.
 
 16
-00:01:43,295 --> 00:01:53,654
+00:01:43,220 --> 00:01:53,583
 Now the idea this visualisation exists for: the circuit you
 write is not the circuit that runs.
 
 17
-00:01:53,654 --> 00:02:02,186
+00:01:53,583 --> 00:02:02,116
 This program needs qubits that sit far apart on the device.
 The router must physically move them together.
 
 18
-00:02:02,186 --> 00:02:15,730
+00:02:02,116 --> 00:02:15,663
 Each SWAP the compiler inserts exchanges two logical-qubit
 banners between physical pylons, at the exact tick it happens.
 
 19
-00:02:15,730 --> 00:02:25,281
+00:02:15,663 --> 00:02:25,207
 Logical qubit q0 is a name tag. The pylon underneath it is the
 physical hardware. A SWAP changes which is which.
 
 20
-00:02:25,281 --> 00:02:32,288
+00:02:25,207 --> 00:02:32,214
 Compare Mode puts the circuit you wrote next to the circuit
 that actually ran, with the compiler metrics.
 
 21
-00:02:32,288 --> 00:02:40,804
+00:02:32,214 --> 00:02:40,723
 Gate count, two-qubit gates, SWAPs inserted, depth. This is
 where the cost of connectivity becomes concrete.
 
 22
-00:02:40,804 --> 00:02:53,874
+00:02:40,723 --> 00:02:53,791
 Turn on the noise model and run again. Noise does not produce
 a wrong answer: it changes the distribution.
 
 23
-00:02:53,874 --> 00:03:00,430
+00:02:53,791 --> 00:03:00,348
 Accessible 2D Mode is the complete product with no WebGL at
 all, for machines and users that need it.
 
 24
-00:03:00,430 --> 00:03:07,932
+00:03:00,348 --> 00:03:07,850
 Every number carries its provenance: measured counts are
 SAMPLED, compiler metrics are COMPUTED, probabilities are
 EXACT.
 
 25
-00:03:07,932 --> 00:03:16,260
+00:03:07,850 --> 00:03:16,153
 An Active Simplifications panel states what the model is NOT,
 including that playback pacing is presentation time.
 
 26
-00:03:16,260 --> 00:03:22,969
+00:03:16,153 --> 00:03:22,864
 You are not limited to looking down at it. Press four, and you
 are standing in the street.
 
 27
-00:03:22,969 --> 00:03:30,771
+00:03:22,864 --> 00:03:30,669
 Walking the Processing Boulevard: traffic, people, street
 lamps, and the districts you just watched the job pass
 through.
 
 28
-00:03:30,771 --> 00:03:39,419
+00:03:30,669 --> 00:03:39,320
 The city is deliberately ordinary. It is scaffolding for the
 pipeline, and the Legend says exactly which parts mean
 anything.
 
 29
-00:03:39,419 --> 00:03:53,463
+00:03:39,320 --> 00:03:53,367
 Day, golden hour, and night are presentation settings only.
 They never touch the science underneath.
 
 30
-00:03:53,463 --> 00:03:59,465
+00:03:53,367 --> 00:03:59,369
 The mission that carries the central idea: a program whose
 qubits start far apart on the device.
 
 31
-00:03:59,465 --> 00:04:11,496
+00:03:59,369 --> 00:04:11,398
 Run it with a deliberately poor initial layout and the router
 must insert SWAP after SWAP just to bring qubits together.
 
 32
-00:04:11,496 --> 00:04:23,328
+00:04:11,398 --> 00:04:23,238
 Then the learner changes one setting — the layout method — and
 runs the identical circuit again.
 
 33
-00:04:23,328 --> 00:04:33,115
+00:04:23,238 --> 00:04:33,021
 Same circuit, same hardware, a different layout — and the
 router has less distance to pay for. That is the compiler
 decision made visible, and it is the point of the whole
 
 34
-00:04:33,115 --> 00:04:48,991
+00:04:33,021 --> 00:04:48,879
 A guided tour narrates the same pipeline hands-free, sixteen
 chapters, each stating how certain its claims are.
 
 35
-00:04:48,991 --> 00:04:55,997
+00:04:48,879 --> 00:04:55,882
 The City Legend lists everything that moves, what it means,
 what triggers it, and how certain it is.
 
 36
-00:04:55,997 --> 00:05:03,527
+00:04:55,882 --> 00:05:03,404
 The rule that makes this teach rather than mislead: vehicles
 carry jobs and measured bits. Never a quantum state.
 
 37
-00:05:03,527 --> 00:05:10,028
+00:05:03,404 --> 00:05:09,906
 No learning outcomes are claimed yet: the assessment
 instrument and study protocol are published, unrun.
 
 38
-00:05:10,028 --> 00:05:15,030
+00:05:09,906 --> 00:05:14,909
 QSimCity. Apache-2.0, original artwork, runs offline. Thank
 you for watching.
