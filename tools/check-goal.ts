@@ -570,7 +570,25 @@ check('Visual regression snapshots exist', () => {
   ];
   const missing = required.filter((r) => !shots.some((s) => s.startsWith(r)));
   if (missing.length > 0) throw new Error(`missing snapshots: ${missing.join(', ')}`);
-  return `${shots.length} snapshots covering all required surfaces`;
+
+  // Baselines are per-platform, and a baseline that exists only for the
+  // developer's platform is not a baseline — it is a test that silently
+  // does nothing on the machine that gates the pull request. CI runs on
+  // Linux; the branch is developed on macOS. Both must be present for
+  // every required surface, or the visual suite is only half a suite.
+  const platforms = ['darwin', 'linux'];
+  const gaps: string[] = [];
+  for (const surface of required) {
+    for (const platform of platforms) {
+      if (!shots.some((s) => s.startsWith(surface) && s.endsWith(`-${platform}.png`))) {
+        gaps.push(`${surface} (${platform})`);
+      }
+    }
+  }
+  if (gaps.length > 0) {
+    throw new Error(`baselines missing for the platforms CI uses: ${gaps.join(', ')}`);
+  }
+  return `${shots.length} snapshots covering all required surfaces on ${platforms.join(' and ')}`;
 });
 
 check('Sample traces validate and match committed hashes', () =>

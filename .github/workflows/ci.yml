@@ -92,3 +92,30 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run pyright
       - run: uv run pytest -q
+
+  goal:
+    name: Definition-of-Done gate (pnpm goal:check)
+    runs-on: ubuntu-latest
+    # Depends on the jobs whose results it reports on. A gate that can go
+    # green while the public checks beside it are red is worse than no gate:
+    # that is exactly how this branch reached a local "33 of 33 passed"
+    # while Qiskit and the E2E matrix were failing on Ubuntu. If Python or
+    # the browser matrix fails, this job does not run, and the required
+    # check never turns green.
+    needs: [verify, e2e, python, build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - run: pnpm goal:check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: goal-check
+          path: release-evidence/goal-check.txt
+          retention-days: 7

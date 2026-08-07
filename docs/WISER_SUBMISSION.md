@@ -151,7 +151,7 @@ gate recomputes them and refuses prose as evidence.
 | Claim | Evidence |
 | --- | --- |
 | Simulator agrees with Qiskit Aer | `release-evidence/python/` — 71 pytest, within sampling tolerance |
-| Traces reproduce byte-identically | `release-evidence/trace-reproducibility/` — 12 independent processes agree |
+| Traces reproduce their scientific content exactly | `release-evidence/trace-reproducibility/` — 12 independent processes agree on `semanticHash` |
 | Compiled circuits preserve measured distributions | `packages/reference-compiler/test/compiled-execution.test.ts` |
 | Frame time, honestly characterised | `release-evidence/wiser-fps/` — p50/p95/p99, long and dropped frames, refresh-cap detection, vsync-disabled ceiling |
 | Repeated 3D/2D mounting is safe | `release-evidence/remount/` — 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |

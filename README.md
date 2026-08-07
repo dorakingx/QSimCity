@@ -113,7 +113,7 @@ verdicts and refuses prose as evidence.
 | Claim | Evidence |
 | --- | --- |
 | Simulator agrees with Qiskit Aer | 71 pytest, within sampling tolerance |
-| Traces reproduce byte-identically | 12 independent processes agree |
+| Traces reproduce their scientific content exactly | 12 independent processes agree on `semanticHash`; `artifactHash` also covers timestamps and telemetry, which vary by design |
 | Compiled circuits preserve measured distributions | `compiled-execution.test.ts` |
 | Frame time honestly characterised | p50/p95/p99, long and dropped frames, refresh-cap detection, plus a vsync-disabled ceiling run |
 | Repeated 3D/2D mounting is safe | 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |

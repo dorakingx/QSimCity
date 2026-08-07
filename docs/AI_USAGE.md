@@ -51,7 +51,8 @@ The project's own machinery, not trust, is the control:
   end. This is the strongest non-AI check in the project: Qiskit was not
   written by this process.
 - **Determinism is enforced.** No runtime randomness in generation or
-  rendering; sample traces reproduce byte-identically across processes and
+  rendering; sample traces reproduce their `semanticHash` across processes,
+  machines and interpreter versions, and
   against the Python bridge.
 - **Adversarial review is recorded and machine-checked** — with the
   caveat at the top of this document about what that review is worth.

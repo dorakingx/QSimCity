@@ -94,7 +94,19 @@ export async function expectCityRendered(page: Page): Promise<void> {
   );
 }
 
-/** Runs the default Bell sample from the Lab and waits for the timeline. */
+/**
+ * Runs the default Bell sample from the Lab, waits for the timeline, and
+ * pauses the replay.
+ *
+ * The pause is not cosmetic. A completed run starts playing immediately,
+ * so the results section re-renders on every tick — and Playwright's
+ * actionability protocol waits for an element to be *stable* before
+ * clicking it. A details summary inside a continuously re-rendering panel
+ * may never settle, which is how "charts expose complete table
+ * alternatives" spent 60 seconds trying to open a disclosure and failed on
+ * CI while passing locally. Every test built on this helper is about
+ * content, not about playback.
+ */
 export async function runBellFromLab(page: Page): Promise<void> {
   await page
     .getByRole('navigation', { name: 'Modes' })
@@ -104,6 +116,8 @@ export async function runBellFromLab(page: Page): Promise<void> {
   await expect(page.getByRole('toolbar', { name: 'Replay timeline' })).toBeVisible({
     timeout: 20_000,
   });
+  const pause = page.getByRole('button', { name: 'Pause replay' });
+  if (await pause.isVisible().catch(() => false)) await pause.click();
 }
 
 /**
