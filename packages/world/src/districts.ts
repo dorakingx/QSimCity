@@ -98,7 +98,7 @@ const RAW_DISTRICTS: readonly District[] = [
     accentColor: '#7a5fd8',
     icon: 'rails',
     description:
-      'The rail yard. When two qubits must interact across the device, routes are planned here and SWAP cars shuttle quantum information between platforms.',
+      'The rail yard. When two qubits must interact across the device, routes are planned here and SWAP operations exchange which physical qubit each logical qubit occupies. The rail cars carry the routing instructions, never the quantum state itself.',
   },
   {
     id: 'translation-refinery',

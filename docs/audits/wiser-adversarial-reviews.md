@@ -7,6 +7,56 @@
 > evidence. Read them as internal QA. See
 > [`../AI_USAGE.md`](../AI_USAGE.md).
 
+## Round 4: the seven separated reviews (AI-assisted)
+
+A later round ran seven separated adversarial reviews, each asked to
+falsify rather than confirm: quantum accuracy, WISER compliance,
+accessibility, performance methodology, licensing, pedagogy/child UX, and
+visual art direction. **All seven were performed by AI agents and are not
+human expert review, independent external validation, or peer review.**
+
+The single most serious finding in the whole project came out of the
+pedagogy review, and it was a blocking one:
+
+> `packages/world/src/districts.ts` described Routing Transit as "SWAP cars
+> **shuttle quantum information** between platforms" — rendered in the
+> Inspector at every explanation level including child, in both 3D and
+> Accessible 2D. That is the exact transport misconception README and
+> `WISER_SUBMISSION.md` claim the product is designed against, and the
+> exact answer `LEARNING_EVALUATION.md` nominates as the disqualifying
+> misconception-probe response.
+
+The guard that was supposed to prevent this checked the `represents` field
+of three legend entries by hand-written id list — a spot check quoted as a
+rule. It has been replaced by
+`packages/ui/test/transport-misconception.test.ts`, which scans every
+string literal in the learner-visible content sources for any phrasing that
+puts quantum state, amplitudes or "quantum information" in motion. On its
+first run it caught a **second** instance the reviewer had not found, in
+the teleportation scenario. Both are fixed.
+
+Other findings from this round that changed the product or the claims:
+
+- The pre-assessment was unreachable on the documented first-run path,
+  because onboarding calls `setActiveMission` directly and bypasses the
+  only site that offers it.
+- The assessment's distractors do not instantiate the misconceptions its
+  documentation says they catch, and several correct options echo the
+  app's own child-register wording. `LEARNING_EVALUATION.md` now states
+  plainly that the instrument must be revised before it is used to measure
+  anything.
+- "Growth-framed, never graded … the words grade, wrong and fail do not
+  appear" was false on all three counts. Corrected.
+- The 45-minute plan reaches six of ten objectives, not ten. Corrected in
+  both README and the submission.
+- Art direction: the coastline fix is real at the terrain mesh, but the
+  slab read survives because the quay road still holds the un-offset base
+  line; residential parcels are a flat-colour checkerboard with one
+  repeated house asset; there are no longitudinal lane markings at street
+  level; the kerb has zero height and the walk camera stands on it. These
+  are recorded as open art-direction weaknesses rather than fixed, and the
+  visual claim is scoped to "believable stylized city" accordingly.
+
 Four separated AI reviewer agents — art direction, quantum-information
 accuracy, child UX and accessibility, and performance — reviewed the
 release evidence adversarially across three fix rounds. Every blocking

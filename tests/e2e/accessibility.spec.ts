@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { runBellFromLab, skipOnboarding } from './helpers.js';
+import { pauseReplay, runBellFromLab, skipOnboarding } from './helpers.js';
 
 // Every flow here models a returning user; onboarding has its own spec.
 test.beforeEach(async ({ page }) => {
@@ -37,7 +37,7 @@ test('accessible 2D mode passes axe before and after a run', async ({ page }) =>
   await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
     timeout: 20_000,
   });
-  await page.getByRole('button', { name: 'Pause replay' }).click();
+  await pauseReplay(page);
   await expectNoViolations(page);
 });
 

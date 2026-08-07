@@ -7,7 +7,9 @@ QSimCity is a browser-based, client-side 3D visualisation of the quantum
 compilation and execution pipeline. You build a circuit; it is parsed, laid
 out, routed with real SWAP insertion, translated, optimised, scheduled,
 executed with optional noise, measured, and fed back — and every stage
-happens in a district of a city you can fly over and walk through. Every
+happens in a district of a **believable stylized city** you can fly over
+and walk through — stylized deliberately, and never claimed to be
+photorealistic or mistakable for a real place. Every
 light that *means* something is driven by a real computation trace — the
 City Legend says which ones those are and which are scenery — and every
 number on screen says how certain it is.
@@ -92,7 +94,9 @@ feed-forward; optimisation; sampling statistics) → Guided Tour → free
 exploration in the Quantum Lab →
 Compare Mode → a five-question picture assessment, growth-framed and never
 graded. Full detail in [docs/EDUCATOR_GUIDE.md](docs/EDUCATOR_GUIDE.md),
-including a zero-setup 45-minute lesson plan.
+including a zero-setup 45-minute lesson plan. That plan reaches six of the
+ten learning objectives; the rest need the Guided Tour, Compare Mode, or
+the later missions.
 
 ## Technologies
 

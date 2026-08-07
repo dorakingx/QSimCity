@@ -26,9 +26,16 @@ Mission 1, and once after six missions are complete. It is:
 
 - **Optional and dismissible.** It never blocks progress, and the offer can
   be declined at any point.
-- **Growth-framed, never graded.** The learner sees which ideas they have
-  met, not a score out of five. The words "grade", "wrong", and "fail" do
-  not appear.
+- **Growth-framed, and never marked right or wrong in front of the
+  learner.** Choosing an option records it and moves on: there is no
+  per-item feedback, no red mark, and no penalty for a lower post score.
+  Being precise about what that does *not* mean, because an earlier version
+  of this bullet overclaimed on three counts: the summary *is* derived from
+  correctness and *is* a count out of five ("You explored N of 5 ideas"),
+  it does **not** name which ideas were met, and the word "grade" does
+  appear — in the reassurances "never a grade" and "There are no grades
+  here". The behaviour is unshaming; the earlier description of it was
+  false.
 - **Local-only.** Answers are written to `localStorage` under
   `qsimcity.progress.v1` and are never transmitted. There is no analytics
   or telemetry of any kind in the product (see
@@ -50,8 +57,27 @@ These are the items the product actually ships, verbatim from
 | `entangled-pair` | "These two qubits were linked into a pair. We measure both. What do we see most often?" | Entangled outcomes are correlated | "One qubit sends a signal to the other", or "the answers are random and unrelated" |
 | `swap-homes` | "A SWAP move just happened on the chip. What changed?" | Routing moves logical qubits between physical sites | Any two qubits can interact directly and for free |
 | `noise-results` | "A storm of noise hits the machine while it runs. What happens to the results?" | Noise shifts the distribution | A noisy machine returns a "wrong answer" rather than a changed distribution |
+
+> **The distractors do not currently instantiate these misconceptions.**
+> An adversarial review established that every wrong option is implausible
+> on its face ("The computer runs faster", "One qubit was deleted
+> forever"), so the items are answerable by elimination without any quantum
+> understanding — which would produce a high pre-test floor and a ceiling
+> effect on exactly the three items named as the primary outcome. Several
+> correct options also echo the app's own child-register wording almost
+> verbatim, so a learner who read the event log could string-match the
+> post-test. **The instrument must be revised before it is used to measure
+> anything.** It is published here as a starting point, not as a validated
+> instrument, and this is now the largest known gap in the evaluation plan.
 | `more-shots` | "We repeat the run with many more shots. What happens to the bar chart?" | Sampling error shrinks with shots | More shots change the underlying physics rather than the estimate's precision |
 | `measurement-bit` | "We measure a qubit at the end of the run. What comes out?" | Measurement yields a classical bit | A measurement returns "the quantum state" itself |
+
+**Two documents disagreed about the primary outcome, and this one is
+correct.** `docs/WISER_SUBMISSION.md` previously said objectives 2-7 were
+the primary outcome; the instrument cannot report that, because it has no
+item for objective 2 (layout), 4 (basis translation), 5 (optimisation) or
+6 (scheduling). The pre-registration below commits to the three items that
+exist, which map to objectives 3/7, 9 and 8.
 
 `swap-homes`, `noise-results`, and `more-shots` are the primary outcome:
 they are the compiler- and statistics-facing ideas this visualisation is

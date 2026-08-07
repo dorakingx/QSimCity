@@ -116,8 +116,27 @@ export async function runBellFromLab(page: Page): Promise<void> {
   await expect(page.getByRole('toolbar', { name: 'Replay timeline' })).toBeVisible({
     timeout: 20_000,
   });
-  const pause = page.getByRole('button', { name: 'Pause replay' });
-  if (await pause.isVisible().catch(() => false)) await pause.click();
+  await pauseReplay(page);
+}
+
+/**
+ * Stops the replay if it is running, and does nothing if it has already
+ * finished.
+ *
+ * Bounded and state-independent on purpose. A bare
+ * `getByRole('button', { name: 'Pause replay' }).click()` loses a race that
+ * only shows up on a slow machine: the replay can reach its last tick
+ * between the locator resolving and the click landing, at which point the
+ * button relabels to "Play replay" and the click waits the full test
+ * timeout for an element that will never appear. Branching on
+ * `isVisible()` does not help — it does not wait, so it loses the same
+ * race. Either way the desired end state is the same: playback stopped.
+ */
+export async function pauseReplay(page: Page): Promise<void> {
+  await page
+    .getByRole('button', { name: 'Pause replay' })
+    .click({ timeout: 3_000 })
+    .catch(() => undefined);
 }
 
 /**

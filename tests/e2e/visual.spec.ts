@@ -3,6 +3,7 @@ import {
   disableWebgl,
   e2eUrl,
   freezeCity,
+  pauseReplay,
   runBellFromLab,
   settle2d,
   skipOnboarding,
@@ -127,7 +128,7 @@ test.describe('desktop surfaces', () => {
     await expect(page.getByRole('group', { name: /Measured counts/ })).toBeVisible({
       timeout: 20_000,
     });
-    await page.getByRole('button', { name: 'Pause replay' }).click();
+    await pauseReplay(page);
     await settle2d(page);
     await expect(page).toHaveScreenshot('accessible-2d.png');
   });

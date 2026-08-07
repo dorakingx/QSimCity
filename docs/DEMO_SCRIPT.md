@@ -145,7 +145,7 @@ Open the app fresh (or use a private window for the real first-run). The
 onboarding offers Play / Watch / Build with pictures. Choose **Watch the
 city**: Explore opens in daylight and a Bell pair runs.
 
-Say: *"This is a real city — streets, blocks, districts, a harbor — and
+Say: *"This is a city — streets, blocks, districts, a harbor — and
 its geography is a quantum computer's compilation pipeline. Programs
 arrive as ships in the west and results leave as containers in the east."*
 

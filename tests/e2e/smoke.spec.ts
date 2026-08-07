@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures.js';
-import { trackConsoleErrors, runBellFromLab, skipOnboarding } from './helpers.js';
+import { pauseReplay, runBellFromLab, skipOnboarding, trackConsoleErrors } from './helpers.js';
 
 // Every flow here models a returning user; onboarding has its own spec.
 test.beforeEach(async ({ page }) => {
@@ -55,7 +55,7 @@ test('running the Bell sample produces synchronized results in 2D', async ({
   await expect(page.getByRole('group', { name: /Coupling map/ })).toBeVisible();
   // Timeline stepping updates the tick display.
   const position = page.locator('.timeline-position');
-  await page.getByRole('button', { name: 'Pause replay' }).click();
+  await pauseReplay(page);
   const before = await position.textContent();
   await page.getByRole('button', { name: 'Step forward one tick' }).click();
   const after = await position.textContent();

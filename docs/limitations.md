@@ -74,3 +74,17 @@ those documents pointed here for the full list.
   resources are released and the figure is bounded and gated, but it is
   not zero; heap snapshots trace the residual to JavaScript bookkeeping
   inside three.js. See `release-evidence/remount/`.
+
+## Visual fidelity
+
+- **The city is a believable stylized city, not a photorealistic one.** No
+  claim of photorealism or of being mistakable for a real place is made
+  anywhere, and none should be added without a human explicitly approving
+  it against the current screenshots.
+- **Building massing repeats and roofs are plain.** The strongest remaining
+  cues that this is a model rather than a place. A deterministic
+  rooftop-clutter pass was implemented and reverted: sized against the
+  massing extent, parapets overhung the narrower towers and looked worse
+  than flat roofs.
+- **Interiors are sparse.** They are enterable and labelled, but furnished
+  with a few primitives.

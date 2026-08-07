@@ -78,7 +78,11 @@ upload, no telemetry, and a complete non-WebGL path.
 
 ## Learning objectives
 
-After a 45-minute session a learner should be able to:
+These are the objectives the product is designed around. A single
+45-minute session reaches six of them; see the note below the list.
+
+After working through the full mission set and the Guided Tour, a learner
+should be able to:
 
 1. Explain that a compiler rewrites a circuit before it runs, and name at
    least three things it changes.
@@ -97,8 +101,16 @@ After a 45-minute session a learner should be able to:
    wrong answer.
 10. Explain what **classical feedback** does with a measured bit.
 
-Objectives 2–7 are the ones this visualisation is built to carry, and are
-the primary outcome in the evaluation plan.
+Objectives 2–7 are the ones this visualisation is built to carry.
+
+**The 45-minute plan does not reach all ten**, and neither does the mission
+set. The plan in [`EDUCATOR_GUIDE.md`](EDUCATOR_GUIDE.md) covers objectives
+1, 2, 3, 7, 8 and 9; objectives 4 (basis translation), 5 (optimisation),
+6 (scheduling) and 10 (classical feedback) need the Guided Tour, Compare
+Mode or the later missions. No mission covers basis translation or
+scheduling at all. The primary outcome in the evaluation plan is narrower
+still — the three instrument items that exist — and
+[`LEARNING_EVALUATION.md`](LEARNING_EVALUATION.md) is authoritative on it.
 
 ## Pedagogical sequence
 
@@ -181,8 +193,13 @@ Stated plainly, and in full in [`limitations.md`](limitations.md):
 - **Playback pacing is presentation time,** not hardware timing.
 - **Mobile figures are Chromium emulation** on a desktop GPU. No
   real-device measurement has been taken.
-- **The city is an illustration.** Buildings, traffic, and pedestrians
-  carry no scientific meaning beyond what the City Legend states.
+- **The city is a believable stylized illustration, not a photorealistic
+  one.** It is low-poly by design and is never claimed to be mistakable for
+  a real place. Buildings, traffic, and pedestrians carry no scientific
+  meaning beyond what the City Legend states. Repeated building massing and
+  plain roofs remain the main outstanding art-direction weakness; an
+  attempt at rooftop clutter was reverted for looking worse than flat
+  roofs.
 - **A small memory residual survives repeated 3D/2D switching** — about
   90 KiB per switch of JavaScript bookkeeping inside three.js. GPU
   resources are released; the figure is measured and bounded by the
