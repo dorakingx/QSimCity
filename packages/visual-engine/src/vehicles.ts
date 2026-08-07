@@ -9,9 +9,11 @@ import type { TimeOfDay } from './sky.js';
  * @qsimcity/world — this module only draws states, it never invents them.
  */
 
-// Five ambient loops (36 cars) plus headroom; instanced, so the cost is
-// per-instance transform work, not extra draw calls.
-const AMBIENT_CAPACITY = 56;
+// Seven ambient loops (78 cars) plus headroom; instanced, so the cost is
+// per-instance transform work, not extra draw calls. A capacity below the
+// fleet size would silently truncate it, so a world test asserts the two
+// stay in step.
+const AMBIENT_CAPACITY = 112;
 const COURIER_CAPACITY = 16;
 // District workers (activity-driven) plus arterial sidewalk strollers.
 const PEDESTRIAN_CAPACITY = 224;

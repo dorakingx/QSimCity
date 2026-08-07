@@ -214,7 +214,7 @@ const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLe
   // two loops whose boulevard legs overlap across the city centre.
   {
     id: 'blvd-west',
-    carCount: 14,
+    carCount: 20,
     legs: [
       { segmentId: 'blvd', from: [-132, 20], to: [44, 20] },
       { segmentId: 'ave-transit', from: [44, 20], to: [44, -26] },
@@ -224,12 +224,39 @@ const LOOP_SPECS: readonly { id: string; carCount: number; legs: readonly LoopLe
   },
   {
     id: 'blvd-east',
-    carCount: 14,
+    carCount: 20,
     legs: [
       { segmentId: 'blvd', from: [150, 20], to: [-14, 20] },
       { segmentId: 'ave-exchange', from: [-14, 20], to: [-14, 95] },
       { segmentId: 'col-south', from: [-14, 95], to: [150, 95] },
       { segmentId: 'ave-tower', from: [150, 95], to: [150, 20] },
+    ],
+  },
+  // The western edge. Walk mode snaps the camera to the *nearest arterial*,
+  // so an arterial with no loop is a street that is empty by construction
+  // for anyone who happens to stand on it — the same defect the boulevard
+  // had. These two close the last of that gap: every arterial in
+  // ARTERIAL_SEGMENTS now carries traffic, and a test asserts it.
+  {
+    // col-north stops short of ave-west (it starts at world x -243, and
+    // ave-west sits at -342), so there is no northern cross street to close
+    // a ring on. Out-and-back along the avenue instead.
+    id: 'west-edge',
+    carCount: 10,
+    legs: [
+      { segmentId: 'ave-west', from: [-190, -24], to: [-190, 93] },
+      { segmentId: 'ave-west', from: [-190, 93], to: [-190, -24] },
+    ],
+  },
+  {
+    // The quay has no cross street at either end that also reaches
+    // ave-west, so this is an out-and-back along the waterfront rather than
+    // a ring. Every point stays inside the quay-west corridor.
+    id: 'west-quay',
+    carCount: 8,
+    legs: [
+      { segmentId: 'quay-west', from: [-200, -18], to: [-200, 58] },
+      { segmentId: 'quay-west', from: [-200, 58], to: [-200, -18] },
     ],
   },
 ];

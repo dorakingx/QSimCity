@@ -90,7 +90,7 @@ describe('buildVehicles', () => {
     const crowd = Array.from({ length: 300 }, (_, i) => walker(`w${i}`, i, 0));
     expect(() => fleet.update(0.016, many, crowd, false)).not.toThrow();
     const ambient = fleet.group.getObjectByName('ambient-car-bodies') as THREE.InstancedMesh;
-    expect(ambient.count).toBeLessThanOrEqual(56);
+    expect(ambient.count).toBeLessThanOrEqual(112);
     fleet.dispose();
   });
 });

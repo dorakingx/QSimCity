@@ -10,6 +10,9 @@ import {
   COURIER_JOURNEY_TICKS,
 } from '../src/agents.js';
 import { LANDMARK_SITES } from '../src/landmarks.js';
+
+/** Mirrors AMBIENT_CAPACITY in @qsimcity/visual-engine (vehicles.ts). */
+const AMBIENT_CAPACITY = 112;
 import { maxTickOf } from '../src/playback.js';
 import { QPU_GATE } from '../src/props.js';
 import { ARTERIAL_SEGMENTS, corridorHalfWidth, lanePath, type RoadSegment } from '../src/roads.js';
@@ -213,6 +216,38 @@ describe('classical couriers (W3.2)', () => {
 });
 
 describe('ambient traffic (W3.3)', () => {
+  // Walk mode snaps the camera to the nearest arterial, so an arterial with
+  // no loop is a street that is empty by construction for whoever stands on
+  // it. That was once true of the boulevard itself, and later of the two
+  // western arterials. This makes it impossible to reintroduce quietly:
+  // adding a road to the network without giving it traffic fails here.
+  it('gives every arterial in the road network ambient traffic', () => {
+    const covered = new Set<string>();
+    for (const time of [0, 5, 17.5, 60, 240]) {
+      for (const car of ambientVehiclesAt(time, false)) {
+        for (const segment of ARTERIAL_SEGMENTS) {
+          const horizontal = Math.abs(segment.a.z - segment.b.z) < 0.001;
+          const along = horizontal ? car.position.x : car.position.z;
+          const across = horizontal ? car.position.z : car.position.x;
+          const axis = horizontal ? segment.a.z : segment.a.x;
+          const lo = Math.min(
+            horizontal ? segment.a.x : segment.a.z,
+            horizontal ? segment.b.x : segment.b.z,
+          );
+          const hi = Math.max(
+            horizontal ? segment.a.x : segment.a.z,
+            horizontal ? segment.b.x : segment.b.z,
+          );
+          if (Math.abs(across - axis) <= segment.width / 2 && along >= lo && along <= hi) {
+            covered.add(segment.id);
+          }
+        }
+      }
+    }
+    const missing = ARTERIAL_SEGMENTS.filter((s) => !covered.has(s.id)).map((s) => s.id);
+    expect(missing, `arterials with no ambient traffic: ${missing.join(', ')}`).toEqual([]);
+  });
+
   it('is deterministic in animation time', () => {
     for (const time of [0, 7.25, 123.4]) {
       expect(ambientVehiclesAt(time, false)).toEqual(ambientVehiclesAt(time, false));
@@ -223,11 +258,19 @@ describe('ambient traffic (W3.3)', () => {
     expect(ambientVehiclesAt(12, true)).toEqual([]);
   });
 
+  // The renderer draws ambient cars from a fixed-size InstancedMesh. If the
+  // fleet outgrows it the excess is silently dropped, which looks like an
+  // empty street rather than an error, so the two are pinned together here.
+  it('fits inside the renderer instance capacity', () => {
+    expect(ambientVehiclesAt(0, false).length).toBeLessThanOrEqual(AMBIENT_CAPACITY);
+  });
+
   it('keeps every ambient car inside arterial road corridors at all times', () => {
     for (const time of [0, 3.7, 42, 999.5]) {
       const cars = ambientVehiclesAt(time, false);
-      // Five loops: three interior rings plus both boulevard directions.
-      expect(cars).toHaveLength(48);
+      // Seven loops: three interior rings, both boulevard directions, and
+      // the two western-edge loops.
+      expect(cars).toHaveLength(78);
       for (const car of cars) {
         expect(car.kind).toBe('ambient-car');
         expect(withinSomeCorridor(car.position), `car ${car.id} at t=${time}`).toBe(true);
