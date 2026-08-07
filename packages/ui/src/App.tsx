@@ -17,6 +17,7 @@ import { ScenarioPanel } from './scenarios/ScenarioPanel.js';
 import { Toast } from './components/Toast.js';
 import { SettingsMenu } from './components/SettingsMenu.js';
 import { MissionPanel } from './missions/MissionPanel.js';
+import { installTestHooks } from './testHooks.js';
 
 /** 3D city is code-split so 2D users never download three.js (spec §19). */
 const CityView = lazy(() => import('./views/CityView.js'));
@@ -75,6 +76,12 @@ export function App(): ReactElement {
   useEffect(() => {
     const s = useAppStore.getState();
     s.setRunner(createRunner());
+    // No-op unless the page was loaded with ?e2e=1.
+    installTestHooks({
+      clearToast: () => useAppStore.getState().clearToast(),
+      setTick: (tick) => useAppStore.getState().setTick(tick),
+      pause: () => useAppStore.getState().pause(),
+    });
     s.setWebglAvailable(detectWebgl());
     if (detectWebgl() && detectSoftwareRenderer()) {
       s.showToast(

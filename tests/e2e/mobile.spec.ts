@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test';
-import { trackConsoleErrors, expectCityRendered, skipOnboarding } from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { trackConsoleErrors, skipOnboarding } from './helpers.js';
 
 // Every flow here models a returning user; onboarding has its own spec.
 test.beforeEach(async ({ page }) => {
@@ -59,32 +59,7 @@ test('mobile: circuit builder works by touch alone (W6.2)', async ({ page, brows
     Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
   );
   expect(docOverflow).toBeLessThanOrEqual(1);
-  // Touch walk controls exist in the 3D city too.
-  await page
-    .getByRole('navigation', { name: 'Modes' })
-    .getByRole('button', { name: 'Explore' })
-    .tap();
-  await page.getByRole('button', { name: /^Walk/ }).tap();
-  await expect(page.getByRole('application', { name: /Movement pad/ })).toBeVisible();
-  assertClean();
-});
-
-test('mobile: 3D city loads and responds to touch drag', async ({ page, browserName }) => {
-  const assertClean = trackConsoleErrors(page, browserName);
-  await page.goto('/');
-  await page
-    .getByRole('navigation', { name: 'Modes' })
-    .getByRole('button', { name: 'Explore' })
-    .tap();
-  const canvas = page.locator('.city-canvas');
-  await expect(canvas).toBeVisible({ timeout: 15_000 });
-  await page.waitForTimeout(1500);
-  // One-finger drag orbits the camera; the app must not crash or scroll.
-  const box = (await canvas.boundingBox())!;
-  const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2;
-  await page.touchscreen.tap(cx, cy);
-  await page.waitForTimeout(300);
-  await expectCityRendered(page);
+  // The 3D touch walk controls are covered by city3d.spec.ts, which runs
+  // in the projects that actually have WebGL.
   assertClean();
 });

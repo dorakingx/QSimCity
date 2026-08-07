@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures.js';
 import { trackConsoleErrors, skipOnboarding } from './helpers.js';
 
 // Every flow here models a returning user; onboarding has its own spec.

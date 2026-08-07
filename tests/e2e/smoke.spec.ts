@@ -1,10 +1,5 @@
-import { expect, test } from '@playwright/test';
-import {
-  trackConsoleErrors,
-  runBellFromLab,
-  expectCityRendered,
-  skipOnboarding,
-} from './helpers.js';
+import { expect, test } from './fixtures.js';
+import { trackConsoleErrors, runBellFromLab, skipOnboarding } from './helpers.js';
 
 // Every flow here models a returning user; onboarding has its own spec.
 test.beforeEach(async ({ page }) => {
@@ -105,27 +100,6 @@ test('help overlay shows keyboard map and closes with Escape', async ({ page }) 
   await expect(dialog.getByText('District legend')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialog).not.toBeVisible();
-});
-
-test('guided tour walks chapters with camera sync and exits cleanly', async ({
-  page,
-  browserName,
-}) => {
-  const assertClean = trackConsoleErrors(page, browserName);
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Guided Tour' }).first().click();
-  const tour = page.locator('.tour-overlay');
-  await expect(tour).toBeVisible({ timeout: 15_000 });
-  await expect(tour.getByRole('heading', { name: 'Quantum Program Port' })).toBeVisible();
-  await tour.getByRole('button', { name: 'Next →' }).click();
-  await expect(tour.getByText('Chapter 2 of 16')).toBeVisible();
-  await tour.getByRole('button', { name: '← Previous' }).click();
-  await expect(tour.getByText('Chapter 1 of 16')).toBeVisible();
-  await tour.getByRole('button', { name: 'Exit tour' }).click();
-  await expect(tour).not.toBeVisible();
-  // A filtered browser warning must never mask a blank canvas.
-  await expectCityRendered(page);
-  assertClean();
 });
 
 test('share URL restores a sample configuration', async ({ page }) => {

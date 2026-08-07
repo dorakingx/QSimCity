@@ -1,0 +1,60 @@
+name: Linux visual baselines
+
+# Generates the Linux screenshot baselines on the runner that will consume
+# them, and uploads them for a human (or an agent) to look at before they
+# are committed.
+#
+# Baselines cannot honestly be produced anywhere else. CI is linux/amd64
+# with no GPU; the developer machine is macOS on Apple Silicon with one.
+# Emulating amd64 locally makes Chromium segfault under QEMU, so the only
+# way to get a baseline that matches what CI renders is to render it in CI.
+#
+# Deliberately manual: it never runs on push, and it never commits anything.
+# Its artifact is a proposal that has to be reviewed and inspected before it
+# becomes a baseline — accepting screenshots unseen is how a visual suite
+# stops testing anything.
+on:
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: Playwright projects to regenerate
+        default: '--project=city --project=city-mobile'
+        required: false
+
+jobs:
+  baselines:
+    name: Regenerate Linux baselines (review before committing)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm build
+      - name: Render baselines
+        # --update-snapshots writes what the runner actually draws. The step
+        # is allowed to "fail": with no baseline present Playwright reports
+        # the write as a failure, which is correct and not interesting here.
+        run: pnpm exec playwright test ${{ inputs.projects }} --workers=1 --update-snapshots
+        continue-on-error: true
+      - name: Report what changed
+        run: |
+          echo '### Baseline files after regeneration' >> "$GITHUB_STEP_SUMMARY"
+          git status --porcelain tests/e2e >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-baselines
+          path: tests/e2e/**/*-snapshots/**
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-baselines-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

@@ -106,6 +106,48 @@ export async function runBellFromLab(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Loads a page with the deterministic-frame contract enabled, waits for the
+ * 3D city to be genuinely ready, pins every source of motion, and renders
+ * one frame.
+ *
+ * This replaces `page.waitForTimeout(6500)`. A sleep is a bet on machine
+ * speed: it passed on a laptop with a GPU and produced nine 60-second
+ * timeouts on a CI runner drawing WebGL in software. Waiting for a promise
+ * the app resolves, then freezing, is a synchronisation primitive.
+ *
+ * `animTime` is pinned so ambient traffic, strollers, clouds, the
+ * scheduling beacon and the refinery steam — all pure functions of it —
+ * land in the same phase on every machine.
+ */
+export async function freezeCity(page: Page, options: { tick?: number } = {}): Promise<void> {
+  await page.waitForFunction(
+    '!!window.__qsimcityTest && window.__qsimcityTest.isCityMounted()',
+    undefined,
+    { timeout: 60_000 },
+  );
+  await page.evaluate('window.__qsimcityTest.cityReady');
+  if (options.tick !== undefined) {
+    await page.evaluate(`window.__qsimcityTest.setTick(${options.tick})`);
+  }
+  // Transient status messages have a five-second life and are not part of
+  // any surface's identity. They get their own spec.
+  await page.evaluate('window.__qsimcityTest.clearToast()');
+  await page.evaluate('window.__qsimcityTest.freeze(12)');
+  await page.evaluate('window.__qsimcityTest.renderFrame()');
+}
+
+/** Settles a 2D-only surface: no engine, just the transient toast. */
+export async function settle2d(page: Page): Promise<void> {
+  await page.waitForFunction('!!window.__qsimcityTest', undefined, { timeout: 30_000 });
+  await page.evaluate('window.__qsimcityTest.clearToast()');
+}
+
+/** Adds the test-contract flag to a path. */
+export function e2eUrl(path: string): string {
+  return path.includes('?') ? `${path}&e2e=1` : `${path}?e2e=1`;
+}
+
 /** Disables WebGL2 before app scripts run (fallback testing). */
 export async function disableWebgl(page: Page): Promise<void> {
   await page.addInitScript(() => {

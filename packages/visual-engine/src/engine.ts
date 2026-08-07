@@ -123,6 +123,8 @@ export class CityEngine {
   private farPropsVisible = true;
   private disposed = false;
   private released = false;
+  /** Set by freeze(); the render loop stays stopped while it is true. */
+  private frozen = false;
   /** Set when the user is near an interactive console in first-person mode. */
   nearbyInteractiveId: string | null = null;
 
@@ -905,6 +907,52 @@ export class CityEngine {
 
   get cameraMode(): CameraMode {
     return this.rig.mode;
+  }
+
+  /**
+   * Deterministic-frame contract for visual tests.
+   *
+   * A screenshot of this engine is otherwise a photograph of a moving
+   * scene: ambient traffic, strollers, clouds, the scheduling beacon and
+   * the refinery steam are all functions of `animTime`, the camera damps
+   * toward its goal over several frames, and the logical banners lerp
+   * toward their pylons. Waiting "long enough" with a sleep does not fix
+   * that — it only makes the race less likely, which is exactly the kind
+   * of test that passes on a fast machine and fails on a CI runner with
+   * software rendering.
+   *
+   * `freeze` stops the animation loop, pins `animTime` to a caller-chosen
+   * constant, and then settles every interpolator by ticking with a large
+   * dt while holding `animTime` fixed. After it returns, the scene is a
+   * pure function of (trace, tick, settings, animTime) and will render
+   * identically on any machine, however slow.
+   *
+   * `renderFrame` then draws exactly one frame on request. No sleeps.
+   */
+  freeze(animTime = 12): void {
+    cancelAnimationFrame(this.animationHandle);
+    this.animationHandle = 0;
+    this.frozen = true;
+    // Converge the damped camera, the banner positions and the arrival
+    // ship. Large steps because every interpolator here approaches its
+    // target geometrically; 40 steps of 0.5 s leaves nothing visible.
+    for (let i = 0; i < 40; i += 1) {
+      this.animTime = animTime;
+      this.tick(0.5, performance.now());
+    }
+    this.animTime = animTime;
+    this.renderFrame();
+  }
+
+  /** Renders one frame without advancing time. Requires freeze(). */
+  renderFrame(): void {
+    if (this.disposed) return;
+    this.renderer.render(this.scene, this.rig.camera);
+  }
+
+  /** Whether the deterministic-frame contract is currently engaged. */
+  get isFrozen(): boolean {
+    return this.frozen;
   }
 
   /** Stand the walker at an exact spot (camera-only; see CameraRig.walkTo). */

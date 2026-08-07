@@ -58,6 +58,15 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+      # The report alone shows *that* a test failed. The traces, the actual
+      # screenshots, and the diff images show *why* — without them a red
+      # visual test can only be guessed at from a distance.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-test-results
+          path: test-results
+          retention-days: 7
 
   python:
     name: Qiskit bridge (pytest, pyright, ruff)

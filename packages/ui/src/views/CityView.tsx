@@ -10,6 +10,7 @@ import {
 } from '@qsimcity/visual-engine';
 import { useAppStore } from '../store/appStore.js';
 import { CityLegend } from '../components/CityLegend.js';
+import { publishEngineForTests } from '../testHooks.js';
 
 /**
  * The 3D city canvas. Bridges the engine (imperative three.js) with the
@@ -82,6 +83,7 @@ export default function CityView(): ReactElement {
       return;
     }
     engineRef.current = engine;
+    publishEngineForTests(engine);
     // Stable read-only diagnostics hook for performance measurement tools
     // (never mutates scientific state); the full engine is exposed only in
     // dev builds for debugging.
@@ -166,6 +168,7 @@ export default function CityView(): ReactElement {
       // it inside the unmount commit stalls the mode switch behind it.
       engine.detach();
       engineRef.current = null;
+      publishEngineForTests(null);
       const release = (): void => engine.dispose();
       if (typeof requestAnimationFrame === 'function') {
         requestAnimationFrame(() => setTimeout(release, 0));

@@ -20,3 +20,8 @@ release-evidence/tmp/
 tools/mutation/.work/
 .hypothesis/
 .vercel
+# Container CI-parity runs (tools/ci-parity/run-linux.sh) write these into
+# the bind-mounted working tree. None of it belongs in the repository.
+.pnpm-store/
+qemu_*.core
+core
