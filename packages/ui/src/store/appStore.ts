@@ -138,6 +138,7 @@ interface AppState {
   inspectorOpen: boolean;
   scheduleOpen: boolean;
   toast: string | null;
+  toastsSuppressed: boolean;
   runner: PipelineRunner | null;
 
   setMode(mode: AppMode): void;
@@ -167,6 +168,8 @@ interface AppState {
   setInspectorOpen(open: boolean): void;
   setScheduleOpen(open: boolean): void;
   showToast(message: string): void;
+  /** Test-only: stop transient messages from appearing at all. */
+  suppressToasts(): void;
   clearToast(): void;
   clearLocalData(): void;
   applyInteractiveAction(action: InteractiveAction): void;
@@ -243,6 +246,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   inspectorOpen: false,
   scheduleOpen: false,
   toast: null,
+  toastsSuppressed: false,
   runner: null,
 
   setMode: (mode) => set({ mode }),
@@ -390,7 +394,16 @@ export const useAppStore = create<AppState>((set, get) => ({
   setHelpOpen: (open) => set({ helpOpen: open }),
   setInspectorOpen: (open) => set({ inspectorOpen: open }),
   setScheduleOpen: (open) => set({ scheduleOpen: open }),
-  showToast: (message) => set({ toast: message }),
+  showToast: (message) => {
+    // A suppressed run shows no transient messages at all. Visual
+    // baselines otherwise capture whichever toast happened to be alive,
+    // and a five-second status message is not part of a surface's
+    // identity — the service worker's "ready to work offline" notice was
+    // being baked into the WebGL-fallback baseline.
+    if (get().toastsSuppressed) return;
+    set({ toast: message });
+  },
+  suppressToasts: () => set({ toastsSuppressed: true, toast: null }),
   clearToast: () => set({ toast: null }),
 
   clearLocalData: () => {

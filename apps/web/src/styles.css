@@ -906,6 +906,17 @@ figure {
   margin-right: 360px;
 }
 
+/* Accessible 2D has no canvas to float over: the dock is absolutely
+   positioned for the 3D city, and in the 2D document it landed on top of
+   the WebGL-fallback status message, obscuring "the complete product
+   without WebGL". In 2D it belongs in normal flow. */
+.view-2d .scenario-dock {
+  position: static;
+  margin-right: 0;
+  align-items: stretch;
+  margin-bottom: 0.8rem;
+}
+
 .scenario-list {
   list-style: none;
   margin: 0;

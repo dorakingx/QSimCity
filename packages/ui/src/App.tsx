@@ -79,6 +79,7 @@ export function App(): ReactElement {
     // No-op unless the page was loaded with ?e2e=1.
     installTestHooks({
       clearToast: () => useAppStore.getState().clearToast(),
+      suppressToasts: () => useAppStore.getState().suppressToasts(),
       setTick: (tick) => useAppStore.getState().setTick(tick),
       pause: () => useAppStore.getState().pause(),
     });

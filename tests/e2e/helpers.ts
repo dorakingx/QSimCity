@@ -173,8 +173,11 @@ export async function freezeCity(page: Page, options: { tick?: number } = {}): P
     await page.evaluate(`window.__qsimcityTest.setTick(${options.tick})`);
   }
   // Transient status messages have a five-second life and are not part of
-  // any surface's identity. They get their own spec.
-  await page.evaluate('window.__qsimcityTest.clearToast()');
+  // any surface's identity. Suppressing rather than clearing matters: the
+  // service worker's "ready to work offline" notice fires on activation,
+  // which can land *after* a clear and did get baked into the
+  // WebGL-fallback baseline. Toast behaviour has its own spec.
+  await page.evaluate('window.__qsimcityTest.suppressToasts()');
   await page.evaluate('window.__qsimcityTest.freeze(12)');
   await page.evaluate('window.__qsimcityTest.renderFrame()');
 }
@@ -182,7 +185,7 @@ export async function freezeCity(page: Page, options: { tick?: number } = {}): P
 /** Settles a 2D-only surface: no engine, just the transient toast. */
 export async function settle2d(page: Page): Promise<void> {
   await page.waitForFunction('!!window.__qsimcityTest', undefined, { timeout: 30_000 });
-  await page.evaluate('window.__qsimcityTest.clearToast()');
+  await page.evaluate('window.__qsimcityTest.suppressToasts()');
 }
 
 /** Adds the test-contract flag to a path. */

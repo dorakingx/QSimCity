@@ -30,6 +30,8 @@ export interface TestHooks {
   renderFrame(): void;
   /** Dismisses any transient status message so it cannot land in a shot. */
   clearToast(): void;
+  /** Stops any further transient message from appearing. */
+  suppressToasts(): void;
   /** Pins the replay to a tick and stops playback. */
   setTick(tick: number): void;
 }
@@ -89,6 +91,7 @@ export function publishEngineForTests(instance: EngineLike | null): void {
  */
 export function installTestHooks(actions: {
   clearToast: () => void;
+  suppressToasts: () => void;
   setTick: (tick: number) => void;
   pause: () => void;
 }): void {
@@ -101,6 +104,7 @@ export function installTestHooks(actions: {
     freeze: (animTime = 12) => engine?.freeze(animTime),
     renderFrame: () => engine?.renderFrame(),
     clearToast: () => actions.clearToast(),
+    suppressToasts: () => actions.suppressToasts(),
     setTick: (tick: number) => {
       actions.pause();
       actions.setTick(tick);
