@@ -936,9 +936,19 @@ export class CityEngine {
     // Converge the damped camera, the banner positions and the arrival
     // ship. Large steps because every interpolator here approaches its
     // target geometrically; 40 steps of 0.5 s leaves nothing visible.
+    // The settling clock has to advance with the simulated step rather than
+    // read the wall clock. `tick` ages district pulses from `now - born`,
+    // so passing performance.now() forty times in a tight loop leaves a
+    // pulse born moments earlier sitting at whatever size real elapsed time
+    // put it — a frame that depends on how fast the machine got here, which
+    // is the one thing this contract exists to rule out. Advancing by the
+    // simulated dt runs 20 s of scene time, past every pulse's 1.2 s life,
+    // so the settled frame contains no pulses on any machine.
+    let clock = performance.now();
     for (let i = 0; i < 40; i += 1) {
       this.animTime = animTime;
-      this.tick(0.5, performance.now());
+      clock += 500;
+      this.tick(0.5, clock);
     }
     this.animTime = animTime;
     // Clouds drift by accumulation, so their position otherwise depends on

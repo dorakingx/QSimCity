@@ -118,4 +118,17 @@ jobs:
         with:
           name: goal-check
           path: release-evidence/goal-check.txt
+      # The gate re-runs the browser matrix itself, so it can fail on a
+      # screenshot the e2e job passed — and when it did, it threw the
+      # expected/actual/diff away and left only a one-line message. A gate
+      # that reports a visual failure without producing the image cannot be
+      # diagnosed without another full run.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: goal-check-playwright
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7
           retention-days: 7
