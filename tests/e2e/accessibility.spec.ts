@@ -88,7 +88,13 @@ test('keyboard-only entry: skip link, navigation, palette, and run', async ({
 });
 
 test('charts expose complete table alternatives', async ({ page }) => {
-  await page.goto('/');
+  // 64 shots, not the default 1024. This test is about the table
+  // alternatives beside each chart, not about sampling: the assertions
+  // below hold for any shot count. On a loaded CI runner the default run
+  // was consuming most of the 60-second budget before the test reached
+  // what it is actually checking. Raising the timeout would have hidden
+  // that; doing less unnecessary work fixes it.
+  await page.goto('/?sample=bell&shots=64&seed=a11y-tables&device=linear-5');
   await runBellFromLab(page);
   await page
     .getByRole('navigation', { name: 'Modes' })
