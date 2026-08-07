@@ -43,9 +43,15 @@ let engine: EngineLike | null = null;
 let resolveCityReady: (() => void) | null = null;
 let cityReady: Promise<void> | null = null;
 
-/** True when the page asked for the test contract. */
+/**
+ * True when the page asked for the test contract, either through `?e2e=1`
+ * or through a flag an automation harness set before the app booted. The
+ * second form exists so a test can enable the contract without rewriting
+ * every URL under test.
+ */
 export function testHooksEnabled(): boolean {
   try {
+    if ((globalThis as Record<string, unknown>)['__QSIMCITY_E2E'] === true) return true;
     return new URLSearchParams(globalThis.location?.search ?? '').get('e2e') === '1';
   } catch {
     return false;

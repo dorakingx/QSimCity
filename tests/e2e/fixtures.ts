@@ -29,6 +29,13 @@ const CITY_PROJECTS = new Set(['city', 'city-mobile']);
 export const test = base.extend<{ webglPolicy: void }>({
   webglPolicy: [
     async ({ page }, use, testInfo) => {
+      // Enable the deterministic-frame contract for every test, so helpers
+      // can stop playback through the store instead of clicking a control
+      // inside a panel that is re-rendering on every tick. Production never
+      // sets this flag.
+      await page.addInitScript(() => {
+        (window as unknown as Record<string, unknown>)['__QSIMCITY_E2E'] = true;
+      });
       if (!CITY_PROJECTS.has(testInfo.project.name)) {
         await disableWebgl(page);
       }

@@ -133,6 +133,15 @@ export async function runBellFromLab(page: Page): Promise<void> {
  * race. Either way the desired end state is the same: playback stopped.
  */
 export async function pauseReplay(page: Page): Promise<void> {
+  // Prefer the store. Clicking the control means waiting for it to be
+  // "stable", and it lives in a dock that re-renders on every playback
+  // tick — a trace from CI showed this click exhausting its budget without
+  // landing, after which the page never settled and a later header click
+  // burned 33 seconds. Setting the flag directly cannot race.
+  const stopped = await page
+    .evaluate('!!window.__qsimcityTest && (window.__qsimcityTest.setTick(0), true)')
+    .catch(() => false);
+  if (stopped === true) return;
   await page
     .getByRole('button', { name: 'Pause replay' })
     .click({ timeout: 3_000 })
