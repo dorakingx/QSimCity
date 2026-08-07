@@ -37,6 +37,21 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: true,
   retries: 0,
+  /**
+   * Match the worker count to the runner, not to a developer laptop.
+   *
+   * `ubuntu-latest` has 4 cores. Playwright's default is half the core
+   * count per project, and several of these tests run a full statevector
+   * simulation in a Web Worker — so a fully parallel run had multiple
+   * simulations competing for the same two cores. A trace from CI showed
+   * what that costs: a single `click()` on the Run button taking 17.8
+   * seconds, an in-page `evaluate` taking 6.8, and the next click never
+   * completing inside the 60-second budget.
+   *
+   * This is not a raised timeout. The work was real and the machine was
+   * oversubscribed; two workers give each simulation a core to run on.
+   */
+  workers: process.env['CI'] ? 2 : undefined,
   reporter: [['list'], ['html', { open: 'never' }]],
   expect: {
     toHaveScreenshot: {
