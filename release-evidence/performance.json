@@ -1,27 +1,27 @@
 {
-  "commitSha": "d14bf4c1235c3cd10cff7222263b8c2b1e9ef920",
-  "sourceTreeHash": "49e43eb5af6efc09",
+  "commitSha": "3e97a9eb1c96b16094f74450e846bbb0c42cee4e",
+  "sourceTreeHash": "23049fcbe62fe585",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T04:49:46.223Z",
+  "generatedAt": "2026-08-07T10:55:08.113Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "d86fbd506234c048",
+  "inputHash": "2231929f9987f47d",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 162069,
-    "totalJsGzipBytes": 357696,
+    "initialJsGzipBytes": 162798,
+    "totalJsGzipBytes": 358618,
     "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 162069,
-    "totalJsGzipBytes": 357696,
+    "initialJsGzipBytes": 162798,
+    "totalJsGzipBytes": 358618,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
@@ -34,8 +34,8 @@
         "gzipBytes": 33194
       },
       {
-        "name": "CityView-BfUKkgie.js",
-        "gzipBytes": 23980
+        "name": "CityView-Da_UJee7.js",
+        "gzipBytes": 24173
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -48,12 +48,12 @@
         "gzipBytes": 58969
       },
       {
-        "name": "CityLegend-DIfxPdD4.js",
-        "gzipBytes": 58352
+        "name": "testHooks-BJr752n6.js",
+        "gzipBytes": 58944
       },
       {
-        "name": "index-BTLle_AN.js",
-        "gzipBytes": 44388
+        "name": "index-DXmf55KF.js",
+        "gzipBytes": 44525
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-07T04:49:46.175Z"
+    "generatedAt": "2026-08-07T10:55:08.071Z"
   }
 }

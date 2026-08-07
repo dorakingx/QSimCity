@@ -1,8 +1,8 @@
 {
-  "commitSha": "d14bf4c1235c3cd10cff7222263b8c2b1e9ef920",
-  "sourceTreeHash": "49e43eb5af6efc09",
+  "commitSha": "3e97a9eb1c96b16094f74450e846bbb0c42cee4e",
+  "sourceTreeHash": "23049fcbe62fe585",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T04:51:06.151Z",
+  "generatedAt": "2026-08-07T10:56:28.295Z",
   "tool": "lighthouse",
   "toolVersion": "13.4.1",
   "command": "pnpm lighthouse",
@@ -90,7 +90,7 @@
           "seo": 92
         },
         {
-          "performance": 78,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -140,7 +140,7 @@
       },
       "runs": [
         {
-          "performance": 79,
+          "performance": 78,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92

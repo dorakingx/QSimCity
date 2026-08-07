@@ -1,11 +1,11 @@
 {
-  "commitSha": "d14bf4c1235c3cd10cff7222263b8c2b1e9ef920",
-  "sourceTreeHash": "49e43eb5af6efc09",
+  "commitSha": "3e97a9eb1c96b16094f74450e846bbb0c42cee4e",
+  "sourceTreeHash": "23049fcbe62fe585",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T04:49:34.564Z",
+  "generatedAt": "2026-08-07T10:54:56.669Z",
   "tool": "qsimcity-python-verify",
   "toolVersion": "uv 0.9.10 (44f5a14f4 2025-11-17)",
-  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-yc7VC0/pytest.xml",
+  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-tUFsnm/pytest.xml",
   "exitStatus": 0,
   "inputHash": "dbe2f8e3c97544b8",
   "thresholds": {
@@ -14,7 +14,7 @@
     "minimumPytestPassed": 1
   },
   "measurements": {
-    "pytestPassed": 71,
+    "pytestPassed": 76,
     "pytestFailed": 0,
     "pytestSkipped": 0,
     "pyrightErrors": 0,
@@ -34,7 +34,7 @@
         "command": "uv sync --frozen",
         "exitStatus": 0,
         "durationSeconds": 0.1,
-        "tail": "Audited 23 packages in 7ms"
+        "tail": "Audited 23 packages in 8ms"
       },
       {
         "id": "ruff-check",
@@ -54,15 +54,15 @@
         "id": "pyright",
         "command": "uv run pyright",
         "exitStatus": 0,
-        "durationSeconds": 1.6,
+        "durationSeconds": 2,
         "tail": "0 errors, 0 warnings, 0 informations\nWARNING: there is a new pyright version available (v1.1.407 -> v1.1.411).\nPlease install the new version or set PYRIGHT_PYTHON_FORCE_VERSION to `latest`"
       },
       {
         "id": "pytest",
-        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-yc7VC0/pytest.xml",
+        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-tUFsnm/pytest.xml",
         "exitStatus": 0,
         "durationSeconds": 4.3,
-        "tail": ".......................................................................  [100%]\n71 passed in 4.03s"
+        "tail": "........................................................................ [ 94%]\n....                                                                     [100%]\n76 passed in 4.01s"
       }
     ]
   }

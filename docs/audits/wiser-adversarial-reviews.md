@@ -51,11 +51,31 @@ Other findings from this round that changed the product or the claims:
   both README and the submission.
 - Art direction: the coastline fix is real at the terrain mesh, but the
   slab read survives because the quay road still holds the un-offset base
-  line; residential parcels are a flat-colour checkerboard with one
-  repeated house asset; there are no longitudinal lane markings at street
-  level; the kerb has zero height and the walk camera stands on it. These
-  are recorded as open art-direction weaknesses rather than fixed, and the
-  visual claim is scoped to "believable stylized city" accordingly.
+  line — `quay-west` and `quay-east` are straight segments at fixed x
+  while the shore now wanders up to `COAST_WANDER` metres either side of
+  them. Outskirt parcels remain a flat-colour checkerboard: they are cut
+  on an axis-aligned grid and filled by a per-parcel hash, so the usage
+  changes but the shape never does. Every outskirt house is the same
+  box-plus-gable archetype, varying only in dimensions, facade material
+  and a 90-degree rotation. The kerb is a flat ribbon 0.1 above the
+  carriageway with no modelled riser, so no kerb face is ever visible and
+  the walk camera stands on the seam.
+
+  Two findings from this stance were checked against the tree and did not
+  survive. **"There are no longitudinal lane markings at street level" is
+  false**: `city-builder.ts` gives boulevards two dashed carriageways
+  either side of a planted median, and arterials and collectors a dashed
+  centreline; only `local` and `quay` streets are unmarked, which is what
+  unclassified streets look like in a real city. **The golden-hour
+  sea/land collapse was real and is now fixed** rather than recorded —
+  the fog was using the saturated sky-horizon orange from 300 metres out
+  at exposure 1.24, which flattened the whole frame; it now uses a
+  desaturated warm tone from 420 metres at exposure 1.14, and the bay
+  separates from the land again.
+
+  The rest are recorded as open art-direction weaknesses rather than
+  fixed, and the visual claim is scoped to "believable stylized city"
+  accordingly. Nothing in this repository claims photorealism.
 
 Four separated AI reviewer agents — art direction, quantum-information
 accuracy, child UX and accessibility, and performance — reviewed the

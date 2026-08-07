@@ -68,10 +68,18 @@ export const LIGHTING_PRESETS: Record<TimeOfDay, LightingPreset> = {
     hemiSky: 0xc79f7e,
     hemiGround: 0x6a6053,
     hemiIntensity: 0.72,
-    fogColor: 0xf2a35c,
-    fogNear: 300,
-    fogFar: 1200,
-    exposure: 1.24,
+    // The horizon colour is right for the sky and wrong for the fog. Using
+    // the saturated orange at 300/1200 with exposure 1.24 washed sea and
+    // land into a single tone: in the golden overview screenshot the
+    // coastline was only findable as a faint seam, so the one image that is
+    // supposed to show the coast showed it least. The fog keeps its warmth
+    // but gives up saturation, starts further out, and the exposure stops
+    // blowing the highlights, which lets the dark blue bay separate from
+    // the green-and-tan land again.
+    fogColor: 0xd8a37a,
+    fogNear: 420,
+    fogFar: 1500,
+    exposure: 1.14,
     starOpacity: 0,
     cloudColor: 0xffc9a0,
     cloudOpacity: 0.75,

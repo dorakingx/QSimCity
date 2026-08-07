@@ -1704,10 +1704,15 @@ figure {
     width: calc(100% - 1.6rem);
   }
 
+  /* Clear of the playback dock, which on a phone is full-width and about
+     232px tall — the same clearance the movement pad above already uses.
+     At 5.6rem the Scenarios button sat inside the dock: the screenshot
+     evidence showed it half-covered by the speed row, so the control that
+     opens the scenario list was partly unreachable on every phone. */
   .scenario-dock {
     margin-right: 0;
     top: auto;
-    bottom: 5.6rem;
+    bottom: 232px;
   }
 
   .field-grid {

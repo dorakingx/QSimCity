@@ -89,4 +89,57 @@ test.describe('mobile city', () => {
     await expect(page.getByRole('application', { name: /Movement pad/ })).toBeVisible();
     assertClean();
   });
+
+  /**
+   * The floating controls must not cover each other on a phone.
+   *
+   * This was a real defect that no visual baseline could have caught: the
+   * only mobile screenshots are portrait *2D*, where the dock is in normal
+   * flow, and landscape, which is wide enough that the phone rules never
+   * apply. Portrait 3D — the common case — went unphotographed, and the
+   * Scenarios button sat inside the playback dock, half-covered by the
+   * speed row.
+   *
+   * A geometry assertion is the right shape for this rather than another
+   * baseline: it states the contract, it cannot be satisfied by a stale
+   * image, and it does not need a per-platform reference to compare with.
+   */
+  test('the floating controls do not cover each other in portrait', async ({ page }) => {
+    // The playback dock only exists once a run has produced a trace, which
+    // is also the only state in which the overlap could be seen. Explore
+    // has no Run control on a phone, so the run starts in the lab — the
+    // same route the screenshot evidence takes.
+    await page.goto(e2eUrl('/?view=lab&sample=bell'));
+    await page.getByRole('button', { name: 'Run', exact: true }).tap();
+    await expect(page.getByRole('toolbar', { name: 'Replay timeline' }).first()).toBeVisible({
+      timeout: 30_000,
+    });
+    await page
+      .getByRole('navigation', { name: 'Modes' })
+      .getByRole('button', { name: 'Explore' })
+      .tap();
+    await expect(page.locator('.city-canvas')).toBeVisible({ timeout: 30_000 });
+    await freezeCity(page);
+
+    const overlaps = await page.evaluate(() => {
+      const rect = (selector: string) => document.querySelector(selector)?.getBoundingClientRect();
+      const dock = rect('.scenario-dock');
+      const playback = rect('.timeline-dock');
+      const pad = rect('.touch-joystick');
+      const hit = (a?: DOMRect, b?: DOMRect) =>
+        !!a && !!b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      return {
+        found: !!dock && !!playback,
+        scenariosOverPlayback: hit(dock, playback),
+        padOverPlayback: hit(pad, playback),
+        // Wholly on screen, not merely non-overlapping off the edge.
+        dockOnScreen: !!dock && dock.top >= 0 && dock.bottom <= window.innerHeight,
+      };
+    });
+
+    expect(overlaps.found, 'the Scenarios dock and playback dock must both exist').toBe(true);
+    expect(overlaps.scenariosOverPlayback, 'Scenarios overlaps the playback dock').toBe(false);
+    expect(overlaps.padOverPlayback, 'the movement pad overlaps the playback dock').toBe(false);
+    expect(overlaps.dockOnScreen, 'the Scenarios dock is off screen').toBe(true);
+  });
 });
