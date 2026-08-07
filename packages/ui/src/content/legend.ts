@@ -210,10 +210,12 @@ export const LEGEND_ENTRIES: readonly LegendEntry[] = [
     represents:
       'The Results Observatory reporting that the run finished. The beam appears once the result stage is reached.',
     childRepresents: 'A beam of light switches on when your answers are ready.',
-    trigger: 'Appears once the trace reaches the result stage at or before the current tick.',
+    trigger:
+      'Appears once the trace reaches the result stage at or before the current tick — that is, once execution has completed and counts exist.',
     childTrigger: 'It lights up when the results arrive.',
-    source: 'reference_compiler',
+    source: 'exact_simulation',
     certainty: 'COMPUTED',
+    noisyCertainty: 'SAMPLED',
   },
   {
     id: 'district-pulse',

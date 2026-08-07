@@ -1,27 +1,27 @@
 {
-  "commitSha": "5b2f0fe344e4119e89b82bb9a6185abccf326ac2",
-  "sourceTreeHash": "cef36fe92447040b",
+  "commitSha": "d746ca15b2d454c225f55b184769386066c9fb2c",
+  "sourceTreeHash": "fd24219e95946548",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-06T05:21:01.869Z",
+  "generatedAt": "2026-08-07T03:03:03.586Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "84be3d664565b188",
+  "inputHash": "8efe014b42d017cf",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 157071,
-    "totalJsGzipBytes": 355372,
+    "initialJsGzipBytes": 161516,
+    "totalJsGzipBytes": 357140,
     "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 157071,
-    "totalJsGzipBytes": 355372,
+    "initialJsGzipBytes": 161516,
+    "totalJsGzipBytes": 357140,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
@@ -30,12 +30,12 @@
         "gzipBytes": 136194
       },
       {
-        "name": "pipeline.worker-Bs6_6sSe.js",
-        "gzipBytes": 33177
+        "name": "pipeline.worker-CAj369ss.js",
+        "gzipBytes": 33190
       },
       {
-        "name": "CityView-BjlM0zxU.js",
-        "gzipBytes": 26671
+        "name": "CityView-CBz-GFp6.js",
+        "gzipBytes": 23981
       },
       {
         "name": "workbox-window.prod.es5-DsELeUxu.js",
@@ -48,12 +48,12 @@
         "gzipBytes": 58969
       },
       {
-        "name": "CertaintyBadge-D8Mw5V8X.js",
-        "gzipBytes": 54410
+        "name": "CityLegend-D0fHcmhB.js",
+        "gzipBytes": 58246
       },
       {
-        "name": "index-ujnJrWPk.js",
-        "gzipBytes": 43332
+        "name": "index-D5GEotjr.js",
+        "gzipBytes": 43941
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-06T05:21:01.827Z"
+    "generatedAt": "2026-08-07T03:03:03.545Z"
   }
 }
