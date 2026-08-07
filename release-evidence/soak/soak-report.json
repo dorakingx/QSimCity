@@ -1,8 +1,8 @@
 {
-  "commitSha": "0605d6f32cdb5bb1b4d65ad9d419838fc6f3b8b6",
-  "sourceTreeHash": "914699c3422de069",
+  "commitSha": "37731184c85b9c093c6bad053abf53c350720daa",
+  "sourceTreeHash": "26f839c5d0065e26",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:38:29.824Z",
+  "generatedAt": "2026-08-07T03:54:19.159Z",
   "tool": "qsimcity-soak",
   "toolVersion": "1.0.0",
   "command": "pnpm soak",
@@ -17,68 +17,212 @@
     "maxFinalInteractionMs": 3000
   },
   "measurements": {
-    "durationSeconds": 58.6,
-    "cycles": 4,
-    "heapSampleCount": 7,
-    "heapSlopeBytesPerMinute": 38189203,
-    "baselineMinHeapBytes": 3623763,
-    "trailingMinHeapBytes": 27978147,
-    "trailingMinGrowthRatio": 7.7207,
+    "durationSeconds": 119.7,
+    "cycles": 16,
+    "heapSampleCount": 31,
+    "heapSlopeBytesPerMinute": 2079497,
+    "baselineMinHeapBytes": 30393358,
+    "trailingMinHeapBytes": 31092818,
+    "trailingMinGrowthRatio": 1.023,
     "uncaughtErrors": 1,
     "consoleErrors": 0,
     "failedRequests": 0,
     "contextLossEvents": 0,
     "contextRestoreEvents": 0,
     "unrecoveredContextLoss": 0,
-    "finalInteractionMs": 0,
-    "finalInteractionDriverMs": 51,
+    "finalInteractionMs": 6,
+    "finalInteractionDriverMs": 31,
     "crashed": false
   },
   "passed": false,
   "detail": {
-    "workloadError": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Step forward one tick' })\n    - locator resolved to <button type=\"button\" aria-disabled=\"false\" aria-label=\"Step forward one tick\">Step ▶</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    9 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n    49 × waiting for element to be visible, enabled and stable\n       - element is not enabled\n     - retrying click action\n       - waiting 500ms\n",
+    "workloadError": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.tour-overlay').getByRole('button', { name: 'Next →' })\n    - locator resolved to <button disabled type=\"button\" class=\"primary\">Next →</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not enabled\n     - retrying click action\n       - waiting 500ms\n",
     "heapSamples": [
       {
         "elapsedSeconds": 0.3,
-        "usedJsHeapBytes": 3623763,
+        "usedJsHeapBytes": 3622299,
         "totalJsHeapBytes": 7356667,
         "cycle": 1
       },
       {
-        "elapsedSeconds": 10.3,
-        "usedJsHeapBytes": 26908856,
-        "totalJsHeapBytes": 94355616,
+        "elapsedSeconds": 5.3,
+        "usedJsHeapBytes": 26879085,
+        "totalJsHeapBytes": 94617793,
         "cycle": 1
       },
       {
-        "elapsedSeconds": 10.5,
-        "usedJsHeapBytes": 26976630,
-        "totalJsHeapBytes": 94353142,
+        "elapsedSeconds": 5.5,
+        "usedJsHeapBytes": 26947811,
+        "totalJsHeapBytes": 94615319,
         "cycle": 2
       },
       {
-        "elapsedSeconds": 18.1,
-        "usedJsHeapBytes": 27439637,
-        "totalJsHeapBytes": 96456929,
+        "elapsedSeconds": 10.2,
+        "usedJsHeapBytes": 27531689,
+        "totalJsHeapBytes": 95670481,
         "cycle": 2
       },
       {
-        "elapsedSeconds": 18.3,
-        "usedJsHeapBytes": 27439141,
-        "totalJsHeapBytes": 95930145,
+        "elapsedSeconds": 10.4,
+        "usedJsHeapBytes": 27739541,
+        "totalJsHeapBytes": 95667985,
         "cycle": 3
       },
       {
-        "elapsedSeconds": 28.4,
-        "usedJsHeapBytes": 27971695,
-        "totalJsHeapBytes": 96977427,
+        "elapsedSeconds": 17.5,
+        "usedJsHeapBytes": 28080263,
+        "totalJsHeapBytes": 96717763,
         "cycle": 3
       },
       {
-        "elapsedSeconds": 28.6,
-        "usedJsHeapBytes": 27978147,
-        "totalJsHeapBytes": 96455635,
+        "elapsedSeconds": 17.6,
+        "usedJsHeapBytes": 28120227,
+        "totalJsHeapBytes": 96717763,
         "cycle": 4
+      },
+      {
+        "elapsedSeconds": 22.3,
+        "usedJsHeapBytes": 28799510,
+        "totalJsHeapBytes": 97668842,
+        "cycle": 4
+      },
+      {
+        "elapsedSeconds": 22.5,
+        "usedJsHeapBytes": 28786234,
+        "totalJsHeapBytes": 97666346,
+        "cycle": 5
+      },
+      {
+        "elapsedSeconds": 27.1,
+        "usedJsHeapBytes": 28699850,
+        "totalJsHeapBytes": 97246182,
+        "cycle": 5
+      },
+      {
+        "elapsedSeconds": 27.3,
+        "usedJsHeapBytes": 28683218,
+        "totalJsHeapBytes": 96981542,
+        "cycle": 6
+      },
+      {
+        "elapsedSeconds": 34.5,
+        "usedJsHeapBytes": 28875526,
+        "totalJsHeapBytes": 96982154,
+        "cycle": 6
+      },
+      {
+        "elapsedSeconds": 34.6,
+        "usedJsHeapBytes": 28875758,
+        "totalJsHeapBytes": 96720010,
+        "cycle": 7
+      },
+      {
+        "elapsedSeconds": 39.3,
+        "usedJsHeapBytes": 29214727,
+        "totalJsHeapBytes": 96982963,
+        "cycle": 7
+      },
+      {
+        "elapsedSeconds": 39.4,
+        "usedJsHeapBytes": 29206863,
+        "totalJsHeapBytes": 96980467,
+        "cycle": 8
+      },
+      {
+        "elapsedSeconds": 44.1,
+        "usedJsHeapBytes": 29532519,
+        "totalJsHeapBytes": 97510591,
+        "cycle": 8
+      },
+      {
+        "elapsedSeconds": 44.2,
+        "usedJsHeapBytes": 29523463,
+        "totalJsHeapBytes": 97508095,
+        "cycle": 9
+      },
+      {
+        "elapsedSeconds": 51.4,
+        "usedJsHeapBytes": 29711153,
+        "totalJsHeapBytes": 98295233,
+        "cycle": 9
+      },
+      {
+        "elapsedSeconds": 51.6,
+        "usedJsHeapBytes": 29715045,
+        "totalJsHeapBytes": 98295233,
+        "cycle": 10
+      },
+      {
+        "elapsedSeconds": 56.3,
+        "usedJsHeapBytes": 29958389,
+        "totalJsHeapBytes": 96985173,
+        "cycle": 10
+      },
+      {
+        "elapsedSeconds": 56.4,
+        "usedJsHeapBytes": 29954925,
+        "totalJsHeapBytes": 96982677,
+        "cycle": 11
+      },
+      {
+        "elapsedSeconds": 61.1,
+        "usedJsHeapBytes": 30398334,
+        "totalJsHeapBytes": 98987390,
+        "cycle": 11
+      },
+      {
+        "elapsedSeconds": 61.3,
+        "usedJsHeapBytes": 30393358,
+        "totalJsHeapBytes": 98722750,
+        "cycle": 12
+      },
+      {
+        "elapsedSeconds": 68.5,
+        "usedJsHeapBytes": 30266915,
+        "totalJsHeapBytes": 97508567,
+        "cycle": 12
+      },
+      {
+        "elapsedSeconds": 68.7,
+        "usedJsHeapBytes": 30274027,
+        "totalJsHeapBytes": 97248919,
+        "cycle": 13
+      },
+      {
+        "elapsedSeconds": 73.3,
+        "usedJsHeapBytes": 30490116,
+        "totalJsHeapBytes": 98298168,
+        "cycle": 13
+      },
+      {
+        "elapsedSeconds": 73.5,
+        "usedJsHeapBytes": 30499544,
+        "totalJsHeapBytes": 98295672,
+        "cycle": 14
+      },
+      {
+        "elapsedSeconds": 78.2,
+        "usedJsHeapBytes": 30961796,
+        "totalJsHeapBytes": 98465388,
+        "cycle": 14
+      },
+      {
+        "elapsedSeconds": 78.3,
+        "usedJsHeapBytes": 30962608,
+        "totalJsHeapBytes": 98462892,
+        "cycle": 15
+      },
+      {
+        "elapsedSeconds": 85.5,
+        "usedJsHeapBytes": 31092818,
+        "totalJsHeapBytes": 98461294,
+        "cycle": 15
+      },
+      {
+        "elapsedSeconds": 85.7,
+        "usedJsHeapBytes": 31107854,
+        "totalJsHeapBytes": 98463790,
+        "cycle": 16
       }
     ]
   }

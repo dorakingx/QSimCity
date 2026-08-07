@@ -1,8 +1,8 @@
 {
-  "commitSha": "0605d6f32cdb5bb1b4d65ad9d419838fc6f3b8b6",
-  "sourceTreeHash": "914699c3422de069",
+  "commitSha": "37731184c85b9c093c6bad053abf53c350720daa",
+  "sourceTreeHash": "26f839c5d0065e26",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:36:03.844Z",
+  "generatedAt": "2026-08-07T03:50:51.928Z",
   "tool": "qsimcity-fresh-clone",
   "toolVersion": "v22.23.1",
   "command": "git clone <repo> && pnpm install --frozen-lockfile && verify + build + e2e",
@@ -16,123 +16,123 @@
     "stepsRun": 16,
     "stepsPassed": 16,
     "failedSteps": 0,
-    "totalSeconds": 90.1
+    "totalSeconds": 95
   },
   "passed": true,
   "detail": {
-    "commit": "0605d6f32cdb5bb1b4d65ad9d419838fc6f3b8b6",
+    "commit": "37731184c85b9c093c6bad053abf53c350720daa",
     "steps": [
       {
         "id": "install",
         "command": "pnpm install --frozen-lockfile",
         "exitStatus": 0,
-        "durationSeconds": 3.3,
-        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.2s using pnpm v11.14.0"
+        "durationSeconds": 3.8,
+        "tail": "+ tsx 4.23.1\n+ typescript 5.9.3\n+ typescript-eslint 8.65.0\n+ vite 8.1.5\n+ vite-plugin-pwa 1.3.0\n+ vitest 4.1.10\n\nDone in 3.7s using pnpm v11.14.0"
       },
       {
         "id": "typecheck",
         "command": "pnpm typecheck",
         "exitStatus": 0,
-        "durationSeconds": 3.5,
+        "durationSeconds": 3.7,
         "tail": "$ tsc -p tsconfig.typecheck.json"
       },
       {
         "id": "lint",
         "command": "pnpm lint",
         "exitStatus": 0,
-        "durationSeconds": 4,
+        "durationSeconds": 4.3,
         "tail": "$ eslint ."
       },
       {
         "id": "format",
         "command": "pnpm format",
         "exitStatus": 0,
-        "durationSeconds": 2.3,
+        "durationSeconds": 2.6,
         "tail": "Checking formatting...\nAll matched files use Prettier code style!\n$ prettier --check ."
       },
       {
         "id": "policy-names",
         "command": "pnpm check:names",
         "exitStatus": 0,
-        "durationSeconds": 1,
+        "durationSeconds": 1.1,
         "tail": "Prohibited-name scan passed.\n$ tsx tools/check-prohibited-names.ts"
       },
       {
         "id": "policy-language",
         "command": "pnpm check:language",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Language-policy scan passed.\n$ tsx tools/check-language.ts"
       },
       {
         "id": "policy-todos",
         "command": "pnpm check:todos",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Blocking-marker scan passed.\n$ tsx tools/check-todos.ts"
       },
       {
         "id": "unit-tests",
         "command": "pnpm test",
         "exitStatus": 0,
-        "durationSeconds": 4.4,
-        "tail": "\n\n Test Files  57 passed (57)\n      Tests  942 passed (942)\n   Start at  12:34:43\n   Duration  3.41s (transform 3.83s, setup 0ms, import 9.80s, tests 13.02s, environment 1.91s)\n\n$ vitest run"
+        "durationSeconds": 5.4,
+        "tail": "\n\n Test Files  57 passed (57)\n      Tests  942 passed (942)\n   Start at  12:49:29\n   Duration  4.33s (transform 5.35s, setup 0ms, import 13.71s, tests 17.02s, environment 2.86s)\n\n$ vitest run"
       },
       {
         "id": "coverage",
         "command": "pnpm test:coverage",
         "exitStatus": 0,
-        "durationSeconds": 7.6,
+        "durationSeconds": 9.7,
         "tail": "\n=============================== Coverage summary ===============================\nStatements   : 94.89% ( 6064/6390 )\nBranches     : 85.4% ( 2925/3425 )\nFunctions    : 93.05% ( 1085/1166 )\nLines        : 96.11% ( 5418/5637 )\n================================================================================\n$ vitest run --coverage"
       },
       {
         "id": "coverage-gate",
         "command": "pnpm coverage:check",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
+        "durationSeconds": 0.5,
         "tail": "Per-package coverage:\n  packages/domain                  lines  98.49%  branches  95.51%  PASS\n  packages/trace                   lines  98.28%  branches     96%  PASS\n  packages/simulator               lines    100%  branches  97.65%  PASS\n  packages/reference-compiler      lines  97.69%  branches   90.4%  PASS\n  project total                    lines  96.11%  branches   85.4%  PASS\n$ tsx tools/coverage/check-coverage.ts"
       },
       {
         "id": "security-audit",
         "command": "pnpm security:audit",
         "exitStatus": 0,
-        "durationSeconds": 3.2,
+        "durationSeconds": 3.6,
         "tail": "Security audit\n  JavaScript: 0 advisories, 0 high or critical\n  Python: 47 packages audited, 0 advisories, 0 high or critical\n  Secret scan: 0 hit(s)\nSecurity audit PASSED\n$ tsx tools/security/run-security-audit.ts"
       },
       {
         "id": "trace-reproducibility",
         "command": "pnpm repro:check",
         "exitStatus": 0,
-        "durationSeconds": 6.7,
+        "durationSeconds": 7.3,
         "tail": "  process 9/12 ghz-4 482455cdf3c61bf1\n  process 10/12 grover-2 80cf54776e9db752\n  process 11/12 grover-2 80cf54776e9db752\n  process 12/12 grover-2 80cf54776e9db752\n  seed sensitivity: the hash tracks the seed\n  committed samples: 5/5 reproduce the Python manifest (5 carry transpiler telemetry)\nTrace reproducibility PASSED\n$ tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts"
       },
       {
         "id": "python-verify",
         "command": "pnpm python:verify",
         "exitStatus": 0,
-        "durationSeconds": 11.8,
-        "tail": "  PASS sync (0s)\n  PASS ruff-check (0.4s)\n  PASS ruff-format (0s)\n  PASS pyright (1.8s)\n  PASS pytest (9.1s)\n  pytest 71 passed / 0 failed, pyright 0 errors, qiskit 2.5.1, aer 0.17.2\nPython bridge verification PASSED\n$ tsx tools/python/run-python-verify.ts"
+        "durationSeconds": 13.6,
+        "tail": "  PASS sync (0.1s)\n  PASS ruff-check (0.5s)\n  PASS ruff-format (0.1s)\n  PASS pyright (1.9s)\n  PASS pytest (10.5s)\n  pytest 71 passed / 0 failed, pyright 0 errors, qiskit 2.5.1, aer 0.17.2\nPython bridge verification PASSED\n$ tsx tools/python/run-python-verify.ts"
       },
       {
         "id": "build",
         "command": "pnpm build",
         "exitStatus": 0,
-        "durationSeconds": 1.5,
-        "tail": "PWA v1.3.0\nmode      generateSW\nprecache  17 entries (1273.97 KiB)\nfiles generated\n  dist/sw.js\n  dist/workbox-2fbc6a65.js\n$ pnpm --filter qsimcity-web build\n$ vite build"
+        "durationSeconds": 1.8,
+        "tail": "PWA v1.3.0\nmode      generateSW\nprecache  17 entries (1274.03 KiB)\nfiles generated\n  dist/sw.js\n  dist/workbox-2fbc6a65.js\n$ pnpm --filter qsimcity-web build\n$ vite build"
       },
       {
         "id": "perf-budget",
         "command": "pnpm check:perf",
         "exitStatus": 0,
-        "durationSeconds": 0.4,
-        "tail": "Lazily loaded chunks (gzip):\n  three-q9RKXkIj.js                            133.0 KiB\n  pipeline.worker-CpbPGLVa.js                  32.4 KiB\n  CityView-DLM0nHF8.js                         23.4 KiB\n  workbox-window.prod.es5-DsELeUxu.js          2.2 KiB\n  TOTAL ALL JS 349.3 KiB (budget 600 KiB)\nPerformance budgets pass.\n$ tsx tools/check-performance.ts"
+        "durationSeconds": 0.5,
+        "tail": "Lazily loaded chunks (gzip):\n  three-q9RKXkIj.js                            133.0 KiB\n  pipeline.worker-CpbPGLVa.js                  32.4 KiB\n  CityView-BfUKkgie.js                         23.4 KiB\n  workbox-window.prod.es5-DsELeUxu.js          2.2 KiB\n  TOTAL ALL JS 349.3 KiB (budget 600 KiB)\nPerformance budgets pass.\n$ tsx tools/check-performance.ts"
       },
       {
         "id": "e2e",
         "command": "pnpm test:e2e",
         "exitStatus": 0,
-        "durationSeconds": 39.2,
-        "tail": "  ✓  92 [chromium] › tests/e2e/visual.spec.ts:140:3 › desktop surfaces › offline mode still serves the app shell (2.3s)\n  -  93 [chromium] › tests/e2e/visual.spec.ts:154:3 › mobile surfaces › mobile portrait 2D\n  -  94 [chromium] › tests/e2e/visual.spec.ts:164:3 › mobile surfaces › mobile landscape city\n\n  12 skipped\n  82 passed (38.4s)\n$ playwright test\n[WebServer] $ vite preview"
+        "durationSeconds": 36.1,
+        "tail": "  -  93 [chromium] › tests/e2e/visual.spec.ts:154:3 › mobile surfaces › mobile portrait 2D\n  -  94 [chromium] › tests/e2e/visual.spec.ts:164:3 › mobile surfaces › mobile landscape city\n  ✓  74 [mobile] › tests/e2e/mobile.spec.ts:25:1 › mobile: circuit builder works by touch alone (W6.2) (11.0s)\n\n  12 skipped\n  82 passed (35.2s)\n$ playwright test\n[WebServer] $ vite preview"
       }
     ]
   }

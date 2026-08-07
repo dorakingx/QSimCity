@@ -162,9 +162,23 @@ async function runCycle(page: Page, cycle: number): Promise<void> {
   // stable state rather than mid-overlay.
   await nav.getByRole('button', { name: 'Guided Tour' }).click();
   const next = page.locator('.tour-overlay').getByRole('button', { name: 'Next →' });
-  if (await next.count()) {
+  // The tour's chapter position survives between cycles, and Next is
+  // correctly disabled on the last chapter. Before the soak ran with GPU
+  // flags each cycle took long enough that the run never got that far;
+  // now it does about ten times as many cycles in the same wall clock, so
+  // the workload has to cope with reaching the end of the tour rather than
+  // waiting 30 s for a button that is never going to enable.
+  if ((await next.count()) && (await next.isEnabled())) {
     await next.click();
     await page.waitForTimeout(250);
+  } else {
+    // On the last chapter, walk back instead so the tour keeps exercising
+    // its chapter transitions rather than sitting still.
+    const previous = page.locator('.tour-overlay').getByRole('button', { name: '← Previous' });
+    if ((await previous.count()) && (await previous.isEnabled())) {
+      await previous.click();
+      await page.waitForTimeout(250);
+    }
   }
   await page.keyboard.press('Escape');
   await page.waitForTimeout(200);

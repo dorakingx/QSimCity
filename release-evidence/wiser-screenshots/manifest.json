@@ -1,8 +1,8 @@
 {
-  "commitSha": "0605d6f32cdb5bb1b4d65ad9d419838fc6f3b8b6",
-  "sourceTreeHash": "914699c3422de069",
+  "commitSha": "37731184c85b9c093c6bad053abf53c350720daa",
+  "sourceTreeHash": "26f839c5d0065e26",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:34:25.887Z",
+  "generatedAt": "2026-08-07T03:49:09.372Z",
   "tool": "wiser-screenshots",
   "toolVersion": "1.0.0",
   "command": "pnpm wiser:screens",
@@ -25,42 +25,42 @@
         "viewport": "desktop",
         "timeOfDay": "day",
         "view": "overview",
-        "sha256": "d2415faf5604262de245609808359f6f7f4b6b2fad3c9729d0e52130b88931aa"
+        "sha256": "e447bb8a7a41303f2807434b7282e467350f019bd1822174fe0a4d871cdecf2a"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-day-street.png",
         "viewport": "desktop",
         "timeOfDay": "day",
         "view": "street",
-        "sha256": "761e80a0c39606f40f9b60e58f5e60b450c0c3ef289aee996b97f2d08513f64d"
+        "sha256": "61b6629fee366e561941b034edb4162813d8f966647f95b48644f53aefbec8c8"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-golden-overview.png",
         "viewport": "desktop",
         "timeOfDay": "golden",
         "view": "overview",
-        "sha256": "3e68505b5cd040089e81a8251b7227b751e5618ae800c1cc193555a578314ac4"
+        "sha256": "67bddcd5d8bd76ae41cea1ff30e92603f81f388297f50a7308422b4a188d22e6"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-golden-street.png",
         "viewport": "desktop",
         "timeOfDay": "golden",
         "view": "street",
-        "sha256": "d3a14c4d4b6cf239739e6894433c43b6073b0729019e1e7cfb4527d2bca2c186"
+        "sha256": "4615ed0ed8beaa467f661ea68efe537244d22cea0c2705dd09b19b1d00d00751"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-night-overview.png",
         "viewport": "desktop",
         "timeOfDay": "night",
         "view": "overview",
-        "sha256": "cf08a99a17868e5306446319c7cb6b2ada52bcb000c67731a3cbfc846b8db177"
+        "sha256": "d76c4ab5e4f03126c0bce2b0858a8ff7cc5c5cde90f35cbf31117487ce4ce47a"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-night-street.png",
         "viewport": "desktop",
         "timeOfDay": "night",
         "view": "street",
-        "sha256": "398c948e1798499acbf54ddde1b82864b215861035f55a33ef96825a8c66b4a5"
+        "sha256": "d89633317eef80220b7f38b7aaa2e62e8136ea90ef72c5accbf0efe66a1270dc"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
@@ -74,7 +74,7 @@
         "viewport": "desktop",
         "timeOfDay": "day",
         "view": "legend",
-        "sha256": "f630d071c6f9952f1f9e51969a3eb9cf19bc551e4b6e1fabc221b501771c5192"
+        "sha256": "bbf50024de2001a7cdb37b5f0a4283d08cfd8513a6f6ff034d4f6fbcea9e5c58"
       },
       {
         "file": "release-evidence/wiser-screenshots/desktop-day-interior.png",
@@ -88,42 +88,42 @@
         "viewport": "mobile",
         "timeOfDay": "day",
         "view": "overview",
-        "sha256": "9f8ed80a69f337c90d3d1cd63b9174d622658bd92af6deafc145b2211f8f673d"
+        "sha256": "c51cce2a0480d2f5e94d65a679b5c43b5347f96e0412dada3453042c034a67b4"
       },
       {
         "file": "release-evidence/wiser-screenshots/mobile-day-street.png",
         "viewport": "mobile",
         "timeOfDay": "day",
         "view": "street",
-        "sha256": "1e3e21d552c2fb3a8740c6b4cb66f3040dc1b6a4a20564db99df0a277bc5523f"
+        "sha256": "bd63e7038b807bb54a5b2a63df7953873a8cc581694e66ec622df46c9742fd0b"
       },
       {
         "file": "release-evidence/wiser-screenshots/mobile-golden-overview.png",
         "viewport": "mobile",
         "timeOfDay": "golden",
         "view": "overview",
-        "sha256": "4f11f3060207cf13c1bd2461822585c6925fa34cf978e1658067b99010a9e364"
+        "sha256": "d57fcec36ce7b56bd669fc9434976f93e2a56bced5849549246d2ffd12f37adf"
       },
       {
         "file": "release-evidence/wiser-screenshots/mobile-golden-street.png",
         "viewport": "mobile",
         "timeOfDay": "golden",
         "view": "street",
-        "sha256": "74d4a3c736b5eea1be3335f33d0dc3d0c7a65f038ab8a790bc801db148583a41"
+        "sha256": "091ec632bb522fc280f57852e20f3a4dbefcf27c2f896b3b3a8fdf914d59f398"
       },
       {
         "file": "release-evidence/wiser-screenshots/mobile-night-overview.png",
         "viewport": "mobile",
         "timeOfDay": "night",
         "view": "overview",
-        "sha256": "de980dc1d52f2331c9a909a33420cc01cbb8b1ffc3eb653574e5e453651141e0"
+        "sha256": "75add00dd3ec627e5519baf515951dba07b37674a952a67f317a224d00662d1d"
       },
       {
         "file": "release-evidence/wiser-screenshots/mobile-night-street.png",
         "viewport": "mobile",
         "timeOfDay": "night",
         "view": "street",
-        "sha256": "806cc61de7e43156ac4a588c087f0423dc6d652556884018d7c6b4cc454bdff3"
+        "sha256": "a1d8ec5bec85140e4c52fd8c773bd80befc275ea65b938905cf68263ce15fab7"
       }
     ]
   }
