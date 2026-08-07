@@ -40,6 +40,32 @@ function detectWebgl(): boolean {
   }
 }
 
+/**
+ * Whether WebGL2 exists but is being served by a software rasterizer.
+ *
+ * A blocklisted GPU, a virtual machine, or a remote desktop gives a page a
+ * WebGL2 context that works and is roughly a hundred times too slow — this
+ * build measured a p50 of 314 ms per frame, about 3 fps, on SwiftShader.
+ * `detectWebgl` returns true in that case, so the learner is dropped into
+ * the 3D city with nothing steering them to the complete 2D path that
+ * would serve them far better. School and lab hardware is exactly where
+ * this happens.
+ */
+function detectSoftwareRenderer(): boolean {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2');
+    if (!gl) return false;
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = info
+      ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL))
+      : String(gl.getParameter(gl.RENDERER));
+    return /swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(renderer);
+  } catch {
+    return false;
+  }
+}
+
 export function App(): ReactElement {
   const mode = useAppStore((s) => s.mode);
   const webglAvailable = useAppStore((s) => s.webglAvailable);
@@ -50,6 +76,11 @@ export function App(): ReactElement {
     const s = useAppStore.getState();
     s.setRunner(createRunner());
     s.setWebglAvailable(detectWebgl());
+    if (detectWebgl() && detectSoftwareRenderer()) {
+      s.showToast(
+        'This device is drawing 3D in software, which will be very slow. Accessible 2D Mode has the whole workflow and runs smoothly here.',
+      );
+    }
     const search = globalThis.location?.search ?? '';
     const shared = decodeShareUrl(search);
     const sharedMode = decodeShareMode(search);

@@ -1826,3 +1826,12 @@ button[aria-disabled='true'] {
   flex-wrap: wrap;
   margin-bottom: 0.8rem;
 }
+
+/* The disclaimer must be reachable from every view, not only Home: a shared
+   link opens straight into the Lab or the city, where Home is never seen. */
+.help-disclaimer {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  border-left: 3px solid var(--border);
+  padding-left: 0.7rem;
+}

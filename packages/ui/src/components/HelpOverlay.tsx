@@ -105,6 +105,14 @@ export function HelpOverlay(): ReactElement | null {
           Quantum state itself never travels on roads — that would misrepresent the physics. Every
           number on screen carries a certainty label; open the Provenance panel for the full legend.
         </p>
+        <h3>About this project</h3>
+        <p className="help-disclaimer">
+          QSimCity is an unofficial, independent, open-source educational and research visualization
+          project, released under the Apache License 2.0. It is not produced, endorsed, sponsored,
+          or approved by Electronic Arts, Maxis, IBM, or any quantum-hardware vendor. No real
+          quantum processor is used: every result comes from a simulator running in your browser. No
+          account, no upload, no telemetry.
+        </p>
       </div>
     </div>
   );
