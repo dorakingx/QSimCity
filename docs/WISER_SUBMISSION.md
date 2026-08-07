@@ -134,13 +134,13 @@ watch it happen again.
 | --- | --- | --- |
 | Rendering | three.js (WebGL2), merged per-material geometry, instanced agents | One coherent city at ~180 draw calls |
 | UI | React + Zustand | Small, testable, no framework lock-in |
-| Build | Vite / Rolldown, PWA service worker | 153 KiB gzip initial JS of a 320 KiB budget; installable and offline-capable |
+| Build | Vite / Rolldown, PWA service worker | 158 KiB gzip initial JS of a 320 KiB budget; installable and offline-capable |
 | Domain | Own TypeScript packages: gates, topologies, seeded RNG, OpenQASM parser | Deterministic and dependency-light |
 | Compiler | Own reference compiler: normalise → layout → route → translate → optimise → schedule | The pipeline is the subject, so it must be inspectable |
 | Simulation | Own statevector engine with noise channels, in a Web Worker | Keeps the main thread free for rendering |
 | Trace format | QSimCity Trace: versioned, hashed, migratable | The single source every surface renders from |
 | Cross-validation | Optional Python bridge to Qiskit and Qiskit Aer | Independent check that the science is right |
-| Testing | Vitest, Playwright (Chromium/Firefox/WebKit/mobile), mutation testing | 925 unit and 94 end-to-end tests |
+| Testing | Vitest, Playwright (Chromium/Firefox/WebKit/mobile), mutation testing | 942 unit and 94 end-to-end tests |
 
 ## Results and evidence
 
@@ -157,7 +157,7 @@ gate recomputes them and refuses prose as evidence.
 | Repeated 3D/2D mounting is safe | `release-evidence/remount/` — 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |
 | Ten-minute production soak | `release-evidence/soak/` |
 | Accessibility | Lighthouse accessibility 100 on four targets; axe WCAG 2.2 AA scans across surfaces |
-| Bundle budget | 153 KiB gzip initial JS against 320 KiB; 347 KiB total JS against 600 KiB |
+| Bundle budget | 158 KiB gzip initial JS against 320 KiB; 349 KiB total JS against 600 KiB |
 | Security | `pnpm audit` clean of high/critical; no committed secrets |
 | Builds from a clean clone | `release-evidence/fresh-clone/` — 16 steps |
 | Adversarial review | `docs/audits/wiser-adversarial-reviews.md` — **AI-assisted, not independent human validation** |

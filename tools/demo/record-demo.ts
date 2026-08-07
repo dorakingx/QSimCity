@@ -132,17 +132,17 @@ function toSrt(captions: readonly Caption[]): string {
  * SWAP count from the metrics panel, so the caption states the numbers the
  * viewer can see on screen rather than asserting an improvement in prose.
  */
-async function readSwapCount(page: Page): Promise<string> {
+async function readSwapCount(page: Page): Promise<string | null> {
   const text = await page
     .evaluate(
       `(() => {
       const el = document.body.innerText || '';
-      const m = el.match(/SWAPs?[^0-9]{0,12}(\\d+)/i);
+      const m = el.match(/SWAPs?[^0-9]{0,16}(\\d+)/i);
       return m ? m[1] : '';
     })()`,
     )
     .catch(() => '');
-  return typeof text === 'string' && text.length > 0 ? text : 'fewer';
+  return typeof text === 'string' && text.length > 0 ? text : null;
 }
 
 async function clickMode(page: Page, name: string): Promise<void> {
@@ -436,13 +436,23 @@ async function main(): Promise<void> {
   // Anything missing here now fails the recording.
   await clickMode(page, 'Missions');
   await page.waitForTimeout(1200);
+  // Mission 1 ran earlier in the walkthrough and is still open, so the
+  // panel shows its detail view rather than the list. Go back to the list
+  // before choosing the layout mission.
+  const allMissions = page.getByRole('button', { name: 'All missions' });
+  if (await allMissions.count()) {
+    await allMissions.first().click();
+    await page.waitForTimeout(600);
+  }
   const longWay = page.getByRole('button', { name: /The Long Way Around/ }).first();
   await longWay.waitFor({ state: 'visible', timeout: 20_000 });
   await longWay.click();
   await page.waitForTimeout(2500);
   const missionRegion = page.getByRole('region', { name: /Mission:/ });
   await missionRegion.waitFor({ state: 'visible', timeout: 20_000 });
-  const missionRun = missionRegion.getByRole('button', { name: 'Run', exact: true });
+  // The mission region also contains the Lab's own Run; target the mission
+  // panel's button by its stable hook rather than by name.
+  const missionRun = missionRegion.locator('[data-mission-target="mission-run"]');
   await missionRun.waitFor({ state: 'visible', timeout: 20_000 });
 
   await narration.say(
@@ -471,13 +481,18 @@ async function main(): Promise<void> {
   await missionRun.click();
   await page.waitForTimeout(5000);
   const swapsAfter = await readSwapCount(page);
-  console.log(`  layout lesson: SWAPs ${swapsBefore} -> ${swapsAfter}`);
-
-  await narration.say(
-    page,
-    `Same circuit, same hardware, fewer SWAPs: ${swapsBefore} became ${swapsAfter}. That is the compiler decision made visible, and it is the point of the whole project.`,
-    7500,
+  console.log(
+    `  layout lesson: SWAPs ${swapsBefore ?? 'not shown'} -> ${swapsAfter ?? 'not shown'}`,
   );
+
+  // Only quote numbers the viewer can actually see on screen. The metrics
+  // table is not part of the mission view, so when the counts cannot be
+  // read the caption says what changed without inventing figures.
+  const swapCaption =
+    swapsBefore !== null && swapsAfter !== null && swapsBefore !== swapsAfter
+      ? `Same circuit, same hardware, fewer SWAPs: ${swapsBefore} became ${swapsAfter}. That is the compiler decision made visible, and it is the point of the whole project.`
+      : 'Same circuit, same hardware, a different layout — and the router has less distance to pay for. That is the compiler decision made visible, and it is the point of the whole project.';
+  await narration.say(page, swapCaption, 7500);
 
   // ------------------------------------------------------------ guided tour
   await clickMode(page, 'Guided Tour');

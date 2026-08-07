@@ -1,11 +1,11 @@
 {
-  "commitSha": "37731184c85b9c093c6bad053abf53c350720daa",
-  "sourceTreeHash": "26f839c5d0065e26",
+  "commitSha": "f5ae236807fa170fe421928eb603c7eb7e7f8d70",
+  "sourceTreeHash": "2a50f16be5de64c3",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:45:48.809Z",
+  "generatedAt": "2026-08-07T04:00:29.575Z",
   "tool": "qsimcity-python-verify",
   "toolVersion": "uv 0.9.10 (44f5a14f4 2025-11-17)",
-  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-XURXqA/pytest.xml",
+  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-nWqPiD/pytest.xml",
   "exitStatus": 0,
   "inputHash": "dbe2f8e3c97544b8",
   "thresholds": {
@@ -54,15 +54,15 @@
         "id": "pyright",
         "command": "uv run pyright",
         "exitStatus": 0,
-        "durationSeconds": 1.9,
+        "durationSeconds": 1.8,
         "tail": "0 errors, 0 warnings, 0 informations\nWARNING: there is a new pyright version available (v1.1.407 -> v1.1.411).\nPlease install the new version or set PYRIGHT_PYTHON_FORCE_VERSION to `latest`"
       },
       {
         "id": "pytest",
-        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-XURXqA/pytest.xml",
+        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-nWqPiD/pytest.xml",
         "exitStatus": 0,
-        "durationSeconds": 4.2,
-        "tail": ".......................................................................  [100%]\n71 passed in 3.90s"
+        "durationSeconds": 3.9,
+        "tail": ".......................................................................  [100%]\n71 passed in 3.64s"
       }
     ]
   }

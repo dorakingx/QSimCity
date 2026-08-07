@@ -11,10 +11,10 @@ demo in person.
 | --- | --- |
 | Path | `release-evidence/demo/qsimcity-demo.mp4` |
 | Captions (sidecar) | `release-evidence/demo/qsimcity-demo.srt` |
-| Duration | 5 minutes 12 seconds |
+| Duration | 5 minutes 17 seconds (316.6 s) |
 | Resolution | 1920 x 1080 (H.264, yuv420p, faststart) |
-| Size | 21,705,781 bytes (about 20.7 MiB) |
-| SHA-256 | `e431ebf0d8eb1fbd6a749117c38914803e7046e4522241830ce6eb8393494466` |
+| Size | 23,463,570 bytes (about 22.4 MiB) |
+| SHA-256 | `7737ec90bbfadddd804c6acb9eac2decea379cae786a0602755f1a58d5298679` |
 | Audio | None — the narration is on-screen captions |
 | Language | English |
 | Uploaded | **No.** No public video URL exists |

@@ -1,11 +1,5 @@
 {
   "consoleErrors": [],
-  "uncaught": [
-    {
-      "elapsedSeconds": 119.73,
-      "type": "workload-error",
-      "text": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.tour-overlay').getByRole('button', { name: 'Next →' })\n    - locator resolved to <button disabled type=\"button\" class=\"primary\">Next →</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n      - waiting 100ms\n    58 × waiting for element to be visible, enabled and stable\n       - element is not enabled\n     - retrying click action\n       - waiting 500ms\n"
-    }
-  ],
+  "uncaught": [],
   "failedRequests": []
 }

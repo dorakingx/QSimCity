@@ -119,9 +119,9 @@ verdicts and refuses prose as evidence.
 | Repeated 3D/2D mounting is safe | 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |
 | Ten-minute production soak | zero uncaught errors, zero console errors |
 | Accessibility | Lighthouse 100 on four targets; axe WCAG 2.2 AA |
-| Bundle budget | 153 KiB gzip initial JS against 320 KiB; 347 KiB total JS against 600 KiB |
+| Bundle budget | 158 KiB gzip initial JS against 320 KiB; 349 KiB total JS against 600 KiB |
 | Builds from a clean clone | 16 verified steps |
-| Tests | 925 unit, 94 end-to-end across four browser projects |
+| Tests | 942 unit, 94 end-to-end across four browser projects |
 
 **No learning outcomes are claimed** — see
 [docs/LEARNING_EVALUATION.md](docs/LEARNING_EVALUATION.md).
