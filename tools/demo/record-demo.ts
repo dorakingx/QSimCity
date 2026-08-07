@@ -128,19 +128,19 @@ function toSrt(captions: readonly Caption[]): string {
     .join('\n');
 }
 
-
-
 /**
  * SWAP count from the metrics panel, so the caption states the numbers the
  * viewer can see on screen rather than asserting an improvement in prose.
  */
 async function readSwapCount(page: Page): Promise<string> {
   const text = await page
-    .evaluate(`(() => {
+    .evaluate(
+      `(() => {
       const el = document.body.innerText || '';
       const m = el.match(/SWAPs?[^0-9]{0,12}(\\d+)/i);
       return m ? m[1] : '';
-    })()`)
+    })()`,
+    )
     .catch(() => '');
   return typeof text === 'string' && text.length > 0 ? text : 'fewer';
 }

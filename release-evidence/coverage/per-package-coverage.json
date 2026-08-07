@@ -1,8 +1,8 @@
 {
-  "commitSha": "d746ca15b2d454c225f55b184769386066c9fb2c",
-  "sourceTreeHash": "fd24219e95946548",
+  "commitSha": "e4668e40df262a578288c13fc3bb56159c28eaca",
+  "sourceTreeHash": "bcee31c933b5288a",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:00:34.506Z",
+  "generatedAt": "2026-08-07T03:06:01.876Z",
   "tool": "vitest-v8-coverage",
   "toolVersion": "4.1.10",
   "command": "pnpm coverage:check",
