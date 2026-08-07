@@ -36,7 +36,7 @@
     "benchmark:visual": "tsx tools/visual-benchmark/record-benchmark.ts",
     "security:audit": "tsx tools/security/run-security-audit.ts",
     "repro:check": "tsx --tsconfig tsconfig.typecheck.json tools/trace-reproducibility/run-reproducibility.ts",
-    "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm python:verify && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm verify:fresh-clone && pnpm remount:check && pnpm soak",
+    "evidence:all": "pnpm coverage:check && pnpm test:mutation && pnpm python:verify && pnpm security:audit && pnpm repro:check && pnpm check:perf && pnpm lighthouse && pnpm benchmark:visual && pnpm wiser:fps && pnpm wiser:screens && pnpm wiser:reviews && pnpm verify:fresh-clone && pnpm remount:check && pnpm soak",
     "verify:fresh-clone": "tsx tools/fresh-clone/run-fresh-clone.ts",
     "python:verify": "tsx tools/python/run-python-verify.ts",
     "wiser:fps": "tsx tools/wiser/run-fps-benchmark.ts",

@@ -60,6 +60,13 @@ interface ConsoleEvent {
 const IGNORED_CONSOLE = ['favicon', 'Download the React DevTools'];
 
 async function readHeap(page: Page): Promise<{ used: number; total: number } | null> {
+  // Force collection first. Without it the "floor GC returns to" is
+  // inferred from an unforced minimum, which is dominated by GC phase
+  // rather than by trend — the browser is launched with --expose-gc
+  // precisely so this does not have to be guessed at.
+  await page.evaluate('window.gc && window.gc()');
+  await page.waitForTimeout(150);
+  await page.evaluate('window.gc && window.gc()');
   return page.evaluate(() => {
     const perf = performance as Performance & {
       memory?: { usedJSHeapSize: number; totalJSHeapSize: number };
@@ -167,7 +174,18 @@ async function main(): Promise<void> {
   const baseUrl = `http://localhost:${port}`;
 
   const browser = await chromium.launch({
-    args: ['--js-flags=--expose-gc', '--enable-precise-memory-info'],
+    // The same GPU flags every other measurement tool in this repository
+    // passes. Without them Chromium renders WebGL through SwiftShader: the
+    // soak page then runs at about 3 fps in software, which is not what any
+    // user experiences and which dominated both the frame budget and the
+    // driver-observed interaction time.
+    args: [
+      '--enable-gpu',
+      '--ignore-gpu-blocklist',
+      '--enable-webgl',
+      '--js-flags=--expose-gc',
+      '--enable-precise-memory-info',
+    ],
   });
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await context.newPage();
@@ -234,6 +252,19 @@ async function main(): Promise<void> {
 
   while (elapsed() < durationSeconds && !crashed) {
     cycle++;
+    // Sample before and after each workload cycle. One reading per cycle
+    // gave nine samples over eleven minutes, so the quarter windows below
+    // were two samples wide each and the "growth ratio" was dominated by
+    // which two happened to land there.
+    const preHeap = await readHeap(page);
+    if (preHeap) {
+      heapSamples.push({
+        elapsedSeconds: Number(elapsed().toFixed(1)),
+        usedJsHeapBytes: preHeap.used,
+        totalJsHeapBytes: preHeap.total,
+        cycle,
+      });
+    }
     try {
       await runCycle(page, cycle);
     } catch (e) {
@@ -355,6 +386,22 @@ async function main(): Promise<void> {
   const baselineMin = minOf(baselineWindow);
   const trailingMin = minOf(trailingWindow);
   const growthRatio = baselineMin > 0 ? trailingMin / baselineMin : 1;
+  // Slope of the post-GC heap against elapsed time. A ratio between two
+  // windows depends on how long the run happens to be; a slope does not,
+  // and it is what separates a bounded steady state from a leak.
+  const heapSlopeBytesPerMinute = (() => {
+    const n = analysisSamples.length;
+    if (n < 4) return 0;
+    const meanX = analysisSamples.reduce((a, s) => a + s.elapsedSeconds, 0) / n;
+    const meanY = analysisSamples.reduce((a, s) => a + s.usedJsHeapBytes, 0) / n;
+    let num = 0;
+    let den = 0;
+    for (const sample of analysisSamples) {
+      num += (sample.elapsedSeconds - meanX) * (sample.usedJsHeapBytes - meanY);
+      den += (sample.elapsedSeconds - meanX) ** 2;
+    }
+    return den === 0 ? 0 : Math.round((num / den) * 60);
+  })();
 
   const unrecoveredContextLoss = Math.max(0, contextLossEvents - contextRestoreEvents);
   const totalUncaught = uncaught.length;
@@ -402,6 +449,7 @@ async function main(): Promise<void> {
       durationSeconds: Number(actualDuration.toFixed(1)),
       cycles: cycle,
       heapSampleCount: heapSamples.length,
+      heapSlopeBytesPerMinute,
       baselineMinHeapBytes: baselineMin,
       trailingMinHeapBytes: trailingMin,
       trailingMinGrowthRatio: Number(growthRatio.toFixed(4)),

@@ -460,20 +460,30 @@ check('Remount safety evidence (fixed-count 3D/2D cycles)', () => {
       'heapGrowthRatio',
       'heapGrowthBytes',
       'worstMountLatencyMs',
-      'leakedWebglContexts',
+      'heapSlopeBytesPerCycle',
+      'peakLiveWebglContexts',
       'consoleErrors',
     ],
     ...evidenceOptions,
   });
   const m = evidence.measurements;
   const cycles = Number(m['cyclesCompleted']);
-  if (cycles < 25) throw new Error(`only ${cycles} remount cycles; 25 are required`);
-  if (Number(m['leakedWebglContexts']) > 0) throw new Error('WebGL contexts accumulated');
+  // 60, not 25: the run length was itself deciding the verdict. At 25
+  // cycles this gate passed at ratio 1.183 while the same experiment at 60
+  // failed at 1.443, with post-GC heap rising on every single transition.
+  if (cycles < 60) throw new Error(`only ${cycles} remount cycles; 60 are required`);
+  const slope = Number(m['heapSlopeBytesPerCycle']);
+  if (slope > 160 * 1024)
+    throw new Error(`post-GC heap rising ${(slope / 1024).toFixed(1)} KiB per cycle`);
+  if (Number(m['peakLiveWebglContexts']) > 4)
+    throw new Error(`${m['peakLiveWebglContexts']} live WebGL contexts accumulated`);
   if (Number(m['consoleErrors']) > 0) throw new Error(`${m['consoleErrors']} console errors`);
   return (
-    `${cycles} cycles, heap growth ratio ${m['heapGrowthRatio']} ` +
+    `${cycles} cycles, heap slope ${(slope / 1024).toFixed(1)} KiB/cycle, ` +
+    `growth ratio ${m['heapGrowthRatio']} ` +
     `(${(Number(m['heapGrowthBytes']) / 1048576).toFixed(1)} MiB), ` +
-    `worst in-page mount ${m['worstMountLatencyMs']}ms, no context leak`
+    `worst in-page mount ${m['worstMountLatencyMs']}ms, ` +
+    `peak live WebGL contexts ${m['peakLiveWebglContexts']}`
   );
 });
 
@@ -483,7 +493,15 @@ check('Performance budget evidence', () => {
     ...evidenceOptions,
   });
   const m = evidence.measurements;
-  return `initial JS ${(Number(m['initialJsGzipBytes']) / 1024).toFixed(1)} KiB gzip`;
+  const t = evidence.thresholds as Record<string, unknown>;
+  // Both figures with their own budgets: quoting the initial-load number
+  // against the total-JS budget roughly doubled the apparent headroom.
+  return (
+    `initial JS ${(Number(m['initialJsGzipBytes']) / 1024).toFixed(1)} KiB gzip ` +
+    `of ${(Number(t['initialJsGzipBytes']) / 1024).toFixed(0)} KiB, ` +
+    `total JS ${(Number(m['totalJsGzipBytes']) / 1024).toFixed(1)} KiB ` +
+    `of ${(Number(t['totalJsGzipBytes']) / 1024).toFixed(0)} KiB`
+  );
 });
 
 check('Security audit evidence', () => {
@@ -566,15 +584,31 @@ check('Sample traces validate and match committed hashes', () =>
 // ------------------------------------------------------ WISER real city
 
 check('WISER frame-rate evidence', () => {
+  // The key is `mobileEmulatedMedianFps`, not `mobileMedianFps`: the name
+  // carries the emulation caveat with the number so it cannot be quoted as
+  // a real-device figure. This check asked for the shorter name the tool
+  // never writes, so it could not pass with the evidence the tool produces.
   const evidence = readEvidence(join(ROOT, 'release-evidence', 'wiser-fps', 'fps-report.json'), {
-    requiredMeasurements: ['desktopMedianFps', 'mobileMedianFps'],
+    requiredMeasurements: [
+      'desktopMedianFps',
+      'mobileEmulatedMedianFps',
+      'uncappedDesktopMedianFps',
+    ],
     ...evidenceOptions,
   });
   const desktop = Number(evidence.measurements['desktopMedianFps']);
-  const mobile = Number(evidence.measurements['mobileMedianFps']);
-  if (desktop < 50) throw new Error(`desktop median ${desktop} fps below 50`);
-  if (mobile < 30) throw new Error(`mobile median ${mobile} fps below 30`);
-  return `desktop ${desktop} fps, mobile ${mobile} fps`;
+  const mobile = Number(evidence.measurements['mobileEmulatedMedianFps']);
+  const uncapped = Number(evidence.measurements['uncappedDesktopMedianFps']);
+  // The capped figures are floors on a display-limited measurement; the
+  // uncapped pass is the one with discriminating power, so it is checked
+  // too rather than merely recorded.
+  if (!Number.isFinite(desktop) || desktop < 50)
+    throw new Error(`desktop median ${desktop} fps below 50`);
+  if (!Number.isFinite(mobile) || mobile < 30)
+    throw new Error(`emulated mobile median ${mobile} fps below 30`);
+  if (!Number.isFinite(uncapped) || uncapped < 120)
+    throw new Error(`uncapped desktop median ${uncapped} fps below 120`);
+  return `desktop ${desktop} fps and emulated mobile ${mobile} fps (both display-capped floors), uncapped ceiling ${uncapped} fps`;
 });
 
 check('WISER screenshot evidence', () => {

@@ -34,6 +34,21 @@ import {
 import { buildSky, sunDirection, type SkyRig, type TimeOfDay } from './sky.js';
 import { buildVehicles, type VehicleFleet } from './vehicles.js';
 import { CameraRig, type CameraMode } from './cameras.js';
+import { disposeTextureCaches } from './textures.js';
+
+/**
+ * Engines alive right now. The procedural facade and road textures are
+ * cached at module scope and shared between engines, which is the right
+ * trade while one exists — but a shared texture that outlives a renderer
+ * keeps that renderer's internal WeakMap entry alive, and through it the
+ * GPU texture, the WebGL context, and the detached canvas. A heap snapshot
+ * after four 3D/2D cycles showed exactly that chain, four canvases deep.
+ *
+ * So the caches are released when the last engine goes, and rebuilt on the
+ * next mount (they are procedural: a few milliseconds of pixel generation,
+ * against ~90 KiB retained per remount forever).
+ */
+let liveEngines = 0;
 
 /**
  * The CityEngine renders the quantum city and animates it from
@@ -112,6 +127,7 @@ export class CityEngine {
   nearbyInteractiveId: string | null = null;
 
   constructor(options: EngineOptions) {
+    liveEngines += 1;
     this.canvas = options.canvas;
     this.onPick = options.onPick;
     this.timeOfDay = options.timeOfDay;
@@ -1073,12 +1089,49 @@ export class CityEngine {
       pulse.mesh.geometry.dispose();
       (pulse.mesh.material as THREE.Material).dispose();
     }
+    // Drop the scene graph and the renderer's per-frame lists as well as
+    // the GPU objects: dispose() releases buffers, but the object graph
+    // itself is what a stray retainer would hold on to.
+    this.renderer.renderLists.dispose();
+    this.scene.clear();
     this.renderer.dispose();
-    // Deliberately NOT forceContextLoss(): React StrictMode remounts reuse
-    // the same canvas, and a force-lost context cannot be recreated on it.
-    // Aborting the input listeners above already breaks the retention edge
-    // (canvas -> listener closure -> engine) that leaked disposed engines;
-    // the browser reclaims the context itself once the canvas is dropped.
+    liveEngines = Math.max(0, liveEngines - 1);
+    if (liveEngines === 0) disposeTextureCaches();
+    this.releaseContextWhenCanvasIsGone();
+  }
+
+  /**
+   * Give the WebGL context back, once it is certain the canvas is not
+   * coming back.
+   *
+   * `renderer.dispose()` releases the GPU objects but not the context
+   * itself, and the browser does not reclaim it promptly: a 60-cycle
+   * remount run measured the application's own live contexts climbing to
+   * 16 (Chrome's per-page limit, where it starts evicting the oldest) and
+   * post-GC heap rising on 51 of 51 settled cycles at ~90 KiB each.
+   * `forceContextLoss()` is the only way to hand one back.
+   *
+   * It cannot be called synchronously here. React runs effect cleanup
+   * before it detaches the DOM node, and a StrictMode remount deliberately
+   * reuses the same canvas — a force-lost context cannot be recreated on
+   * it, which is how an earlier attempt broke every development remount.
+   * Deferring the check to a macrotask lets React finish: if the canvas is
+   * still in the document by then it is being reused and the context must
+   * be left alone; if it has been detached, nothing will ever draw on it
+   * again and the context is ours to release.
+   */
+  private releaseContextWhenCanvasIsGone(): void {
+    const canvas = this.canvas;
+    const renderer = this.renderer;
+    setTimeout(() => {
+      if (canvas.isConnected) return;
+      try {
+        renderer.forceContextLoss();
+      } catch {
+        // Losing the context is a courtesy to the browser's context budget;
+        // a driver that refuses is not a failure worth propagating.
+      }
+    }, 0);
   }
 }
 

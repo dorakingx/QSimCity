@@ -35,6 +35,16 @@ import { hashString, writeEvidence } from '../evidence.js';
  *
  * Thresholds are fixed here, before any run, and are not relaxed to
  * accommodate an observed result.
+ *
+ * The gate scores the UNCAPPED pass. That is not a detail. Every capped
+ * segment on this host reads p50 8.3 ms / 120.5 fps, and so does a blank
+ * document measured through the same sampler — a criterion satisfied
+ * identically by an empty page cannot distinguish a 3D city from nothing,
+ * so scoring the capped figures was scoring the display. The capped
+ * desktop and mobile segments are still recorded and still carry floors
+ * (a capped pass that falls *below* its floor is a real regression), but
+ * the number with information in it is the vsync-disabled ceiling, and it
+ * is the one that decides the verdict.
  */
 
 const ROOT = new URL('../..', import.meta.url).pathname;
@@ -48,8 +58,22 @@ export const FPS_CRITERIA = {
   maxMobileP95Ms: 50,
   /** CPU slowdown applied to the emulated mobile pass. */
   mobileCpuThrottle: 4,
-  /** CPU slowdown applied to the supplementary stress pass. */
+  /**
+   * CPU slowdown applied to the stress pass. Run with vsync disabled, so
+   * main-thread cost is observable: at the display cap a 6x-throttled run
+   * reported p50 8.3 ms, identical to the unthrottled one, and therefore
+   * demonstrated the absence of the phenomenon it exists to show.
+   */
   stressCpuThrottle: 6,
+  /**
+   * Uncapped desktop throughput with vsync and the frame-rate limiter off.
+   * This is the criterion with discriminating power: it is the renderer's
+   * own ceiling, not the monitor's.
+   */
+  minUncappedDesktopMedianFps: 120,
+  maxUncappedDesktopP95Ms: 12,
+  /** Uncapped throughput under a 6x CPU slowdown. */
+  minStressedMedianFps: 30,
   /** Sampling seconds per segment. */
   segmentSeconds: 5,
   /** Frames discarded at the start of each segment (compile, upload). */
@@ -61,6 +85,13 @@ export const FPS_CRITERIA = {
 // Evaluate bodies are passed as strings: tsx adds an esbuild __name helper
 // to transpiled closures that does not exist inside the page context.
 const SAMPLER_SNIPPET = `(() => {
+  // Cancel any previous loop. Overwriting the handle without cancelling
+  // left one extra rAF loop running per segment, all pushing into the same
+  // array: segment N reported N times as many samples as it observed
+  // frames, so 'frames', the warm-up slice and every absolute count
+  // (longFrames, droppedFrames) were inflated by the segment index, and the
+  // aggregate weighted later segments several times more heavily.
+  if (window.__fpsHandle) cancelAnimationFrame(window.__fpsHandle);
   window.__fpsSamples = [];
   let last = performance.now();
   function loop() {
@@ -126,6 +157,8 @@ interface Distribution {
   readonly medianFps: number;
   readonly longFrames: number;
   readonly droppedFrames: number;
+  /** Samples removed as tab artifacts (>= 1 s), reported so the filter is visible. */
+  readonly discardedSamples: number;
 }
 
 interface SegmentResult extends Distribution {
@@ -143,13 +176,27 @@ function round(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
-/** Frames worth keeping: warm-up discarded, >1 s pauses are tab artifacts. */
-function cleanedFrameTimes(frameTimes: readonly number[]): number[] {
-  return frameTimes.slice(FPS_CRITERIA.warmupFrames).filter((t) => t > 0.1 && t < 1000);
+/**
+ * Frames worth keeping: warm-up discarded, and intervals over a second
+ * dropped as tab artifacts (a backgrounded or throttled tab stops issuing
+ * rAF entirely, which is not a rendering result). How many were dropped is
+ * reported, because a censoring rule whose firing you cannot see is not a
+ * defensible one in a tool whose thesis is that a single median hides the
+ * stutter a learner notices.
+ */
+const TAB_ARTIFACT_MS = 1000;
+
+function cleanedFrameTimes(frameTimes: readonly number[]): {
+  kept: number[];
+  discarded: number;
+} {
+  const afterWarmup = frameTimes.slice(FPS_CRITERIA.warmupFrames);
+  const kept = afterWarmup.filter((t) => t > 0.1 && t < TAB_ARTIFACT_MS);
+  return { kept, discarded: afterWarmup.length - kept.length };
 }
 
 function describe(frameTimes: readonly number[], refreshMs: number): Distribution {
-  const cleaned = cleanedFrameTimes(frameTimes);
+  const { kept: cleaned, discarded } = cleanedFrameTimes(frameTimes);
   if (cleaned.length === 0) {
     return {
       frames: 0,
@@ -160,6 +207,7 @@ function describe(frameTimes: readonly number[], refreshMs: number): Distributio
       medianFps: 0,
       longFrames: 0,
       droppedFrames: 0,
+      discardedSamples: discarded,
     };
   }
   const sorted = [...cleaned].sort((a, b) => a - b);
@@ -174,11 +222,18 @@ function describe(frameTimes: readonly number[], refreshMs: number): Distributio
     longFrames: cleaned.filter((t) => t > FPS_CRITERIA.longFrameMs).length,
     // A frame that took more than two display intervals dropped at least one.
     droppedFrames: cleaned.filter((t) => t > refreshMs * 2).length,
+    discardedSamples: discarded,
   };
 }
 
 async function startSampler(page: Page): Promise<void> {
   await page.evaluate(SAMPLER_SNIPPET);
+}
+
+async function stopSampler(page: Page): Promise<void> {
+  await page.evaluate(
+    `(() => { if (window.__fpsHandle) { cancelAnimationFrame(window.__fpsHandle); window.__fpsHandle = 0; } })()`,
+  );
 }
 
 async function readSamples(page: Page): Promise<number[]> {
@@ -238,6 +293,7 @@ async function sampleSegment(
   await restartReplay(page);
   await startSampler(page);
   await drive();
+  await stopSampler(page);
   const raw = await readSamples(page);
   const distribution = describe(raw, refreshMs);
   return {
@@ -336,21 +392,6 @@ async function main(): Promise<void> {
     desktopDrawCalls = stats.drawCalls;
     desktopTriangles = stats.triangles;
 
-    // -------------------------- supplementary: 6x CPU throttle, desktop
-    const stressSession = await desktop.newCDPSession(desktopPage);
-    await stressSession.send('Emulation.setCPUThrottlingRate', {
-      rate: FPS_CRITERIA.stressCpuThrottle,
-    });
-    const stress = await sampleSegment(
-      desktopPage,
-      `desktop-cpu-throttled-${FPS_CRITERIA.stressCpuThrottle}x`,
-      refreshMs,
-      async () => {
-        await desktopPage.waitForTimeout(FPS_CRITERIA.segmentSeconds * 1000);
-      },
-    );
-    stressSegments.push(stress.segment);
-    await stressSession.send('Emulation.setCPUThrottlingRate', { rate: 1 });
     await desktop.close();
 
     // ------------------------------- emulated mobile: NOT a real device
@@ -429,6 +470,26 @@ async function main(): Promise<void> {
         true,
       );
       uncappedSegments.push(result.segment);
+
+      // The stress pass belongs here, not on the vsync-capped browser: at
+      // the display cap a 6x-throttled run reported the same p50 as an
+      // unthrottled one, so it demonstrated nothing. With vsync off, the
+      // main thread's cost is what the frame time is made of.
+      const stressSession = await uncappedContext.newCDPSession(uncappedPage);
+      await stressSession.send('Emulation.setCPUThrottlingRate', {
+        rate: FPS_CRITERIA.stressCpuThrottle,
+      });
+      const stress = await sampleSegment(
+        uncappedPage,
+        `desktop-cpu-throttled-${FPS_CRITERIA.stressCpuThrottle}x-vsync-disabled`,
+        refreshMs,
+        async () => {
+          await uncappedPage.waitForTimeout(FPS_CRITERIA.segmentSeconds * 1000);
+        },
+        true,
+      );
+      stressSegments.push(stress.segment);
+      await stressSession.send('Emulation.setCPUThrottlingRate', { rate: 1 });
     } finally {
       await uncapped.close();
     }
@@ -439,7 +500,19 @@ async function main(): Promise<void> {
 
   const desktop = describe(desktopRaw.flat(), refreshMs);
   const mobile = describe(mobileRaw.flat(), refreshMs);
+  const uncappedDesktop = uncappedSegments[0];
+  const stressed = stressSegments[0];
   const passed =
+    // The criteria with discriminating power: the renderer's own ceiling
+    // with vsync off, and its behaviour with the main thread starved.
+    uncappedDesktop !== undefined &&
+    uncappedDesktop.medianFps >= FPS_CRITERIA.minUncappedDesktopMedianFps &&
+    uncappedDesktop.p95Ms <= FPS_CRITERIA.maxUncappedDesktopP95Ms &&
+    stressed !== undefined &&
+    stressed.medianFps >= FPS_CRITERIA.minStressedMedianFps &&
+    // Floors on the capped passes. These cannot prove headroom — a blank
+    // page satisfies them identically — but a capped pass that falls below
+    // its own display cap is a genuine regression, so they stay.
     desktop.medianFps >= FPS_CRITERIA.minDesktopMedianFps &&
     mobile.medianFps >= FPS_CRITERIA.minMobileMedianFps &&
     desktop.p95Ms <= FPS_CRITERIA.maxDesktopP95Ms &&
@@ -450,7 +523,7 @@ async function main(): Promise<void> {
 
   writeEvidence(join(OUT_DIR, 'fps-report.json'), {
     tool: 'wiser-fps-benchmark',
-    toolVersion: '3.0.0',
+    toolVersion: '4.0.0',
     command: 'pnpm wiser:fps',
     exitStatus: passed ? 0 : 1,
     inputHash: hashString(JSON.stringify(FPS_CRITERIA)),
@@ -459,6 +532,9 @@ async function main(): Promise<void> {
       minMobileMedianFps: FPS_CRITERIA.minMobileMedianFps,
       maxDesktopP95Ms: FPS_CRITERIA.maxDesktopP95Ms,
       maxMobileP95Ms: FPS_CRITERIA.maxMobileP95Ms,
+      minUncappedDesktopMedianFps: FPS_CRITERIA.minUncappedDesktopMedianFps,
+      maxUncappedDesktopP95Ms: FPS_CRITERIA.maxUncappedDesktopP95Ms,
+      minStressedMedianFps: FPS_CRITERIA.minStressedMedianFps,
     },
     measurements: {
       desktopMedianFps: desktop.medianFps,

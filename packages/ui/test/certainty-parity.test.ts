@@ -69,7 +69,7 @@ describe('emitted certainty matches the City Legend', () => {
  */
 describe('logical residency before the layout stage', () => {
   it('has no assignment at all until layout.assigned fires', async () => {
-    const { trace } = await runPipeline({ ...BASE, noise: null, layoutMethod: 'dense' });
+    const { trace } = await runPipeline({ ...BASE, noise: null, layoutMethod: 'interaction' });
     const assignedAt = trace.events.find((e) => e.eventType === 'layout.assigned')?.logicalTick;
     expect(assignedAt, 'the pipeline must record a layout decision').toBeTypeOf('number');
     for (let tick = 0; tick < assignedAt!; tick += 1) {
