@@ -81,7 +81,11 @@ test.describe('transient status messages', () => {
     });
 
     expect(geometry, 'toast and replay toolbar must both be present').not.toBeNull();
-    expect(geometry!.text).toContain('geometry check');
+    // Any live status message will do. Asserting on *which* message lost a
+    // race on CI: the service worker's "ready to work offline" notice can
+    // land between showing this one and measuring it, and the geometry
+    // contract under test is a property of the region, not of its text.
+    expect(geometry!.text.trim().length, 'a status message must be showing').toBeGreaterThan(0);
     // The soak caught this as a 30-second click failure: the toast sat on
     // top of the timeline dock and swallowed presses on Play and Step. A
     // status message must never block the thing it reports on.
