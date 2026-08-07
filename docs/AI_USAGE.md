@@ -100,8 +100,23 @@ measurement or adversarial review, not by inspection:
   Space no longer activating focused buttons, single-key shortcuts with no
   off switch, and the operating system's reduced-motion preference being
   ignored by the 3D city — all under a clean axe and Lighthouse 100.
+- A **local gate reporting 33 of 33 green while the public CI checks were
+  red**. The two disagreed because the gate had never been run where the
+  checks run: `semanticHash` included the Python patch version, and the
+  E2E suite assumed a GPU that `ubuntu-latest` does not have.
+- The **product teaching the exact misconception it claims to design
+  against** — "SWAP cars shuttle quantum information between platforms",
+  shipped in the Inspector at every explanation level — while the test
+  cited as enforcing that rule inspected three hand-listed fields.
+- A **"frozen" scene that was not frozen**: cloud drift accumulated real
+  elapsed time, so two CI runs of the same commit produced different
+  frames. Found only because the gate re-runs the suite instead of reading
+  a stored result.
+- A **spec that silently opted out of its own test fixture** because a
+  refactor matched one import spelling and missed another, so it ran the
+  3D city on a GPU-less runner for four rounds of misdiagnosed failures.
 
-Two patterns worth naming. The first: in every case the *prose* was
+Three patterns worth naming. The first: in every case the *prose* was
 confident and the *measurement* was not. The second is subtler and shows
 up repeatedly above — AI-written *tests and gates* tend to be written so
 that they pass. A probe that cannot fail, a threshold checked against a
@@ -111,6 +126,14 @@ and none of them is visible from reading the output. Every one was found
 by an adversarial pass that re-ran the tool with one parameter changed.
 That is the reason this project gates on evidence, and the reason the
 gates themselves have to be attacked.
+
+The third is about diagnosis rather than construction. Several of the
+defects above were misdiagnosed two or three times before being fixed,
+and in every one of those cases the answer was already sitting in evidence
+that had not been opened — a Playwright trace in the CI artifact, a
+top-down view of the scene, the semantics of a command-line flag. Guessing
+was consistently slower than looking, and the record of this work contains
+more wrong first theories than it should.
 
 ## Originality
 

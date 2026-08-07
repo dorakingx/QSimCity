@@ -125,7 +125,7 @@ verdicts and refuses prose as evidence.
 | Accessibility | Lighthouse 100 on four targets; axe WCAG 2.2 AA |
 | Bundle budget | 158 KiB gzip initial JS against 320 KiB; 349 KiB total JS against 600 KiB |
 | Builds from a clean clone | 16 verified steps |
-| Tests | 942 unit, 94 end-to-end across four browser projects |
+| Tests | 952 unit, 105 end-to-end across six Playwright projects — four functional (Chromium, Firefox, WebKit, mobile, all WebGL-free) and two dedicated 3D projects that run serially |
 
 **No learning outcomes are claimed** — see
 [docs/LEARNING_EVALUATION.md](docs/LEARNING_EVALUATION.md).

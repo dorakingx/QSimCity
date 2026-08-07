@@ -152,7 +152,7 @@ watch it happen again.
 | Simulation | Own statevector engine with noise channels, in a Web Worker | Keeps the main thread free for rendering |
 | Trace format | QSimCity Trace: versioned, hashed, migratable | The single source every surface renders from |
 | Cross-validation | Optional Python bridge to Qiskit and Qiskit Aer | Independent check that the science is right |
-| Testing | Vitest, Playwright (Chromium/Firefox/WebKit/mobile), mutation testing | 942 unit and 94 end-to-end tests |
+| Testing | Vitest, Playwright (four functional projects plus two serial 3D projects), mutation testing | 952 unit and 105 end-to-end tests |
 
 ## Results and evidence
 
