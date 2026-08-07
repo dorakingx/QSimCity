@@ -1042,9 +1042,15 @@ figure {
 }
 
 /* Toast */
+/* Sits clear of the timeline dock and never intercepts a click. A run now
+   announces itself here on every run, and at the old bottom: 1rem it landed
+   squarely on top of the replay controls: the soak caught it failing to
+   press Step for 30 s because the toast was swallowing the click. A status
+   message must not be able to block the thing it is reporting on. */
 .toast {
   position: fixed;
-  bottom: 1rem;
+  bottom: 5.5rem;
+  pointer-events: none;
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg-panel);
@@ -1802,6 +1808,10 @@ button[aria-disabled='true'] {
 
 /* The status live region is mounted for the whole session; when idle it must
    occupy no space and take no clicks. */
+.toast button {
+  pointer-events: auto;
+}
+
 .toast-idle {
   position: absolute;
   width: 1px;

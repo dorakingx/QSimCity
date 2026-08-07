@@ -1,27 +1,27 @@
 {
-  "commitSha": "5383bcf35ff392c0b9ce4c7d63cf72e93315bdad",
-  "sourceTreeHash": "bd1608102ba197c5",
+  "commitSha": "0605d6f32cdb5bb1b4d65ad9d419838fc6f3b8b6",
+  "sourceTreeHash": "914699c3422de069",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T03:20:38.748Z",
+  "generatedAt": "2026-08-07T03:31:19.228Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
   "exitStatus": 0,
-  "inputHash": "3b251ccb0d62bac3",
+  "inputHash": "3c9321cfd3cbf65a",
   "thresholds": {
     "initialJsGzipBytes": 327680,
     "totalJsGzipBytes": 614400
   },
   "measurements": {
-    "initialJsGzipBytes": 162056,
-    "totalJsGzipBytes": 357685,
+    "initialJsGzipBytes": 162070,
+    "totalJsGzipBytes": 357699,
     "eagerChunks": 4,
     "lazyChunks": 4
   },
   "passed": true,
   "detail": {
-    "initialJsGzipBytes": 162056,
-    "totalJsGzipBytes": 357685,
+    "initialJsGzipBytes": 162070,
+    "totalJsGzipBytes": 357699,
     "budgetGzipBytes": 327680,
     "totalBudgetGzipBytes": 614400,
     "lazyChunks": [
@@ -52,8 +52,8 @@
         "gzipBytes": 58352
       },
       {
-        "name": "index-LEER0pho.js",
-        "gzipBytes": 44375
+        "name": "index-DPB0exG9.js",
+        "gzipBytes": 44389
       },
       {
         "name": "rolldown-runtime-Bh1tDfsg.js",
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-07T03:20:38.707Z"
+    "generatedAt": "2026-08-07T03:31:19.186Z"
   }
 }

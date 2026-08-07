@@ -1,5 +1,11 @@
 {
   "consoleErrors": [],
-  "uncaught": [],
+  "uncaught": [
+    {
+      "elapsedSeconds": 58.63,
+      "type": "workload-error",
+      "text": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: 'Step forward one tick' })\n    - locator resolved to <button type=\"button\" aria-disabled=\"false\" aria-label=\"Step forward one tick\">Step ▶</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    9 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"toast\" role=\"status\" aria-live=\"polite\" aria-atomic=\"true\">…</div> intercepts pointer events\n    - retrying click action\n      - waiting 500ms\n    49 × waiting for element to be visible, enabled and stable\n       - element is not enabled\n     - retrying click action\n       - waiting 500ms\n"
+    }
+  ],
   "failedRequests": []
 }

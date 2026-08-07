@@ -91,7 +91,14 @@ async function runCycle(page: Page, cycle: number): Promise<void> {
   await page.getByRole('button', { name: 'Pause replay' }).click();
   const scrubber = page.locator('.timeline-scrubber input').first();
   await scrubber.fill('3');
-  await page.getByRole('button', { name: 'Step forward one tick' }).click();
+  // The step buttons are aria-disabled at the ends of the timeline rather
+  // than `disabled`, so a keyboard user is not blurred to document.body
+  // when they reach a boundary. Playwright treats aria-disabled as not
+  // actionable, so only click when the control can actually do something.
+  const stepForward = page.getByRole('button', { name: 'Step forward one tick' });
+  if ((await stepForward.getAttribute('aria-disabled')) !== 'true') {
+    await stepForward.click();
+  }
   await page.locator('.timeline-speed select').first().selectOption('2');
   await page.getByRole('button', { name: 'Play replay' }).click();
   await page.waitForTimeout(400);

@@ -133,8 +133,12 @@ export class CameraRig {
           const length = Math.sqrt(lengthSq);
           const ux = dx / Math.max(1e-6, length);
           const uz = dz / Math.max(1e-6, length);
-          // Stand in the right-hand driving lane, not on the median.
-          const laneOffset = segment.width / 4 + segment.median / 2;
+          // Stand on the pavement, not in the carriageway. Spawning in the
+          // driving lane put the walker inside a moving ambient car often
+          // enough to be reproducible — the view filled with the inside of
+          // a car body — and a pedestrian viewpoint is also the one that
+          // shows the street working.
+          const laneOffset = segment.width / 2 + segment.sidewalk / 2;
           const px = ax + dx * t + uz * laneOffset;
           const pz = az + dz * t - ux * laneOffset;
           const d = Math.hypot(px - this.target.x, pz - this.target.z);
