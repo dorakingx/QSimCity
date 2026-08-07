@@ -32,6 +32,8 @@ export interface TestHooks {
   clearToast(): void;
   /** Stops any further transient message from appearing. */
   suppressToasts(): void;
+  /** Shows a status message on demand, for testing the region itself. */
+  showToast(message: string): void;
   /** Pins the replay to a tick and stops playback. */
   setTick(tick: number): void;
 }
@@ -92,6 +94,7 @@ export function publishEngineForTests(instance: EngineLike | null): void {
 export function installTestHooks(actions: {
   clearToast: () => void;
   suppressToasts: () => void;
+  showToast: (message: string) => void;
   setTick: (tick: number) => void;
   pause: () => void;
 }): void {
@@ -105,6 +108,7 @@ export function installTestHooks(actions: {
     renderFrame: () => engine?.renderFrame(),
     clearToast: () => actions.clearToast(),
     suppressToasts: () => actions.suppressToasts(),
+    showToast: (message: string) => actions.showToast(message),
     setTick: (tick: number) => {
       actions.pause();
       actions.setTick(tick);

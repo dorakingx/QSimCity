@@ -80,6 +80,7 @@ export function App(): ReactElement {
     installTestHooks({
       clearToast: () => useAppStore.getState().clearToast(),
       suppressToasts: () => useAppStore.getState().suppressToasts(),
+      showToast: (message: string) => useAppStore.getState().showToast(message),
       setTick: (tick) => useAppStore.getState().setTick(tick),
       pause: () => useAppStore.getState().pause(),
     });
