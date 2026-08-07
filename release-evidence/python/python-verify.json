@@ -1,11 +1,11 @@
 {
-  "commitSha": "3e97a9eb1c96b16094f74450e846bbb0c42cee4e",
-  "sourceTreeHash": "23049fcbe62fe585",
+  "commitSha": "088eab8daecfe12c795a087893e7bd85e0e0ba07",
+  "sourceTreeHash": "c64c696180c7e83f",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T10:54:56.669Z",
+  "generatedAt": "2026-08-07T11:37:21.687Z",
   "tool": "qsimcity-python-verify",
   "toolVersion": "uv 0.9.10 (44f5a14f4 2025-11-17)",
-  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-tUFsnm/pytest.xml",
+  "command": "uv sync --frozen && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-gwfdWr/pytest.xml",
   "exitStatus": 0,
   "inputHash": "dbe2f8e3c97544b8",
   "thresholds": {
@@ -54,15 +54,15 @@
         "id": "pyright",
         "command": "uv run pyright",
         "exitStatus": 0,
-        "durationSeconds": 2,
+        "durationSeconds": 1.9,
         "tail": "0 errors, 0 warnings, 0 informations\nWARNING: there is a new pyright version available (v1.1.407 -> v1.1.411).\nPlease install the new version or set PYRIGHT_PYTHON_FORCE_VERSION to `latest`"
       },
       {
         "id": "pytest",
-        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-tUFsnm/pytest.xml",
+        "command": "uv run pytest --junit-xml=/var/folders/wg/yck688tn1pn8cvxftb4_x19r0000gn/T/qsimcity-python-verify-gwfdWr/pytest.xml",
         "exitStatus": 0,
-        "durationSeconds": 4.3,
-        "tail": "........................................................................ [ 94%]\n....                                                                     [100%]\n76 passed in 4.01s"
+        "durationSeconds": 4.1,
+        "tail": "........................................................................ [ 94%]\n....                                                                     [100%]\n76 passed in 3.85s"
       }
     ]
   }

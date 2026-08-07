@@ -1,8 +1,8 @@
 {
-  "commitSha": "3e97a9eb1c96b16094f74450e846bbb0c42cee4e",
-  "sourceTreeHash": "23049fcbe62fe585",
+  "commitSha": "088eab8daecfe12c795a087893e7bd85e0e0ba07",
+  "sourceTreeHash": "c64c696180c7e83f",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-07T10:58:16.797Z",
+  "generatedAt": "2026-08-07T11:40:38.071Z",
   "tool": "wiser-reviews",
   "toolVersion": "1.0.0",
   "command": "pnpm wiser:reviews",
