@@ -172,10 +172,26 @@ export interface SkyRig {
   /** Extra cloud cover in [0,1] for noise weather. */
   setCloudCover(cover: number): void;
   update(dt: number, reducedMotion: boolean): void;
+  /**
+   * Place the clouds at an absolute drift phase, in seconds.
+   *
+   * `update` advances them by dt, so their position is a function of how
+   * long the page has been open — which made a "frozen" scene still differ
+   * between runs. A visual baseline captured on one CI runner then failed
+   * on the next by more than the comparison threshold. Freezing has to pin
+   * this too, and pinning needs an absolute reference rather than an
+   * accumulator.
+   */
+  setCloudPhase(seconds: number): void;
   dispose(): void;
 }
 
 const DOME_RADIUS = 2400;
+
+/** Per-cloud drift speed; shared by the accumulator and the phase setter. */
+function cloudSpeed(i: number): number {
+  return 2.2 + (i % 5) * 0.5;
+}
 
 export function buildSky(): SkyRig {
   const group = new THREE.Group();
@@ -228,6 +244,7 @@ export function buildSky(): SkyRig {
 
   // Cloud billboards drifting slowly across the city.
   const clouds: THREE.Sprite[] = [];
+  const cloudBaseX: number[] = [];
   const cloudTextures: THREE.DataTexture[] = [];
   for (let i = 0; i < 14; i++) {
     const pixels = cloudPixels(i);
@@ -244,8 +261,10 @@ export function buildSky(): SkyRig {
     });
     const sprite = new THREE.Sprite(material);
     const spread = 1500;
+    const baseX = ((hashString(`cloudpos:${i}:x`) & 0xffff) / 0xffff - 0.5) * spread * 2;
+    cloudBaseX.push(baseX);
     sprite.position.set(
-      ((hashString(`cloudpos:${i}:x`) & 0xffff) / 0xffff - 0.5) * spread * 2,
+      baseX,
       470 + ((hashString(`cloudpos:${i}:y`) & 0xffff) / 0xffff) * 220,
       ((hashString(`cloudpos:${i}:z`) & 0xffff) / 0xffff - 0.5) * spread * 1.4,
     );
@@ -308,8 +327,16 @@ export function buildSky(): SkyRig {
     update(dt: number, reducedMotion: boolean): void {
       if (reducedMotion) return;
       for (const [i, cloud] of clouds.entries()) {
-        cloud.position.x += dt * (2.2 + (i % 5) * 0.5);
+        cloud.position.x += dt * cloudSpeed(i);
         if (cloud.position.x > 1700) cloud.position.x = -1700;
+      }
+    },
+    setCloudPhase(seconds: number): void {
+      const span = 3400;
+      for (const [i, cloud] of clouds.entries()) {
+        const drifted = cloudBaseX[i]! + seconds * cloudSpeed(i);
+        // Wrap into the same [-1700, 1700) band `update` uses.
+        cloud.position.x = ((((drifted + 1700) % span) + span) % span) - 1700;
       }
     },
     dispose(): void {

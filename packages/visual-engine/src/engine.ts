@@ -941,6 +941,10 @@ export class CityEngine {
       this.tick(0.5, performance.now());
     }
     this.animTime = animTime;
+    // Clouds drift by accumulation, so their position otherwise depends on
+    // how long the page happened to be open before the freeze — enough to
+    // put two CI runs of the same commit past the screenshot threshold.
+    this.sky.setCloudPhase(animTime);
     this.renderFrame();
   }
 
