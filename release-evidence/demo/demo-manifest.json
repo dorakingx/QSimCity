@@ -1,16 +1,16 @@
 {
   "file": "release-evidence/demo/qsimcity-demo.mp4",
   "captions": "release-evidence/demo/qsimcity-demo.srt",
-  "sourceTreeHash": "2d85dcc67da479c1",
-  "commitSha": "d7609fc26d6c407d47ed59af22e20677fa8f9443",
-  "sha256": "2930cbf8773df3e5eacc432a8a28863740cad5a5a07ada373cbdd4db3f772eb5",
-  "bytes": 22317118,
-  "recordedDurationMs": 314892,
+  "sourceTreeHash": "67c5bcbcb3b144c0",
+  "commitSha": "e5180f4f2fa8e3debdf3086f1cb9ea38af5b03f6",
+  "sha256": "c222c20321ba473b8a77b699c2a5066437674917dce66153956a9fb8192b8e0c",
+  "bytes": 22440461,
+  "recordedDurationMs": 315003,
   "captionCount": 38,
   "probe": [
     "width=1920",
     "height=1080",
-    "duration=316.400000"
+    "duration=316.520000"
   ],
   "uploaded": false,
   "publicUrl": null,

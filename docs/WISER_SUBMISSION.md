@@ -173,9 +173,7 @@ claimed 71 pytest cases and a 158 KiB bundle after both had moved.
 - Ten-minute soak: 601.6s, 105 cycles, 0 console errors.
 - 60 3D/2D remount cycles leave 0 WebGL contexts behind.
 - 159.0 KiB gzip initial JS (350.2 KiB total).
-- Clean clone: 16 of 16 verification steps, 0 failed.
-
-Source tree `2d85dcc67da479c1`.
+- Clean clone: 3 of 3 verification steps, 1 failed.
 <!-- docs:sync end:evidence-list -->
 
 | Claim | Where the evidence lives |

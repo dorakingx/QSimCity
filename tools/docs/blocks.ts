@@ -18,6 +18,13 @@ import type { DocsFacts } from './facts.js';
  * Prose outside the markers stays hand-written on purpose. The goal is not
  * to generate the documentation — it is to stop the *claims* drifting away
  * from the measurements while the writing stays human.
+ *
+ * One value is deliberately absent from every block that lands in a
+ * tree-hashed file: the source-tree hash itself. Writing it into the README
+ * changes the README, which changes the tree, which changes the hash — a
+ * loop with no fixed point, where evidence and documentation could never
+ * both be current. It lives in `release-evidence/summary.md`, which sits
+ * outside the hashed tree and can name the tree freely.
  */
 
 export type BlockName = keyof typeof BLOCKS;
@@ -41,9 +48,11 @@ export const BLOCKS = {
       `| Initial JS | ${f.initialJsKib} KiB gzip (${f.totalJsKib} KiB total) |`,
       `| Clean-clone reproduction | ${f.freshCloneSteps} of ${f.freshCloneSteps} steps, ${f.freshCloneFailed} failed |`,
       '',
-      `Measured on source tree \`${f.sourceTreeHash}\`. Every row is bound to an`,
-      'evidence envelope under [`release-evidence/`](release-evidence/); `pnpm goal:check`',
-      'recomputes the verdicts and rejects any envelope whose tree hash no longer matches.',
+      'Every row is bound to an evidence envelope under',
+      '[`release-evidence/`](release-evidence/) that records the source tree it measured;',
+      '`pnpm goal:check` recomputes the verdicts and rejects any envelope whose tree hash',
+      'no longer matches. The tree itself is named in',
+      '[`release-evidence/summary.md`](release-evidence/summary.md).',
     ].join('\n'),
 
   /** The same numbers in prose form, for the WISER submission. */
@@ -58,8 +67,6 @@ export const BLOCKS = {
       `- ${f.remountCycles} 3D/2D remount cycles leave ${f.remountPeakContexts} WebGL contexts behind.`,
       `- ${f.initialJsKib} KiB gzip initial JS (${f.totalJsKib} KiB total).`,
       `- Clean clone: ${f.freshCloneSteps} of ${f.freshCloneSteps} verification steps, ${f.freshCloneFailed} failed.`,
-      '',
-      `Source tree \`${f.sourceTreeHash}\`.`,
     ].join('\n'),
 
   /** Demo video facts, including the checksum that must match the file. */
@@ -70,13 +77,12 @@ export const BLOCKS = {
       `- **File**: [\`release-evidence/demo/qsimcity-demo.mp4\`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, ${minutes} min ${seconds} s, no audio.`,
       `- **Captions**: ${f.demoCaptions}, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).`,
       `- **SHA-256**: \`${f.demoSha256}\``,
-      `- **Bound to** source tree \`${f.sourceTreeHash}\`; \`pnpm goal:check\` rejects the recording once the tree moves.`,
+      '- **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.',
     ].join('\n');
   },
 
   /** One-line version statement, canonical across the repository. */
-  'product-version': (f: DocsFacts): string =>
-    `QSimCity **v${f.productVersion}** · source tree \`${f.sourceTreeHash}\``,
+  'product-version': (f: DocsFacts): string => `QSimCity **v${f.productVersion}**`,
 } as const satisfies Record<string, (facts: DocsFacts) => string>;
 
 const START = (name: string): string => `<!-- docs:sync start:${name} -->`;
