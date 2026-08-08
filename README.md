@@ -115,7 +115,7 @@ The city is **a believable stylized city**, not a photorealistic one — and no 
 <!-- docs:sync start:evidence-table -->
 | What | Measured |
 | --- | --- |
-| Definition-of-Done gate | **33 passed, 0 failed** |
+| Definition-of-Done gate | every check passing — see [`goal-check.txt`](release-evidence/goal-check.txt) |
 | Tests | 957 unit and integration, 109 end-to-end |
 | Agreement with Qiskit Aer | 76 pytest against Qiskit 2.5.1 / Aer 0.17.2 |
 | Coverage | 96.11% lines, 85.40% branches |
@@ -186,7 +186,7 @@ Node 22.12+ (`.nvmrc` pins 22.23.1) and `pnpm`. Nothing else — no account, no 
 <!-- docs:sync start:demo-facts -->
 - **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, 5 min 15 s, no audio.
 - **Captions**: 38, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).
-- **SHA-256**: `2930cbf8773df3e5eacc432a8a28863740cad5a5a07ada373cbdd4db3f772eb5`
+- **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.
 - **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.
 <!-- docs:sync end:demo-facts -->
 

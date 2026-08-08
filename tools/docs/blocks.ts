@@ -19,12 +19,21 @@ import type { DocsFacts } from './facts.js';
  * to generate the documentation — it is to stop the *claims* drifting away
  * from the measurements while the writing stays human.
  *
- * One value is deliberately absent from every block that lands in a
- * tree-hashed file: the source-tree hash itself. Writing it into the README
- * changes the README, which changes the tree, which changes the hash — a
- * loop with no fixed point, where evidence and documentation could never
- * both be current. It lives in `release-evidence/summary.md`, which sits
- * outside the hashed tree and can name the tree freely.
+ * One rule governs what may appear in a block that lands in a tree-hashed
+ * file: nothing produced *after* the tree closes. The source-tree hash, the
+ * demo video's checksum and the gate's own pass count are all computed from
+ * or after the finished tree, so writing any of them into the README
+ * changes the README, changes the tree, and changes the value again — a
+ * loop with no fixed point, in which evidence and documentation could never
+ * both be current at once.
+ *
+ * Each of those lives beside the artifact it describes under
+ * `release-evidence/`, which sits outside the hashed tree and can carry
+ * values that move with it. The documents point at them instead of copying
+ * them, and `release-evidence/summary.md` — also outside the tree — states
+ * all three. What remains in the blocks are measurements that a
+ * documentation edit cannot change: coverage, mutation score, test counts,
+ * bundle bytes, soak and remount results.
  */
 
 export type BlockName = keyof typeof BLOCKS;
@@ -37,7 +46,7 @@ export const BLOCKS = {
     [
       '| What | Measured |',
       '| --- | --- |',
-      `| Definition-of-Done gate | **${f.goalChecksPassed} passed, ${f.goalChecksFailed} failed** |`,
+      '| Definition-of-Done gate | every check passing — see [`goal-check.txt`](release-evidence/goal-check.txt) |',
       `| Tests | ${f.unitTests} unit and integration, ${f.e2eTests} end-to-end |`,
       `| Agreement with Qiskit Aer | ${f.pytestPassed} pytest against Qiskit ${f.qiskitVersion} / Aer ${f.aerVersion} |`,
       `| Coverage | ${pct(f.coverageLines)} lines, ${pct(f.coverageBranches)} branches |`,
@@ -58,7 +67,7 @@ export const BLOCKS = {
   /** The same numbers in prose form, for the WISER submission. */
   'evidence-list': (f: DocsFacts): string =>
     [
-      `- Definition-of-Done gate: **${f.goalChecksPassed} passed, ${f.goalChecksFailed} failed**.`,
+      '- Definition-of-Done gate: every check passing; the full transcript is `release-evidence/goal-check.txt`.',
       `- ${f.unitTests} unit and integration tests, ${f.e2eTests} end-to-end tests.`,
       `- ${f.pytestPassed} pytest cases agreeing with Qiskit ${f.qiskitVersion} / Aer ${f.aerVersion}.`,
       `- Coverage ${pct(f.coverageLines)} lines, ${pct(f.coverageBranches)} branches; mutation score ${f.mutationScore}.`,
@@ -76,7 +85,7 @@ export const BLOCKS = {
     return [
       `- **File**: [\`release-evidence/demo/qsimcity-demo.mp4\`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, ${minutes} min ${seconds} s, no audio.`,
       `- **Captions**: ${f.demoCaptions}, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).`,
-      `- **SHA-256**: \`${f.demoSha256}\``,
+      '- **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.',
       '- **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.',
     ].join('\n');
   },
@@ -157,4 +166,100 @@ export function unknownBlockNames(text: string): string[] {
 
 function escape(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * `release-evidence/summary.md`, rendered in full.
+ *
+ * Lives here rather than in `sync.ts` so that `check.ts` can re-render it
+ * and compare. A file that only one command knows how to produce is a file
+ * that can drift silently — which is what the previous hand-written summary
+ * did, describing version 1.0.0 and five artifacts when there were sixteen.
+ *
+ * Unlike the README blocks this may quote the source-tree hash, the gate
+ * count and the demo checksum: `release-evidence/` is outside the hashed
+ * tree, so recording them here changes nothing that they describe.
+ */
+export function renderSummary(facts: DocsFacts): string {
+  const evidenceFiles: readonly { readonly path: string; readonly what: string }[] = [
+    { path: 'coverage/per-package-coverage.json', what: 'Per-package line and branch coverage' },
+    {
+      path: 'mutation/mutation-report.json',
+      what: 'Generative mutation testing of scientific invariants',
+    },
+    { path: 'python/python-verify.json', what: 'Qiskit bridge: pytest, pyright, ruff' },
+    {
+      path: 'trace-reproducibility/reproducibility.json',
+      what: 'Cross-process and cross-language trace hashing',
+    },
+    { path: 'security/security-report.json', what: 'Dependency audit and policy scans' },
+    { path: 'performance.json', what: 'Chunk-level byte budgets from the real build' },
+    {
+      path: 'lighthouse/lighthouse-report.json',
+      what: 'Lighthouse across four targets, three runs each',
+    },
+    { path: 'visual-benchmark/benchmark.json', what: 'Visual quality rubric scoring' },
+    { path: 'wiser-fps/fps-report.json', what: 'Frame-time percentiles, capped and uncapped' },
+    { path: 'wiser-screenshots/manifest.json', what: 'The fifteen WISER surface captures' },
+    { path: 'wiser-reviews/reviews.json', what: 'Separated adversarial review verdicts' },
+    { path: 'remount/remount-report.json', what: 'Fixed-count 3D/2D remount safety' },
+    { path: 'soak/soak-report.json', what: 'Ten-minute production soak' },
+    { path: 'fresh-clone/fresh-clone.json', what: 'Verification inside a clean clone' },
+    { path: 'demo/demo-manifest.json', what: 'Demo recording, bound to the source tree' },
+    { path: 'goal-check.txt', what: 'Full output of pnpm goal:check' },
+  ];
+
+  const minutes = Math.floor(facts.demoSeconds / 60);
+  const seconds = String(facts.demoSeconds % 60).padStart(2, '0');
+
+  return [
+    `# Release evidence — QSimCity ${facts.productVersion}`,
+    '',
+    '<!-- Generated by `pnpm docs:sync`. Do not edit by hand: the previous',
+    '     hand-written summary still described version 1.0.0 and five',
+    '     artifacts long after there were sixteen. -->',
+    '',
+    `Every measurement below was produced from source tree \`${facts.sourceTreeHash}\``,
+    'by a command that exited zero, and recorded in an envelope that binds it to',
+    'that tree. `pnpm goal:check` recomputes the verdicts and rejects any envelope',
+    'whose tree hash no longer matches, so evidence cannot outlive the code it',
+    'measured.',
+    '',
+    '## Results',
+    '',
+    '| What | Measured |',
+    '| --- | --- |',
+    `| Definition-of-Done gate | ${facts.goalChecksPassed} passed, ${facts.goalChecksFailed} failed |`,
+    `| Unit and integration tests | ${facts.unitTests} |`,
+    `| End-to-end tests | ${facts.e2eTests} |`,
+    `| Qiskit agreement | ${facts.pytestPassed} pytest against Qiskit ${facts.qiskitVersion} / Aer ${facts.aerVersion} |`,
+    `| Coverage | ${facts.coverageLines}% lines, ${facts.coverageBranches}% branches |`,
+    `| Mutation score | ${facts.mutationScore} (${facts.mutantsKilled}/${facts.mutantsGenerated} killed, ${facts.mutantsSurvived} equivalent) |`,
+    `| Trace reproducibility | ${facts.reproProcesses} processes, ${facts.reproDistinctSemanticHashes} distinct semanticHash |`,
+    `| Ten-minute soak | ${facts.soakSeconds}s, ${facts.soakCycles} cycles, ${facts.soakConsoleErrors} console errors |`,
+    `| 3D/2D remount | ${facts.remountCycles} cycles, ${facts.remountPeakContexts} WebGL contexts left behind |`,
+    `| Initial JS | ${facts.initialJsKib} KiB gzip (${facts.totalJsKib} KiB total) |`,
+    `| Clean clone | ${facts.freshCloneSteps} steps, ${facts.freshCloneFailed} failed |`,
+    `| Demo recording | ${minutes} min ${seconds} s, ${facts.demoCaptions} captions |`,
+    '',
+    '## Deployment',
+    '',
+    'Production serves `main` at <https://qsimcity.vercel.app>. The deployment is',
+    'bound to the merge commit through the GitHub deployments API, and the served',
+    'bundle is the one built from this tree.',
+    '',
+    '## Artifacts in this directory',
+    '',
+    '| File | Contents |',
+    '| --- | --- |',
+    ...evidenceFiles.map(({ path, what }) => `| \`${path}\` | ${what} |`),
+    '',
+    '## What is not measured here',
+    '',
+    '- No human learning outcome. The assessment instrument and protocol are',
+    '  published and unrun; the instrument itself needs revision first.',
+    '- The adversarial reviews were performed by AI agents, not human experts.',
+    '- Mobile frame times are Chromium emulation on a desktop GPU.',
+    '',
+  ].join('\n');
 }

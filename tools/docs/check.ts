@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, resolve, relative } from 'node:path';
-import { findBlocks, presentBlockNames, unknownBlockNames } from './blocks.js';
+import { findBlocks, presentBlockNames, renderSummary, unknownBlockNames } from './blocks.js';
 import { readFacts, productVersion } from './facts.js';
 
 /**
@@ -126,6 +126,19 @@ for (const doc of GATED_DOCS) {
     } else if (block.current !== block.expected) {
       fail(`${doc}: generated block "${block.name}" is stale — run pnpm docs:sync`);
     }
+  }
+}
+
+// ------------------------------------------------------- generated summary
+
+{
+  // Fully generated, so compared in full. Blocks cannot protect a file that
+  // has none, and this one drifted for weeks while nothing looked at it.
+  const path = join(ROOT, 'release-evidence', 'summary.md');
+  if (!existsSync(path)) {
+    fail('release-evidence/summary.md is missing — run pnpm docs:sync');
+  } else if (readFileSync(path, 'utf8') !== renderSummary(facts)) {
+    fail('release-evidence/summary.md is stale — run pnpm docs:sync');
   }
 }
 
