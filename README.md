@@ -116,7 +116,7 @@ The city is **a believable stylized city**, not a photorealistic one — and no 
 | What | Measured |
 | --- | --- |
 | Definition-of-Done gate | every check passing — see [`goal-check.txt`](release-evidence/goal-check.txt) |
-| Tests | 957 unit and integration, 109 end-to-end |
+| Tests | 963 unit and integration, 109 end-to-end |
 | Agreement with Qiskit Aer | 76 pytest against Qiskit 2.5.1 / Aer 0.17.2 |
 | Coverage | 96.11% lines, 85.40% branches |
 | Mutation score | 0.9643 (81 of 84 killed, 3 reviewed equivalent) |

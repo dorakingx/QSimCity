@@ -166,7 +166,7 @@ claimed 71 pytest cases and a 158 KiB bundle after both had moved.
 
 <!-- docs:sync start:evidence-list -->
 - Definition-of-Done gate: every check passing; the full transcript is `release-evidence/goal-check.txt`.
-- 957 unit and integration tests, 109 end-to-end tests.
+- 963 unit and integration tests, 109 end-to-end tests.
 - 76 pytest cases agreeing with Qiskit 2.5.1 / Aer 0.17.2.
 - Coverage 96.11% lines, 85.40% branches; mutation score 0.9643.
 - 12 independent processes produced 1 distinct `semanticHash` per sample.

@@ -15,7 +15,7 @@ measured.
 | What | Measured |
 | --- | --- |
 | Definition-of-Done gate | 33 passed, 0 failed |
-| Unit and integration tests | 957 |
+| Unit and integration tests | 963 |
 | End-to-end tests | 109 |
 | Qiskit agreement | 76 pytest against Qiskit 2.5.1 / Aer 0.17.2 |
 | Coverage | 96.11% lines, 85.40% branches |
