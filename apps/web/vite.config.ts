@@ -11,6 +11,14 @@ export default defineConfig({
       manifest: {
         name: 'QSimCity',
         short_name: 'QSimCity',
+        // The canonical product version, kept equal to the root and app
+        // package versions and to the newest CHANGELOG release by
+        // `pnpm docs:check`. Deliberately *not* tied to the trace schema
+        // version or to the trace generator version: those two identify a
+        // file format and the producer recorded inside a trace, and moving
+        // them to match a marketing number would change trace bytes and
+        // invalidate committed hashes.
+        version: '2.0.0',
         description:
           'An explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.',
         theme_color: '#0a0d16',

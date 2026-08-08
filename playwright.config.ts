@@ -29,7 +29,7 @@ import { defineConfig, devices } from '@playwright/test';
 const GPU_ARGS = ['--enable-gpu', '--ignore-gpu-blocklist', '--enable-webgl'];
 
 /** Specs that require the 3D city; excluded from the functional projects. */
-const CITY_SPECS = ['**/visual.spec.ts', '**/city3d.spec.ts'];
+const CITY_SPECS = ['**/visual.spec.ts', '**/city3d.spec.ts', '**/screenshot-budget.spec.ts'];
 
 /**
  * Budget for a test that has to build and draw the 3D city.
@@ -54,6 +54,45 @@ const CITY_SPECS = ['**/visual.spec.ts', '**/city3d.spec.ts'];
  */
 const CITY_TIMEOUT = 150_000;
 
+/**
+ * How long a single `toHaveScreenshot` may spend capturing and comparing.
+ *
+ * Separate from the test timeout on purpose, and raised from Playwright's
+ * 5 s default for one measured reason. A visual assertion fails two very
+ * different ways: a real pixel difference, or running out of clock before
+ * any comparison happens. The second reports `Timeout 5000ms exceeded` with
+ * **no actual and no diff image**, because nothing was ever compared.
+ *
+ * That is what hit `city first-person` in run 31227695962: the gate failed
+ * while the E2E job passed the identical suite on the same commit, and the
+ * uploaded artifact showed the captured frame was byte-identical to the
+ * committed Linux baseline. A correct frame was reported as a failure
+ * because one SwiftShader capture of a ~400k-triangle scene did not finish
+ * inside five seconds on a runner that was busy with the rest of the gate.
+ *
+ * The number comes from measurement, not from doubling until green. On a
+ * GPU-backed developer machine the three sampled captures of the frozen
+ * 3D city cost 106/88/91 ms. The same scene costs roughly thirty times
+ * that under SwiftShader — which is how a five-second budget ends up a
+ * coin flip on a loaded runner, and why 30 s restores real headroom rather
+ * than hiding a slow path.
+ *
+ * It is applied per assertion, at each `toHaveScreenshot` call, rather than
+ * as a global `expect.timeout`. Raising the global would stretch every
+ * auto-retrying assertion in the suite — `toBeVisible`, `toHaveText`, all
+ * of it — and turn a targeted fix into exactly the blanket inflation that
+ * hides real failures. Only the screenshot assertions needed more room.
+ *
+ * This is not blanket inflation: the per-test budgets, the 0 retries and
+ * the 0.05 pixel-ratio threshold are all unchanged, and this bounds only
+ * the capture. `tests/e2e/screenshot-budget.spec.ts` re-measures on the
+ * heaviest surface every run and fails if the slowest capture climbs past
+ * two thirds of this number — so the headroom is asserted on the machine
+ * in front of it, including the slow one, and the value cannot quietly
+ * become too small again.
+ */
+export const SCREENSHOT_TIMEOUT_MS = 30_000;
+
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 60_000,
@@ -74,7 +113,12 @@ export default defineConfig({
    * This is not a raised timeout. The work was real and the machine was
    * oversubscribed; two workers give each simulation a core to run on.
    */
-  workers: process.env['CI'] ? 2 : undefined,
+  // Spread rather than `: undefined`, because the config is now imported by
+  // the specs that need SCREENSHOT_TIMEOUT_MS, which pulls this file into
+  // the typechecked program — and under `exactOptionalPropertyTypes` an
+  // explicit `undefined` is not the same as an absent key. Locally, absent
+  // means "Playwright decides", which is what was always intended.
+  ...(process.env['CI'] ? { workers: 2 } : {}),
   reporter: [['list'], ['html', { open: 'never' }]],
   expect: {
     toHaveScreenshot: {

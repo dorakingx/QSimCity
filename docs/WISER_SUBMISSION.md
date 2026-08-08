@@ -160,16 +160,34 @@ Every claim below is bound to an evidence envelope under
 `release-evidence/` that records the source tree it measured; the release
 gate recomputes them and refuses prose as evidence.
 
-| Claim | Evidence |
+The figures themselves are written here by `pnpm docs:sync` and verified by
+`pnpm docs:check`, because the hand-copied ones drifted: this section
+claimed 71 pytest cases and a 158 KiB bundle after both had moved.
+
+<!-- docs:sync start:evidence-list -->
+- Definition-of-Done gate: **33 passed, 0 failed**.
+- 957 unit and integration tests, 109 end-to-end tests.
+- 76 pytest cases agreeing with Qiskit 2.5.1 / Aer 0.17.2.
+- Coverage 96.11% lines, 85.40% branches; mutation score 0.9643.
+- 12 independent processes produced 1 distinct `semanticHash` per sample.
+- Ten-minute soak: 601.6s, 105 cycles, 0 console errors.
+- 60 3D/2D remount cycles leave 0 WebGL contexts behind.
+- 159.0 KiB gzip initial JS (350.2 KiB total).
+- Clean clone: 16 of 16 verification steps, 0 failed.
+
+Source tree `2d85dcc67da479c1`.
+<!-- docs:sync end:evidence-list -->
+
+| Claim | Where the evidence lives |
 | --- | --- |
-| Simulator agrees with Qiskit Aer | `release-evidence/python/` — 71 pytest, within sampling tolerance |
+| Simulator agrees with Qiskit Aer | `release-evidence/python/` — pytest against Qiskit Aer, within sampling tolerance |
 | Traces reproduce their scientific content exactly | `release-evidence/trace-reproducibility/` — 12 independent processes agree on `semanticHash` |
 | Compiled circuits preserve measured distributions | `packages/reference-compiler/test/compiled-execution.test.ts` |
 | Frame time, honestly characterised | `release-evidence/wiser-fps/` — p50/p95/p99, long and dropped frames, refresh-cap detection, vsync-disabled ceiling |
 | Repeated 3D/2D mounting is safe | `release-evidence/remount/` — 60 fixed cycles scored on heap slope, absolute growth, mount latency, and the app's own live WebGL contexts |
 | Ten-minute production soak | `release-evidence/soak/` |
 | Accessibility | Lighthouse accessibility 100 on four targets; axe WCAG 2.2 AA scans across surfaces |
-| Bundle budget | 158 KiB gzip initial JS against 320 KiB; 349 KiB total JS against 600 KiB |
+| Bundle budget | `release-evidence/performance.json` — initial and total gzip JS against a 320 KiB / 600 KiB budget |
 | Security | `pnpm audit` clean of high/critical; no committed secrets |
 | Builds from a clean clone | `release-evidence/fresh-clone/` — 16 steps |
 | Adversarial review | `docs/audits/wiser-adversarial-reviews.md` — **AI-assisted, not independent human validation** |
@@ -244,14 +262,16 @@ independent external validation.**
 ## Live URL and demo status
 
 - **Live application:** <https://qsimcity.vercel.app> — verified reachable
-  (HTTP 200). **It currently serves `main`, not the branch under review**;
-  the deployed bundle hash differs from this branch's build. Deploying
-  this branch is a human action that has deliberately not been taken.
-- **Demo video:** produced and committed as a file in this repository —
-  see [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) for the exact path, duration,
-  resolution, checksum, and upload instructions. **It has not been
-  uploaded anywhere**, because that requires credentials this process does
-  not hold. No public video URL is claimed.
+  (HTTP 200), serving `main`. The reviewed work was merged into `main` and
+  deployed from it, and the Vercel production deployment is bound to that
+  merge commit through the GitHub deployments API.
+- **Demo video:** recorded from the production build and public in this
+  repository at
+  [`release-evidence/demo/qsimcity-demo.mp4`](../release-evidence/demo/qsimcity-demo.mp4),
+  with [an SRT sidecar](../release-evidence/demo/qsimcity-demo.srt) and a
+  checksum in the manifest beside it. It is **not** published on any video
+  platform, so no platform URL is claimed; see
+  [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) for the upload steps if one is wanted.
 
 ## Submission checklist
 
@@ -268,8 +288,8 @@ independent external validation.**
 | 9 | Scalability addressed | Yes |
 | 10 | Team contributions | Yes |
 | 11 | AI-use disclosure | Yes — `AI_USAGE.md` |
-| 12 | Live URL | Yes — verified reachable; serves `main`, not this branch |
-| 13 | Demo video | Produced and committed; **not uploaded** — no public URL claimed |
+| 12 | Live URL | Yes — <https://qsimcity.vercel.app>, serving `main`, deployment bound to the merge commit |
+| 13 | Demo video | Public in this repository as an MP4 with captions; not on a video platform |
 | 14 | User guide | `USER_GUIDE.md` |
 | 15 | Educator guide with zero-setup 45-minute lesson plan | `EDUCATOR_GUIDE.md` |
 | 16 | Attributions and asset licences | `ATTRIBUTIONS.md` — no third-party assets |

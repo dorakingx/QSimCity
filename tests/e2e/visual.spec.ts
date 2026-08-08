@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { SCREENSHOT_TIMEOUT_MS } from '../../playwright.config.js';
 import {
   disableWebgl,
   e2eUrl,
@@ -48,7 +49,7 @@ test.describe('desktop surfaces', () => {
     await page.goto(e2eUrl('/'));
     await expect(page.getByRole('heading', { name: /QSimCity/ })).toBeVisible();
     await settle2d(page);
-    await expect(page).toHaveScreenshot('home.png');
+    await expect(page).toHaveScreenshot('home.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('city day (explore, default view)', async ({ page }) => {
@@ -58,7 +59,7 @@ test.describe('desktop surfaces', () => {
       .getByRole('button', { name: 'Explore' })
       .click();
     await freezeCity(page);
-    await expect(page).toHaveScreenshot('city-day.png');
+    await expect(page).toHaveScreenshot('city-day.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('city night (explore)', async ({ page }) => {
@@ -71,7 +72,7 @@ test.describe('desktop surfaces', () => {
     await page.getByLabel('Time of day').selectOption('night');
     await page.keyboard.press('Escape');
     await freezeCity(page);
-    await expect(page).toHaveScreenshot('city-night.png');
+    await expect(page).toHaveScreenshot('city-night.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('city golden hour (explore)', async ({ page }) => {
@@ -84,7 +85,7 @@ test.describe('desktop surfaces', () => {
     await page.getByLabel('Time of day').selectOption('golden');
     await page.keyboard.press('Escape');
     await freezeCity(page);
-    await expect(page).toHaveScreenshot('city-golden.png');
+    await expect(page).toHaveScreenshot('city-golden.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('city first-person', async ({ page }) => {
@@ -97,7 +98,9 @@ test.describe('desktop surfaces', () => {
     await page.getByRole('button', { name: /^Walk/ }).click();
     // Re-freeze: switching camera mode restarts motion.
     await freezeCity(page);
-    await expect(page).toHaveScreenshot('city-first-person.png');
+    await expect(page).toHaveScreenshot('city-first-person.png', {
+      timeout: SCREENSHOT_TIMEOUT_MS,
+    });
   });
 
   test('quantum lab with results', async ({ page }) => {
@@ -109,7 +112,7 @@ test.describe('desktop surfaces', () => {
     await page.goto(e2eUrl('/?sample=bell&shots=64&seed=lab-visual&device=linear-5'));
     await runBellFromLab(page);
     await freezeCity(page, { tick: 0 });
-    await expect(page).toHaveScreenshot('lab-results.png');
+    await expect(page).toHaveScreenshot('lab-results.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('compare mode', async ({ page }) => {
@@ -143,7 +146,7 @@ test.describe('desktop surfaces', () => {
     });
     await pauseReplay(page);
     await settle2d(page);
-    await expect(page).toHaveScreenshot('accessible-2d.png');
+    await expect(page).toHaveScreenshot('accessible-2d.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('webgl-disabled fallback', async ({ page }) => {
@@ -155,7 +158,7 @@ test.describe('desktop surfaces', () => {
       .click();
     await expect(page.getByRole('status').first()).toContainText(/Accessible 2D Mode/);
     await settle2d(page);
-    await expect(page).toHaveScreenshot('webgl-fallback.png');
+    await expect(page).toHaveScreenshot('webgl-fallback.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('offline mode still serves the app shell', async ({ page, context }) => {
@@ -171,7 +174,7 @@ test.describe('desktop surfaces', () => {
     await page.reload();
     await expect(page.getByRole('heading', { name: /QSimCity/ })).toBeVisible({ timeout: 15_000 });
     await settle2d(page);
-    await expect(page).toHaveScreenshot('offline-home.png');
+    await expect(page).toHaveScreenshot('offline-home.png', { timeout: SCREENSHOT_TIMEOUT_MS });
     await context.setOffline(false);
   });
 });
@@ -187,7 +190,7 @@ test.describe('mobile surfaces', () => {
       .click();
     await expect(page.getByRole('button', { name: 'Run', exact: true })).toBeVisible();
     await settle2d(page);
-    await expect(page).toHaveScreenshot('mobile-portrait.png');
+    await expect(page).toHaveScreenshot('mobile-portrait.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 
   test('mobile landscape city', async ({ page }) => {
@@ -198,6 +201,6 @@ test.describe('mobile surfaces', () => {
       .getByRole('button', { name: 'Explore' })
       .click();
     await freezeCity(page);
-    await expect(page).toHaveScreenshot('mobile-landscape.png');
+    await expect(page).toHaveScreenshot('mobile-landscape.png', { timeout: SCREENSHOT_TIMEOUT_MS });
   });
 });
