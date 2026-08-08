@@ -1,14 +1,14 @@
-$ tsx tools/check-goal.ts
-QSimCity completion gate — HEAD d14bf4c1235c, source tree 49e43eb5af6efc09
-
+QSimCity completion gate — HEAD 9c075d750637, source tree e96895a4c4335aa7
 [PASS] Required documents exist: 34 documents present
 [PASS] Required scripts declared: 15 scripts present
 [PASS] Prohibited-name scan: no prohibited project names
 [PASS] Language-policy scan (English only): no unintended non-English text
 [PASS] Blocking TODO/FIXME/placeholder scan: no blocking markers
 [PASS] License claims match the license file: Apache-2.0, named consistently in 3 document(s)
-[PASS] Python bridge verification evidence: 71 pytest passed, pyright clean, ruff clean, qiskit 2.5.1, aer 0.17.2
-[PASS] Meaningful test count (>= 300): 921 tests declared across TypeScript and Python suites
+[PASS] Python bridge verification evidence: 76 pytest passed, pyright clean, ruff clean, qiskit 2.5.1, aer 0.17.2
+[PASS] Demo recording matches the tree it depicts: 5m 15s, 38 captions, tree e96895a4c4335aa7, not uploaded
+[PASS] Documentation claims match the evidence: docs:check succeeded
+[PASS] Meaningful test count (>= 300): 948 tests declared across TypeScript and Python suites
 [PASS] TypeScript strict typecheck: typecheck succeeded
 [PASS] Lint (incl. architecture boundaries): lint succeeded
 [PASS] Unit and integration tests: vitest succeeded
@@ -16,14 +16,14 @@ QSimCity completion gate — HEAD d14bf4c1235c, source tree 49e43eb5af6efc09
 [PASS] End-to-end browser matrix: playwright succeeded
 [PASS] Per-package coverage evidence: project 96.11%/85.4%; domain 98.49%/95.51%, trace 98.28%/96%, simulator 100%/97.65%, reference-compiler 97.69%/90.4%
 [PASS] Scientific mutation evidence: 96.4% (81/84) across 11 capability areas and 14 files
-[PASS] Lighthouse evidence meets all thresholds: desktop perf 99, mobile perf 78, a11y 100, best-practices 96, SEO 92
-[PASS] Ten-minute soak evidence: 600s, 105 cycles, heap growth ratio 1.2847, 0 uncaught, final interaction 11ms
-[PASS] Remount safety evidence (fixed-count 3D/2D cycles): 60 cycles, heap slope 89.6 KiB/cycle, growth ratio 1.3652 (4.2 MiB), worst in-page mount 308ms, peak live WebGL contexts 0
-[PASS] Performance budget evidence: initial JS 158.3 KiB gzip of 320 KiB, total JS 349.3 KiB of 600 KiB
+[PASS] Lighthouse evidence meets all thresholds: desktop perf 99, mobile perf 79, a11y 100, best-practices 96, SEO 92
+[PASS] Ten-minute soak evidence: 601.3s, 105 cycles, heap growth ratio 1.2839, 0 uncaught, final interaction 17ms
+[PASS] Remount safety evidence (fixed-count 3D/2D cycles): 60 cycles, heap slope 79.0 KiB/cycle, growth ratio 1.3652 (4.2 MiB), worst in-page mount 308ms, peak live WebGL contexts 0
+[PASS] Performance budget evidence: initial JS 159.0 KiB gzip of 320 KiB, total JS 350.2 KiB of 600 KiB
 [PASS] Security audit evidence: no high/critical advisories, no committed secrets
 [PASS] Trace reproducibility evidence: 12 independent processes agree; 5 samples verified
 [PASS] Visual benchmark evidence: 18 categories compared, lowest score 4/5
-[PASS] Visual regression snapshots exist: 12 snapshots covering all required surfaces
+[PASS] Visual regression snapshots exist: 24 snapshots covering all required surfaces on darwin and linux
 [PASS] Sample traces validate and match committed hashes: trace hash verification succeeded
 [PASS] WISER frame-rate evidence: desktop 120.5 fps and emulated mobile 120.5 fps (both display-capped floors), uncapped ceiling 370.4 fps
 [PASS] WISER screenshot evidence: 15 screenshots across day/golden/night, all hash-bound
@@ -33,7 +33,7 @@ QSimCity completion gate — HEAD d14bf4c1235c, source tree 49e43eb5af6efc09
 [PASS] Production build output present: index.html, service worker, and manifest present
 [PASS] Acceptance matrix has no unmet required rows: every row in both matrices is PASS or an authorized exception
 [PASS] Project state does not declare an unresolved blocker: no failed or blocked items recorded
-[PASS] Fresh-clone verification evidence: 16 steps passed in a clean clone (86.2s)
+[PASS] Fresh-clone verification evidence: 16 steps passed in a clean clone (117.5s)
 
-33 passed, 0 failed
+35 passed, 0 failed
 GOAL ACHIEVED: QSimCity production v1 is complete.

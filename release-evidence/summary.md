@@ -4,7 +4,7 @@
      hand-written summary still described version 1.0.0 and five
      artifacts long after there were sixteen. -->
 
-Every measurement below was produced from source tree `dc62d9965b9ef38f`
+Every measurement below was produced from source tree `e96895a4c4335aa7`
 by a command that exited zero, and recorded in an envelope that binds it to
 that tree. `pnpm goal:check` recomputes the verdicts and rejects any envelope
 whose tree hash no longer matches, so evidence cannot outlive the code it
@@ -14,14 +14,14 @@ measured.
 
 | What | Measured |
 | --- | --- |
-| Definition-of-Done gate | 33 passed, 0 failed |
+| Definition-of-Done gate | 35 passed, 0 failed |
 | Unit and integration tests | 963 |
 | End-to-end tests | 109 |
 | Qiskit agreement | 76 pytest against Qiskit 2.5.1 / Aer 0.17.2 |
 | Coverage | 96.11% lines, 85.40% branches |
 | Mutation score | 0.9643 (81/84 killed, 3 equivalent) |
 | Trace reproducibility | 12 processes, 1 distinct semanticHash |
-| Ten-minute soak | 601s, 105 cycles, 0 console errors |
+| Ten-minute soak | 601.3s, 105 cycles, 0 console errors |
 | 3D/2D remount | 60 cycles, 0 WebGL contexts left behind |
 | Initial JS | 159.0 KiB gzip (350.2 KiB total) |
 | Clean clone | 16 steps, 0 failed |

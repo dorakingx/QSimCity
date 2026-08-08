@@ -1,8 +1,8 @@
 {
-  "commitSha": "180d0fa5fde0410922d34605aa31f90d7fa7bd90",
-  "sourceTreeHash": "dc62d9965b9ef38f",
+  "commitSha": "9c075d750637b0c31f5541f29b0d4d4c0076e6a8",
+  "sourceTreeHash": "e96895a4c4335aa7",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-08T02:07:02.190Z",
+  "generatedAt": "2026-08-08T02:36:05.585Z",
   "tool": "lighthouse",
   "toolVersion": "13.4.1",
   "command": "pnpm lighthouse",
@@ -21,7 +21,7 @@
     "home-desktop.accessibility": 100,
     "home-desktop.bestPractices": 96,
     "home-desktop.seo": 92,
-    "home-mobile.performance": 78,
+    "home-mobile.performance": 79,
     "home-mobile.accessibility": 100,
     "home-mobile.bestPractices": 96,
     "home-mobile.seo": 92,
@@ -71,7 +71,7 @@
       "label": "Main entry (mobile)",
       "formFactor": "mobile",
       "scores": {
-        "performance": 78,
+        "performance": 79,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
@@ -84,13 +84,13 @@
           "seo": 92
         },
         {
-          "performance": 78,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
         },
         {
-          "performance": 78,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -140,7 +140,7 @@
       },
       "runs": [
         {
-          "performance": 78,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
