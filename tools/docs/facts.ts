@@ -79,6 +79,8 @@ export interface DocsFacts {
   readonly soakSeconds: number;
   readonly soakCycles: number;
   readonly soakConsoleErrors: number;
+  readonly soakUncaughtErrors: number;
+  readonly soakFailedRequests: number;
   readonly remountCycles: number;
   readonly remountHeapSlopeKib: string;
   readonly remountPeakContexts: number;
@@ -149,6 +151,8 @@ export function readFacts(): DocsFacts {
     soakSeconds: num(soak.measurements, 'durationSeconds'),
     soakCycles: num(soak.measurements, 'cycles'),
     soakConsoleErrors: num(soak.measurements, 'consoleErrors'),
+    soakUncaughtErrors: num(soak.measurements, 'uncaughtErrors'),
+    soakFailedRequests: num(soak.measurements, 'failedRequests'),
     remountCycles: num(remount.measurements, 'cyclesCompleted'),
     remountHeapSlopeKib: kib(num(remount.measurements, 'heapSlopeBytesPerCycle')),
     remountPeakContexts: num(remount.measurements, 'peakLiveWebglContexts'),

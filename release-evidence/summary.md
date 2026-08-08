@@ -4,7 +4,7 @@
      hand-written summary still described version 1.0.0 and five
      artifacts long after there were sixteen. -->
 
-Every measurement below was produced from source tree `67c5bcbcb3b144c0`
+Every measurement below was produced from source tree `dc62d9965b9ef38f`
 by a command that exited zero, and recorded in an envelope that binds it to
 that tree. `pnpm goal:check` recomputes the verdicts and rejects any envelope
 whose tree hash no longer matches, so evidence cannot outlive the code it
@@ -21,10 +21,10 @@ measured.
 | Coverage | 96.11% lines, 85.40% branches |
 | Mutation score | 0.9643 (81/84 killed, 3 equivalent) |
 | Trace reproducibility | 12 processes, 1 distinct semanticHash |
-| Ten-minute soak | 601.6s, 105 cycles, 0 console errors |
+| Ten-minute soak | 601s, 105 cycles, 0 console errors |
 | 3D/2D remount | 60 cycles, 0 WebGL contexts left behind |
 | Initial JS | 159.0 KiB gzip (350.2 KiB total) |
-| Clean clone | 3 steps, 1 failed |
+| Clean clone | 16 steps, 0 failed |
 | Demo recording | 5 min 15 s, 38 captions |
 
 ## Deployment

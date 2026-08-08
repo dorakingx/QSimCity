@@ -4,42 +4,42 @@
     "viewport": "desktop",
     "timeOfDay": "day",
     "view": "overview",
-    "sha256": "635e3399f684f9839e5b9a1b6d1612c2a5c192de2cb400e73257d7aeb253f980"
+    "sha256": "7313aab69af846a0965ab5a29a01079b315ba23755b91c9542862f4eb2688223"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-day-street.png",
     "viewport": "desktop",
     "timeOfDay": "day",
     "view": "street",
-    "sha256": "c89508323165c6eb5b811a2335460f9232d6877c59dd062e66c03f78eed297ef"
+    "sha256": "2f9df8b11c3bf163dfdef2dc08c044c78555f1a5b9af1da78aedea4fce437269"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-golden-overview.png",
     "viewport": "desktop",
     "timeOfDay": "golden",
     "view": "overview",
-    "sha256": "78a0f821e2c63c6e9dc190cf002a640ebf3b1cc2037cdf75eec754b95017d447"
+    "sha256": "fc33e0a58121c064adea1b52322bc9ab7880ae9343dcdace97e30121a9569802"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-golden-street.png",
     "viewport": "desktop",
     "timeOfDay": "golden",
     "view": "street",
-    "sha256": "adadd4068dfc3024efe937d3fe215b912d21d5d1c661a2b872818272349d7c8d"
+    "sha256": "bda49accfa68ca94f97ee7515f427e000bd1ffb6060931898b597889bc3dfdb8"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-night-overview.png",
     "viewport": "desktop",
     "timeOfDay": "night",
     "view": "overview",
-    "sha256": "c8640074de92bc82d1612ccbb08a3395e587c64a4a7a3149abb0969cd726fbeb"
+    "sha256": "2510eb91b95b69cf66cca9d73d182accf46a3739c805a658040a08703835daa3"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-night-street.png",
     "viewport": "desktop",
     "timeOfDay": "night",
     "view": "street",
-    "sha256": "0cce6c9098c2c077180626209bd41985cb531605ab5d97782451a4cb5ac656fb"
+    "sha256": "1e330b99445b32b3cf937f5740fd65d8d88f1faf0e9f23f10d7e1b0cb24936dd"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-day-lab-results.png",
@@ -53,7 +53,7 @@
     "viewport": "desktop",
     "timeOfDay": "day",
     "view": "legend",
-    "sha256": "02617987256f201873c34860545004e6e2de490dd016485579efd423a440aab5"
+    "sha256": "4bf306607c9ac9894f470cdd80553b1eeb669b47d29dbe4f825b68797678904f"
   },
   {
     "file": "release-evidence/wiser-screenshots/desktop-day-interior.png",
@@ -67,41 +67,41 @@
     "viewport": "mobile",
     "timeOfDay": "day",
     "view": "overview",
-    "sha256": "384a625d78e9fd50331c683c874fdebe8f30d8fd4a5c5849708d6c870da9f73b"
+    "sha256": "291734a2c8bef478036f90757444712e2c1d7ee870c7e706c74d6e233403fb50"
   },
   {
     "file": "release-evidence/wiser-screenshots/mobile-day-street.png",
     "viewport": "mobile",
     "timeOfDay": "day",
     "view": "street",
-    "sha256": "90fe2d2bb99f66a9af432476184f839eb488770b698c2662a88b53e8d17c9fe1"
+    "sha256": "67f9c3e3decd2a48918c80ef0ce5779fa739d63541156f7d367114be73f1ea7a"
   },
   {
     "file": "release-evidence/wiser-screenshots/mobile-golden-overview.png",
     "viewport": "mobile",
     "timeOfDay": "golden",
     "view": "overview",
-    "sha256": "39bc4acc97832ee1c3d22e5fb37beba7111ac4d9f3637469c0185392ef30cdcd"
+    "sha256": "eb5225a81ed0878e9202165df26c5c0a4d6dd298f77283b9d95c97e69e375026"
   },
   {
     "file": "release-evidence/wiser-screenshots/mobile-golden-street.png",
     "viewport": "mobile",
     "timeOfDay": "golden",
     "view": "street",
-    "sha256": "af289866c983da3ffa818dffed5f6123ce951c454664ea2d7e2b505ae7d8c107"
+    "sha256": "d0295474b792fb84bf4061a850531566296f9124a4a0a5a28fbad0bd8d1f70d3"
   },
   {
     "file": "release-evidence/wiser-screenshots/mobile-night-overview.png",
     "viewport": "mobile",
     "timeOfDay": "night",
     "view": "overview",
-    "sha256": "9a774c1244d8014b9b7f6364444c6f3da7192b4494a4153a619a6ab262ae7a0b"
+    "sha256": "2459ad8e489b72686e8e2bfbbd8c98b61657db89587b96f43f8e4041459615b7"
   },
   {
     "file": "release-evidence/wiser-screenshots/mobile-night-street.png",
     "viewport": "mobile",
     "timeOfDay": "night",
     "view": "street",
-    "sha256": "6fb27e0e302bcca0e705a0821b5ca5dba19fb86c2850e0fd8ae4200bb7e752f4"
+    "sha256": "2c7982bffb6d9d7f9786421cce47b8018d2fed4aa3f3937748dc47d0a072bab3"
   }
 ]

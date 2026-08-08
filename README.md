@@ -121,10 +121,10 @@ The city is **a believable stylized city**, not a photorealistic one — and no 
 | Coverage | 96.11% lines, 85.40% branches |
 | Mutation score | 0.9643 (81 of 84 killed, 3 reviewed equivalent) |
 | Trace reproducibility | 12 independent processes, 1 distinct `semanticHash` |
-| Ten-minute soak | 601.6s, 105 cycles, 0 console errors |
+| Ten-minute soak | 0 console errors, 0 uncaught, 0 failed requests |
 | 3D/2D remount | 60 cycles, 0 WebGL contexts left behind |
 | Initial JS | 159.0 KiB gzip (350.2 KiB total) |
-| Clean-clone reproduction | 3 of 3 steps, 1 failed |
+| Clean-clone reproduction | 16 of 16 steps, 0 failed |
 
 Every row is bound to an evidence envelope under
 [`release-evidence/`](release-evidence/) that records the source tree it measured;
@@ -184,7 +184,7 @@ Node 22.12+ (`.nvmrc` pins 22.23.1) and `pnpm`. Nothing else — no account, no 
 ## Demo
 
 <!-- docs:sync start:demo-facts -->
-- **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, 5 min 15 s, no audio.
+- **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, just over five minutes, no audio.
 - **Captions**: 38, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).
 - **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.
 - **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.

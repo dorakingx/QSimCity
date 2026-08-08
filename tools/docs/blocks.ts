@@ -20,7 +20,10 @@ import type { DocsFacts } from './facts.js';
  * from the measurements while the writing stays human.
  *
  * One rule governs what may appear in a block that lands in a tree-hashed
- * file: nothing produced *after* the tree closes. The source-tree hash, the
+ * file: nothing that changes unless the tree does. That rules out two
+ * families of value.
+ *
+ * The first is anything produced *after* the tree closes. The source-tree hash, the
  * demo video's checksum and the gate's own pass count are all computed from
  * or after the finished tree, so writing any of them into the README
  * changes the README, changes the tree, and changes the value again — a
@@ -31,9 +34,20 @@ import type { DocsFacts } from './facts.js';
  * `release-evidence/`, which sits outside the hashed tree and can carry
  * values that move with it. The documents point at them instead of copying
  * them, and `release-evidence/summary.md` — also outside the tree — states
- * all three. What remains in the blocks are measurements that a
- * documentation edit cannot change: coverage, mutation score, test counts,
- * bundle bytes, soak and remount results.
+ * all three.
+ *
+ * The second is anything that varies between runs of the same tree. The
+ * soak's elapsed seconds and cycle count, and the demo's duration to the
+ * second, differ a little every time — 601.6 s one run, 601.0 s the next —
+ * so quoting them here meant every regeneration rewrote the README and
+ * invalidated the evidence that had just been produced. Those become the
+ * outcome that is actually being asserted: zero errors, zero uncaught,
+ * zero failed requests. The exact figures stay in the envelope and in
+ * `release-evidence/summary.md`.
+ *
+ * What remains in the blocks are measurements that are a deterministic
+ * function of the tree: coverage, mutation score, test counts, bundle
+ * bytes, Qiskit agreement, reproducibility, remount cycles and contexts.
  */
 
 export type BlockName = keyof typeof BLOCKS;
@@ -52,7 +66,7 @@ export const BLOCKS = {
       `| Coverage | ${pct(f.coverageLines)} lines, ${pct(f.coverageBranches)} branches |`,
       `| Mutation score | ${f.mutationScore} (${f.mutantsKilled} of ${f.mutantsGenerated} killed, ${f.mutantsSurvived} reviewed equivalent) |`,
       `| Trace reproducibility | ${f.reproProcesses} independent processes, ${f.reproDistinctSemanticHashes} distinct \`semanticHash\` |`,
-      `| Ten-minute soak | ${f.soakSeconds}s, ${f.soakCycles} cycles, ${f.soakConsoleErrors} console errors |`,
+      `| Ten-minute soak | ${f.soakConsoleErrors} console errors, ${f.soakUncaughtErrors} uncaught, ${f.soakFailedRequests} failed requests |`,
       `| 3D/2D remount | ${f.remountCycles} cycles, ${f.remountPeakContexts} WebGL contexts left behind |`,
       `| Initial JS | ${f.initialJsKib} KiB gzip (${f.totalJsKib} KiB total) |`,
       `| Clean-clone reproduction | ${f.freshCloneSteps} of ${f.freshCloneSteps} steps, ${f.freshCloneFailed} failed |`,
@@ -72,7 +86,7 @@ export const BLOCKS = {
       `- ${f.pytestPassed} pytest cases agreeing with Qiskit ${f.qiskitVersion} / Aer ${f.aerVersion}.`,
       `- Coverage ${pct(f.coverageLines)} lines, ${pct(f.coverageBranches)} branches; mutation score ${f.mutationScore}.`,
       `- ${f.reproProcesses} independent processes produced ${f.reproDistinctSemanticHashes} distinct \`semanticHash\` per sample.`,
-      `- Ten-minute soak: ${f.soakSeconds}s, ${f.soakCycles} cycles, ${f.soakConsoleErrors} console errors.`,
+      `- Ten-minute soak: ${f.soakConsoleErrors} console errors, ${f.soakUncaughtErrors} uncaught, ${f.soakFailedRequests} failed requests.`,
       `- ${f.remountCycles} 3D/2D remount cycles leave ${f.remountPeakContexts} WebGL contexts behind.`,
       `- ${f.initialJsKib} KiB gzip initial JS (${f.totalJsKib} KiB total).`,
       `- Clean clone: ${f.freshCloneSteps} of ${f.freshCloneSteps} verification steps, ${f.freshCloneFailed} failed.`,
@@ -80,10 +94,8 @@ export const BLOCKS = {
 
   /** Demo video facts, including the checksum that must match the file. */
   'demo-facts': (f: DocsFacts): string => {
-    const minutes = Math.floor(f.demoSeconds / 60);
-    const seconds = String(f.demoSeconds % 60).padStart(2, '0');
     return [
-      `- **File**: [\`release-evidence/demo/qsimcity-demo.mp4\`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, ${minutes} min ${seconds} s, no audio.`,
+      '- **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, just over five minutes, no audio.',
       `- **Captions**: ${f.demoCaptions}, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).`,
       '- **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.',
       '- **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.',

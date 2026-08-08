@@ -170,10 +170,10 @@ claimed 71 pytest cases and a 158 KiB bundle after both had moved.
 - 76 pytest cases agreeing with Qiskit 2.5.1 / Aer 0.17.2.
 - Coverage 96.11% lines, 85.40% branches; mutation score 0.9643.
 - 12 independent processes produced 1 distinct `semanticHash` per sample.
-- Ten-minute soak: 601.6s, 105 cycles, 0 console errors.
+- Ten-minute soak: 0 console errors, 0 uncaught, 0 failed requests.
 - 60 3D/2D remount cycles leave 0 WebGL contexts behind.
 - 159.0 KiB gzip initial JS (350.2 KiB total).
-- Clean clone: 3 of 3 verification steps, 1 failed.
+- Clean clone: 16 of 16 verification steps, 0 failed.
 <!-- docs:sync end:evidence-list -->
 
 | Claim | Where the evidence lives |

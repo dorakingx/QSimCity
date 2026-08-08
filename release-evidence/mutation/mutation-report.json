@@ -1,8 +1,8 @@
 {
-  "commitSha": "e5180f4f2fa8e3debdf3086f1cb9ea38af5b03f6",
-  "sourceTreeHash": "67c5bcbcb3b144c0",
+  "commitSha": "180d0fa5fde0410922d34605aa31f90d7fa7bd90",
+  "sourceTreeHash": "dc62d9965b9ef38f",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-08T01:50:06.798Z",
+  "generatedAt": "2026-08-08T02:05:19.665Z",
   "tool": "qsimcity-mutation",
   "toolVersion": "2.0.0",
   "command": "pnpm test:mutation",
@@ -156,7 +156,7 @@
         "index": 33,
         "id": "gate-evolution:statevector.ts:110:numeric-literal",
         "killed": false,
-        "durationMs": 2321
+        "durationMs": 2256
       },
       {
         "area": "gate-evolution",
@@ -174,7 +174,7 @@
         "index": 0,
         "id": "gate-evolution:gates.ts:153:comparison",
         "killed": false,
-        "durationMs": 1673
+        "durationMs": 1720
       },
       {
         "area": "noise-channels",
@@ -190,7 +190,7 @@
         "index": 11,
         "id": "noise-channels:noise.ts:103:comparison",
         "killed": false,
-        "durationMs": 518
+        "durationMs": 527
       }
     ],
     "outcomes": [
@@ -210,7 +210,7 @@
         "index": 0,
         "id": "gate-evolution:statevector.ts:18:comparison",
         "killed": true,
-        "durationMs": 1849
+        "durationMs": 1708
       },
       {
         "area": "gate-evolution",
@@ -228,7 +228,7 @@
         "index": 31,
         "id": "gate-evolution:statevector.ts:222:comparison",
         "killed": true,
-        "durationMs": 786
+        "durationMs": 810
       },
       {
         "area": "gate-evolution",
@@ -246,7 +246,7 @@
         "index": 29,
         "id": "gate-evolution:statevector.ts:114:arithmetic",
         "killed": true,
-        "durationMs": 33107
+        "durationMs": 28559
       },
       {
         "area": "gate-evolution",
@@ -264,7 +264,7 @@
         "index": 2,
         "id": "gate-evolution:statevector.ts:26:numeric-literal",
         "killed": true,
-        "durationMs": 975
+        "durationMs": 911
       },
       {
         "area": "gate-evolution",
@@ -282,7 +282,7 @@
         "index": 33,
         "id": "gate-evolution:statevector.ts:110:numeric-literal",
         "killed": false,
-        "durationMs": 2321
+        "durationMs": 2256
       },
       {
         "area": "gate-evolution",
@@ -318,7 +318,7 @@
         "index": 0,
         "id": "gate-evolution:gates.ts:153:comparison",
         "killed": false,
-        "durationMs": 1673
+        "durationMs": 1720
       },
       {
         "area": "gate-evolution",
@@ -336,7 +336,7 @@
         "index": 30,
         "id": "gate-evolution:gates.ts:45:numeric-literal",
         "killed": true,
-        "durationMs": 1856
+        "durationMs": 1817
       },
       {
         "area": "gate-evolution",
@@ -354,7 +354,7 @@
         "index": 84,
         "id": "gate-evolution:gates.ts:88:numeric-literal",
         "killed": true,
-        "durationMs": 1784
+        "durationMs": 1727
       },
       {
         "area": "gate-evolution",
@@ -372,7 +372,7 @@
         "index": 138,
         "id": "gate-evolution:gates.ts:122:numeric-literal",
         "killed": true,
-        "durationMs": 1813
+        "durationMs": 1833
       },
       {
         "area": "gate-evolution",
@@ -390,7 +390,7 @@
         "index": 192,
         "id": "gate-evolution:gates.ts:154:numeric-literal",
         "killed": true,
-        "durationMs": 1666
+        "durationMs": 1737
       },
       {
         "area": "gate-evolution",
@@ -408,7 +408,7 @@
         "index": 246,
         "id": "gate-evolution:gates.ts:232:numeric-literal",
         "killed": true,
-        "durationMs": 1809
+        "durationMs": 1765
       },
       {
         "area": "indexing-endianness",
@@ -426,7 +426,7 @@
         "index": 0,
         "id": "indexing-endianness:circuit.ts:64:comparison",
         "killed": true,
-        "durationMs": 1695
+        "durationMs": 1788
       },
       {
         "area": "indexing-endianness",
@@ -444,7 +444,7 @@
         "index": 12,
         "id": "indexing-endianness:circuit.ts:143:comparison",
         "killed": true,
-        "durationMs": 1673
+        "durationMs": 1650
       },
       {
         "area": "indexing-endianness",
@@ -462,7 +462,7 @@
         "index": 24,
         "id": "indexing-endianness:circuit.ts:185:comparison",
         "killed": true,
-        "durationMs": 1680
+        "durationMs": 1662
       },
       {
         "area": "indexing-endianness",
@@ -480,7 +480,7 @@
         "index": 5,
         "id": "indexing-endianness:circuit.ts:211:arithmetic",
         "killed": true,
-        "durationMs": 1663
+        "durationMs": 1709
       },
       {
         "area": "indexing-endianness",
@@ -498,7 +498,7 @@
         "index": 2,
         "id": "indexing-endianness:circuit.ts:127:negation",
         "killed": true,
-        "durationMs": 694
+        "durationMs": 784
       },
       {
         "area": "indexing-endianness",
@@ -516,7 +516,7 @@
         "index": 8,
         "id": "indexing-endianness:circuit.ts:136:numeric-literal",
         "killed": true,
-        "durationMs": 1632
+        "durationMs": 1685
       },
       {
         "area": "measurement-collapse-reset",
@@ -533,7 +533,7 @@
         "index": 0,
         "id": "measurement-collapse-reset:engine.ts:80:comparison",
         "killed": true,
-        "durationMs": 623
+        "durationMs": 641
       },
       {
         "area": "measurement-collapse-reset",
@@ -550,7 +550,7 @@
         "index": 26,
         "id": "measurement-collapse-reset:engine.ts:252:comparison",
         "killed": true,
-        "durationMs": 602
+        "durationMs": 648
       },
       {
         "area": "measurement-collapse-reset",
@@ -567,7 +567,7 @@
         "index": 52,
         "id": "measurement-collapse-reset:engine.ts:355:comparison",
         "killed": true,
-        "durationMs": 704
+        "durationMs": 760
       },
       {
         "area": "measurement-collapse-reset",
@@ -584,7 +584,7 @@
         "index": 3,
         "id": "measurement-collapse-reset:engine.ts:180:logical",
         "killed": true,
-        "durationMs": 705
+        "durationMs": 767
       },
       {
         "area": "measurement-collapse-reset",
@@ -601,7 +601,7 @@
         "index": 13,
         "id": "measurement-collapse-reset:engine.ts:126:numeric-literal",
         "killed": true,
-        "durationMs": 705
+        "durationMs": 747
       },
       {
         "area": "measurement-collapse-reset",
@@ -618,7 +618,7 @@
         "index": 39,
         "id": "measurement-collapse-reset:engine.ts:269:numeric-literal",
         "killed": true,
-        "durationMs": 714
+        "durationMs": 777
       },
       {
         "area": "noise-channels",
@@ -634,7 +634,7 @@
         "index": 0,
         "id": "noise-channels:noise.ts:41:comparison",
         "killed": true,
-        "durationMs": 630
+        "durationMs": 682
       },
       {
         "area": "noise-channels",
@@ -650,7 +650,7 @@
         "index": 11,
         "id": "noise-channels:noise.ts:103:comparison",
         "killed": false,
-        "durationMs": 518
+        "durationMs": 527
       },
       {
         "area": "noise-channels",
@@ -666,7 +666,7 @@
         "index": 2,
         "id": "noise-channels:noise.ts:102:arithmetic",
         "killed": true,
-        "durationMs": 531
+        "durationMs": 548
       },
       {
         "area": "noise-channels",
@@ -682,7 +682,7 @@
         "index": 0,
         "id": "noise-channels:noise.ts:51:negation",
         "killed": true,
-        "durationMs": 515
+        "durationMs": 583
       },
       {
         "area": "noise-channels",
@@ -698,7 +698,7 @@
         "index": 10,
         "id": "noise-channels:noise.ts:51:numeric-literal",
         "killed": true,
-        "durationMs": 538
+        "durationMs": 530
       },
       {
         "area": "noise-channels",
@@ -714,7 +714,7 @@
         "index": 21,
         "id": "noise-channels:noise.ts:104:numeric-literal",
         "killed": true,
-        "durationMs": 530
+        "durationMs": 546
       },
       {
         "area": "layout-routing-swap",
@@ -730,7 +730,7 @@
         "index": 0,
         "id": "layout-routing-swap:passes.ts:50:comparison",
         "killed": true,
-        "durationMs": 1550
+        "durationMs": 1581
       },
       {
         "area": "layout-routing-swap",
@@ -746,7 +746,7 @@
         "index": 29,
         "id": "layout-routing-swap:passes.ts:223:comparison",
         "killed": true,
-        "durationMs": 1612
+        "durationMs": 4653
       },
       {
         "area": "layout-routing-swap",
@@ -762,7 +762,7 @@
         "index": 58,
         "id": "layout-routing-swap:passes.ts:409:comparison",
         "killed": true,
-        "durationMs": 1491
+        "durationMs": 1476
       },
       {
         "area": "layout-routing-swap",
@@ -778,7 +778,7 @@
         "index": 4,
         "id": "layout-routing-swap:passes.ts:419:boolean-literal",
         "killed": true,
-        "durationMs": 1582
+        "durationMs": 1536
       },
       {
         "area": "layout-routing-swap",
@@ -794,7 +794,7 @@
         "index": 4,
         "id": "layout-routing-swap:passes.ts:247:negation",
         "killed": true,
-        "durationMs": 1535
+        "durationMs": 2578
       },
       {
         "area": "layout-routing-swap",
@@ -810,7 +810,7 @@
         "index": 27,
         "id": "layout-routing-swap:passes.ts:325:numeric-literal",
         "killed": true,
-        "durationMs": 1591
+        "durationMs": 1523
       },
       {
         "area": "compiler-equivalence",
@@ -826,7 +826,7 @@
         "index": 0,
         "id": "compiler-equivalence:euler.ts:32:comparison",
         "killed": true,
-        "durationMs": 1518
+        "durationMs": 1538
       },
       {
         "area": "compiler-equivalence",
@@ -842,7 +842,7 @@
         "index": 7,
         "id": "compiler-equivalence:euler.ts:103:comparison",
         "killed": true,
-        "durationMs": 1553
+        "durationMs": 1526
       },
       {
         "area": "compiler-equivalence",
@@ -858,7 +858,7 @@
         "index": 6,
         "id": "compiler-equivalence:euler.ts:57:arithmetic",
         "killed": true,
-        "durationMs": 1732
+        "durationMs": 1513
       },
       {
         "area": "compiler-equivalence",
@@ -874,7 +874,7 @@
         "index": 13,
         "id": "compiler-equivalence:euler.ts:78:arithmetic",
         "killed": true,
-        "durationMs": 1574
+        "durationMs": 1545
       },
       {
         "area": "compiler-equivalence",
@@ -890,7 +890,7 @@
         "index": 0,
         "id": "compiler-equivalence:euler.ts:89:negation",
         "killed": true,
-        "durationMs": 1484
+        "durationMs": 1485
       },
       {
         "area": "compiler-equivalence",
@@ -906,7 +906,7 @@
         "index": 6,
         "id": "compiler-equivalence:euler.ts:26:numeric-literal",
         "killed": true,
-        "durationMs": 1669
+        "durationMs": 1714
       },
       {
         "area": "compiler-equivalence",
@@ -922,7 +922,7 @@
         "index": 0,
         "id": "compiler-equivalence:compile.ts:126:comparison",
         "killed": true,
-        "durationMs": 1586
+        "durationMs": 1529
       },
       {
         "area": "compiler-equivalence",
@@ -938,7 +938,7 @@
         "index": 1,
         "id": "compiler-equivalence:compile.ts:149:comparison",
         "killed": true,
-        "durationMs": 1606
+        "durationMs": 1543
       },
       {
         "area": "compiler-equivalence",
@@ -954,7 +954,7 @@
         "index": 2,
         "id": "compiler-equivalence:compile.ts:170:comparison",
         "killed": true,
-        "durationMs": 1575
+        "durationMs": 1564
       },
       {
         "area": "compiler-equivalence",
@@ -970,7 +970,7 @@
         "index": 0,
         "id": "compiler-equivalence:compile.ts:81:boolean-literal",
         "killed": true,
-        "durationMs": 1557
+        "durationMs": 1514
       },
       {
         "area": "compiler-equivalence",
@@ -986,7 +986,7 @@
         "index": 1,
         "id": "compiler-equivalence:compile.ts:213:boolean-literal",
         "killed": true,
-        "durationMs": 1544
+        "durationMs": 1546
       },
       {
         "area": "compiler-equivalence",
@@ -1002,7 +1002,7 @@
         "index": 0,
         "id": "compiler-equivalence:compile.ts:149:numeric-literal",
         "killed": true,
-        "durationMs": 1547
+        "durationMs": 1557
       },
       {
         "area": "global-phase-comparison",
@@ -1019,7 +1019,7 @@
         "index": 0,
         "id": "global-phase-comparison:complex.ts:11:comparison",
         "killed": true,
-        "durationMs": 517
+        "durationMs": 535
       },
       {
         "area": "global-phase-comparison",
@@ -1036,7 +1036,7 @@
         "index": 12,
         "id": "global-phase-comparison:complex.ts:28:arithmetic",
         "killed": true,
-        "durationMs": 1648
+        "durationMs": 1621
       },
       {
         "area": "global-phase-comparison",
@@ -1053,7 +1053,7 @@
         "index": 40,
         "id": "global-phase-comparison:complex.ts:46:arithmetic",
         "killed": true,
-        "durationMs": 1617
+        "durationMs": 1614
       },
       {
         "area": "global-phase-comparison",
@@ -1070,7 +1070,7 @@
         "index": 68,
         "id": "global-phase-comparison:complex.ts:83:arithmetic",
         "killed": true,
-        "durationMs": 1570
+        "durationMs": 1676
       },
       {
         "area": "global-phase-comparison",
@@ -1087,7 +1087,7 @@
         "index": 0,
         "id": "global-phase-comparison:complex.ts:91:negation",
         "killed": true,
-        "durationMs": 1700
+        "durationMs": 1722
       },
       {
         "area": "global-phase-comparison",
@@ -1104,7 +1104,7 @@
         "index": 27,
         "id": "global-phase-comparison:complex.ts:47:numeric-literal",
         "killed": true,
-        "durationMs": 1611
+        "durationMs": 1597
       },
       {
         "area": "topology",
@@ -1121,7 +1121,7 @@
         "index": 0,
         "id": "topology:topology.ts:15:comparison",
         "killed": true,
-        "durationMs": 530
+        "durationMs": 523
       },
       {
         "area": "topology",
@@ -1138,7 +1138,7 @@
         "index": 21,
         "id": "topology:topology.ts:190:comparison",
         "killed": true,
-        "durationMs": 1657
+        "durationMs": 1738
       },
       {
         "area": "topology",
@@ -1155,7 +1155,7 @@
         "index": 13,
         "id": "topology:topology.ts:161:arithmetic",
         "killed": true,
-        "durationMs": 1580
+        "durationMs": 1652
       },
       {
         "area": "topology",
@@ -1172,7 +1172,7 @@
         "index": 14,
         "id": "topology:topology.ts:48:numeric-literal",
         "killed": true,
-        "durationMs": 1586
+        "durationMs": 1681
       },
       {
         "area": "topology",
@@ -1189,7 +1189,7 @@
         "index": 35,
         "id": "topology:topology.ts:100:numeric-literal",
         "killed": true,
-        "durationMs": 4310
+        "durationMs": 3990
       },
       {
         "area": "topology",
@@ -1206,7 +1206,7 @@
         "index": 56,
         "id": "topology:topology.ts:123:numeric-literal",
         "killed": true,
-        "durationMs": 1597
+        "durationMs": 1832
       },
       {
         "area": "trace-validation",
@@ -1222,7 +1222,7 @@
         "index": 0,
         "id": "trace-validation:validate.ts:9:comparison",
         "killed": true,
-        "durationMs": 403
+        "durationMs": 414
       },
       {
         "area": "trace-validation",
@@ -1238,7 +1238,7 @@
         "index": 7,
         "id": "trace-validation:validate.ts:64:comparison",
         "killed": true,
-        "durationMs": 414
+        "durationMs": 462
       },
       {
         "area": "trace-validation",
@@ -1254,7 +1254,7 @@
         "index": 14,
         "id": "trace-validation:validate.ts:103:comparison",
         "killed": true,
-        "durationMs": 408
+        "durationMs": 634
       },
       {
         "area": "trace-validation",
@@ -1270,7 +1270,7 @@
         "index": 3,
         "id": "trace-validation:validate.ts:111:arithmetic",
         "killed": true,
-        "durationMs": 412
+        "durationMs": 441
       },
       {
         "area": "trace-validation",
@@ -1286,7 +1286,7 @@
         "index": 2,
         "id": "trace-validation:validate.ts:93:negation",
         "killed": true,
-        "durationMs": 409
+        "durationMs": 430
       },
       {
         "area": "trace-validation",
@@ -1302,7 +1302,7 @@
         "index": 6,
         "id": "trace-validation:validate.ts:110:numeric-literal",
         "killed": true,
-        "durationMs": 403
+        "durationMs": 426
       },
       {
         "area": "trace-canonicalization",
@@ -1318,7 +1318,7 @@
         "index": 0,
         "id": "trace-canonicalization:hash.ts:13:comparison",
         "killed": true,
-        "durationMs": 409
+        "durationMs": 442
       },
       {
         "area": "trace-canonicalization",
@@ -1334,7 +1334,7 @@
         "index": 5,
         "id": "trace-canonicalization:hash.ts:42:comparison",
         "killed": true,
-        "durationMs": 427
+        "durationMs": 446
       },
       {
         "area": "trace-canonicalization",
@@ -1350,7 +1350,7 @@
         "index": 10,
         "id": "trace-canonicalization:hash.ts:53:comparison",
         "killed": true,
-        "durationMs": 415
+        "durationMs": 425
       },
       {
         "area": "trace-canonicalization",
@@ -1366,7 +1366,7 @@
         "index": 0,
         "id": "trace-canonicalization:hash.ts:20:arithmetic",
         "killed": true,
-        "durationMs": 425
+        "durationMs": 438
       },
       {
         "area": "trace-canonicalization",
@@ -1382,7 +1382,7 @@
         "index": 1,
         "id": "trace-canonicalization:hash.ts:23:numeric-literal",
         "killed": true,
-        "durationMs": 420
+        "durationMs": 415
       },
       {
         "area": "trace-canonicalization",
@@ -1398,7 +1398,7 @@
         "index": 6,
         "id": "trace-canonicalization:hash.ts:30:numeric-literal",
         "killed": true,
-        "durationMs": 412
+        "durationMs": 419
       },
       {
         "area": "trace-canonicalization",
@@ -1414,7 +1414,7 @@
         "index": 0,
         "id": "trace-canonicalization:hashing-contract.ts:32:comparison",
         "killed": true,
-        "durationMs": 408
+        "durationMs": 409
       },
       {
         "area": "trace-canonicalization",
@@ -1430,7 +1430,7 @@
         "index": 1,
         "id": "trace-canonicalization:hashing-contract.ts:32:comparison",
         "killed": true,
-        "durationMs": 431
+        "durationMs": 457
       },
       {
         "area": "trace-canonicalization",
@@ -1446,7 +1446,7 @@
         "index": 2,
         "id": "trace-canonicalization:hashing-contract.ts:67:comparison",
         "killed": true,
-        "durationMs": 455
+        "durationMs": 418
       },
       {
         "area": "trace-canonicalization",
@@ -1462,7 +1462,7 @@
         "index": 3,
         "id": "trace-canonicalization:hashing-contract.ts:67:comparison",
         "killed": true,
-        "durationMs": 447
+        "durationMs": 417
       },
       {
         "area": "trace-canonicalization",
@@ -1478,7 +1478,7 @@
         "index": 4,
         "id": "trace-canonicalization:hashing-contract.ts:91:comparison",
         "killed": true,
-        "durationMs": 457
+        "durationMs": 414
       },
       {
         "area": "trace-canonicalization",
@@ -1494,7 +1494,7 @@
         "index": 5,
         "id": "trace-canonicalization:hashing-contract.ts:91:comparison",
         "killed": true,
-        "durationMs": 425
+        "durationMs": 406
       },
       {
         "area": "seeded-randomness",
@@ -1511,7 +1511,7 @@
         "index": 0,
         "id": "seeded-randomness:rng.ts:21:comparison",
         "killed": true,
-        "durationMs": 650
+        "durationMs": 605
       },
       {
         "area": "seeded-randomness",
@@ -1528,7 +1528,7 @@
         "index": 4,
         "id": "seeded-randomness:rng.ts:45:arithmetic",
         "killed": true,
-        "durationMs": 630
+        "durationMs": 574
       },
       {
         "area": "seeded-randomness",
@@ -1545,7 +1545,7 @@
         "index": 3,
         "id": "seeded-randomness:rng.ts:23:numeric-literal",
         "killed": true,
-        "durationMs": 617
+        "durationMs": 577
       },
       {
         "area": "seeded-randomness",
@@ -1562,7 +1562,7 @@
         "index": 9,
         "id": "seeded-randomness:rng.ts:28:numeric-literal",
         "killed": true,
-        "durationMs": 669
+        "durationMs": 586
       },
       {
         "area": "seeded-randomness",
@@ -1579,7 +1579,7 @@
         "index": 15,
         "id": "seeded-randomness:rng.ts:39:numeric-literal",
         "killed": true,
-        "durationMs": 610
+        "durationMs": 585
       },
       {
         "area": "seeded-randomness",
@@ -1596,7 +1596,7 @@
         "index": 21,
         "id": "seeded-randomness:rng.ts:43:numeric-literal",
         "killed": true,
-        "durationMs": 669
+        "durationMs": 588
       }
     ]
   }

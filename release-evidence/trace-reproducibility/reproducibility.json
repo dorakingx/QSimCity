@@ -1,8 +1,8 @@
 {
-  "commitSha": "e5180f4f2fa8e3debdf3086f1cb9ea38af5b03f6",
-  "sourceTreeHash": "67c5bcbcb3b144c0",
+  "commitSha": "180d0fa5fde0410922d34605aa31f90d7fa7bd90",
+  "sourceTreeHash": "dc62d9965b9ef38f",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-08T01:50:23.125Z",
+  "generatedAt": "2026-08-08T02:05:37.805Z",
   "tool": "qsimcity-trace-reproducibility",
   "toolVersion": "v22.23.1",
   "command": "12 independent `tsx tools/trace-reproducibility/hash-one-run.ts` processes + committed-sample verification",
