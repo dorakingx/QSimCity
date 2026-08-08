@@ -1,8 +1,8 @@
 {
-  "commitSha": "9c075d750637b0c31f5541f29b0d4d4c0076e6a8",
-  "sourceTreeHash": "e96895a4c4335aa7",
+  "commitSha": "064ca93dbc28a4577fa9595bffb5a6b67d486943",
+  "sourceTreeHash": "f92e3283f4601ca7",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-08T02:36:05.585Z",
+  "generatedAt": "2026-08-08T04:10:41.231Z",
   "tool": "lighthouse",
   "toolVersion": "13.4.1",
   "command": "pnpm lighthouse",
@@ -29,7 +29,7 @@
     "accessible2d-desktop.accessibility": 100,
     "accessible2d-desktop.bestPractices": 96,
     "accessible2d-desktop.seo": 92,
-    "accessible2d-mobile.performance": 78,
+    "accessible2d-mobile.performance": 79,
     "accessible2d-mobile.accessibility": 100,
     "accessible2d-mobile.bestPractices": 96,
     "accessible2d-mobile.seo": 92
@@ -78,7 +78,7 @@
       },
       "runs": [
         {
-          "performance": 79,
+          "performance": 78,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92
@@ -133,7 +133,7 @@
       "label": "Accessible 2D Mode (mobile)",
       "formFactor": "mobile",
       "scores": {
-        "performance": 78,
+        "performance": 79,
         "accessibility": 100,
         "best-practices": 96,
         "seo": 92
@@ -152,7 +152,7 @@
           "seo": 92
         },
         {
-          "performance": 78,
+          "performance": 79,
           "accessibility": 100,
           "best-practices": 96,
           "seo": 92

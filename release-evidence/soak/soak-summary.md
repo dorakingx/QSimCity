@@ -1,8 +1,8 @@
 # Soak Test Summary
 
-- Commit: `9c075d750637b0c31f5541f29b0d4d4c0076e6a8`
-- Generated: 2026-08-08T02:51:27.427Z
-- Duration: **601.3s** (minimum 600s)
+- Commit: `064ca93dbc28a4577fa9595bffb5a6b67d486943`
+- Generated: 2026-08-08T04:26:03.999Z
+- Duration: **600.9s** (minimum 600s)
 - Workload cycles: **105**
 - Heap samples: 210
 - Post-warm-up baseline minimum heap: 29.0 MiB
@@ -12,8 +12,8 @@
 - Console errors: 0
 - Failed requests: 0
 - WebGL context loss / restore: 0 / 0
-- Final interaction latency: 17 ms (limit 3000 ms, measured in-page from a trusted click)
-- Same interaction observed through the driver's actionability protocol: 65 ms (harness protocol overhead on a continuously rendering page; not a user-visible number)
+- Final interaction latency: 16 ms (limit 3000 ms, measured in-page from a trusted click)
+- Same interaction observed through the driver's actionability protocol: 59 ms (harness protocol overhead on a continuously rendering page; not a user-visible number)
 - Crashed: false
 
 Result: **PASS**

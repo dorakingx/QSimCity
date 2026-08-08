@@ -1,8 +1,8 @@
 {
-  "commitSha": "9c075d750637b0c31f5541f29b0d4d4c0076e6a8",
-  "sourceTreeHash": "e96895a4c4335aa7",
+  "commitSha": "064ca93dbc28a4577fa9595bffb5a6b67d486943",
+  "sourceTreeHash": "f92e3283f4601ca7",
   "worktreeDirty": false,
-  "generatedAt": "2026-08-08T02:34:41.307Z",
+  "generatedAt": "2026-08-08T04:09:22.111Z",
   "tool": "qsimcity-performance-budget",
   "toolVersion": "1.0.0",
   "command": "pnpm check:perf",
@@ -61,6 +61,6 @@
       }
     ],
     "passed": true,
-    "generatedAt": "2026-08-08T02:34:41.265Z"
+    "generatedAt": "2026-08-08T04:09:22.069Z"
   }
 }

@@ -8,7 +8,7 @@
 [![Node](https://img.shields.io/badge/node-22.12%2B-informational)](.nvmrc)
 
 [**Open the live app**](https://qsimcity.vercel.app) ·
-[**Watch the demo**](release-evidence/demo/qsimcity-demo.mp4) ·
+[**Watch the demo**](https://youtu.be/I05IFasLJWY) ·
 [**Take the guided tour**](https://qsimcity.vercel.app/?view=tour) ·
 [**Read the docs**](docs/)
 
@@ -184,7 +184,8 @@ Node 22.12+ (`.nvmrc` pins 22.23.1) and `pnpm`. Nothing else — no account, no 
 ## Demo
 
 <!-- docs:sync start:demo-facts -->
-- **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, just over five minutes, no audio.
+- **Watch it**: <https://youtu.be/I05IFasLJWY> — 1920x1080, just over five minutes, no audio (the narration is on-screen captions). Unlisted, so the link reaches it without it being listed on the platform.
+- **The same file, in this repository**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — H.264, recorded from the production build.
 - **Captions**: 38, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).
 - **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.
 - **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.

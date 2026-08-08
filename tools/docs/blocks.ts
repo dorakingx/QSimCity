@@ -52,6 +52,16 @@ import type { DocsFacts } from './facts.js';
 
 export type BlockName = keyof typeof BLOCKS;
 
+/**
+ * Where the recording is published.
+ *
+ * A constant rather than a measurement: it does not vary per run and is not
+ * produced after the tree closes, so it is safe inside a block that lands in
+ * a tree-hashed document. Unlisted, so it is reachable by link without being
+ * listed or searchable on the platform.
+ */
+const DEMO_VIDEO_URL = 'https://youtu.be/I05IFasLJWY';
+
 const pct = (value: string): string => `${value}%`;
 
 export const BLOCKS = {
@@ -95,7 +105,8 @@ export const BLOCKS = {
   /** Demo video facts, including the checksum that must match the file. */
   'demo-facts': (f: DocsFacts): string => {
     return [
-      '- **File**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — 1920x1080, H.264, just over five minutes, no audio.',
+      `- **Watch it**: <${DEMO_VIDEO_URL}> — 1920x1080, just over five minutes, no audio (the narration is on-screen captions). Unlisted, so the link reaches it without it being listed on the platform.`,
+      '- **The same file, in this repository**: [`release-evidence/demo/qsimcity-demo.mp4`](release-evidence/demo/qsimcity-demo.mp4) — H.264, recorded from the production build.',
       `- **Captions**: ${f.demoCaptions}, drawn into the page as it recorded, plus [an SRT sidecar](release-evidence/demo/qsimcity-demo.srt).`,
       '- **SHA-256**: in [`qsimcity-demo.sha256`](release-evidence/demo/qsimcity-demo.sha256), beside the file.',
       '- **Bound to** the source tree it depicts; `pnpm goal:check` rejects the recording once that tree moves.',
