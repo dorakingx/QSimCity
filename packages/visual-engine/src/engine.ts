@@ -143,7 +143,13 @@ export class CityEngine {
       powerPreference: 'high-performance',
     });
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // PCFShadowMap, stated rather than implied. three r185 deprecated
+    // PCFSoftShadowMap and its shadow map substitutes PCFShadowMap on the
+    // first render anyway, warning once per context — so this scene has
+    // always been drawn with PCFShadowMap and the pixels do not change.
+    // Asking for what we actually get removes the warning at the source
+    // instead of filtering it out of the console.
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.scene = new THREE.Scene();
 
     this.sky = buildSky();

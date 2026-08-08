@@ -1,9 +1,9 @@
 {
   "name": "qsimcity",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "private": true,
-  "description": "QSimCity \u2014 an explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.",
+  "description": "QSimCity — an explorable 3D quantum city driven by real computation traces. Unofficial, independent, educational and research visualization project.",
   "type": "module",
   "packageManager": "pnpm@11.14.0",
   "engines": {
@@ -27,7 +27,7 @@
     "check:names": "tsx tools/check-prohibited-names.ts",
     "check:language": "tsx tools/check-language.ts",
     "check:todos": "tsx tools/check-todos.ts",
-    "verify": "pnpm typecheck && pnpm lint && pnpm format && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm test",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format && pnpm check:names && pnpm check:language && pnpm check:todos && pnpm docs:check && pnpm test",
     "verify:release": "pnpm verify && pnpm python:verify && pnpm test:coverage && pnpm build && pnpm check:perf && pnpm test:e2e && pnpm test:mutation",
     "goal:check": "tsx tools/check-goal.ts",
     "check:perf": "tsx tools/check-performance.ts",
@@ -44,7 +44,10 @@
     "wiser:fps": "tsx tools/wiser/run-fps-benchmark.ts",
     "wiser:screens": "tsx tools/wiser/capture-screenshots.ts",
     "wiser:reviews": "tsx tools/wiser/record-reviews.ts",
-    "demo:record": "tsx tools/demo/record-demo.ts"
+    "demo:record": "tsx tools/demo/record-demo.ts",
+    "docs:sync": "tsx tools/docs/sync.ts",
+    "docs:check": "tsx tools/docs/check.ts",
+    "docs:capture": "tsx tools/docs/capture-readme.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",

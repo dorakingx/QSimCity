@@ -1,0 +1,55 @@
+{
+  "note": "Captured by pnpm docs:capture from the production build with the deterministic-frame contract engaged.",
+  "sourceTreeHash": "2d85dcc67da479c1",
+  "totalBytes": 2362902,
+  "shots": [
+    {
+      "file": "hero-city-day.png",
+      "alt": "The QSimCity skyline by day: labelled districts along a coastal grid, one per compilation and execution stage, with the replay timeline docked below the city.",
+      "bytes": 553947,
+      "sha256": "76d718649a9c332195ece42b0427b4b84d2468ae2e51ff84bcede81a114c8979"
+    },
+    {
+      "file": "step-1-author.png",
+      "alt": "A guided mission in the circuit builder: a gate palette above a two-lane grid holding a Hadamard, a CX and two measurements, with the mission steps listed above it.",
+      "bytes": 96954,
+      "sha256": "86380a47f4e01fd69dea34b3efa0693f4a3b9717bc5f871744456fcdb32cb85c"
+    },
+    {
+      "file": "step-2-legend.png",
+      "alt": "The City Legend open over the city, naming every animated object and stating that vehicles carry instructions and measured bits, never quantum states.",
+      "bytes": 266572,
+      "sha256": "2aa3fd9b132144c4371dd818b368840769120520d138a2d669922cb60162f22b"
+    },
+    {
+      "file": "step-4-compare.png",
+      "alt": "Compare mode: the ideal and noisy distributions side by side above a circuit-metrics table showing gate count rising from 2 to 6 through compilation.",
+      "bytes": 98971,
+      "sha256": "d95b042852fc04a5065ba1a3f805bcd702e54b5c37047c7baf26a79f75cdc669"
+    },
+    {
+      "file": "city-golden.png",
+      "alt": "The same city at golden hour: low warm light across the districts, with the wandering coastline and the bay still reading as separate from the land.",
+      "bytes": 572497,
+      "sha256": "30efa4f7c730f2efba7f60ef99dc9afde4cf6bebff77dbe808991bafa5ab1579"
+    },
+    {
+      "file": "city-night.png",
+      "alt": "The same city at night: lit windows across the districts, street lighting along the boulevards, and the QPU campus glowing at the edge of the grid.",
+      "bytes": 400943,
+      "sha256": "ffc613a5dd4bc18855d71185655633d2adc61c3be0bfb85283c89a965562ad84"
+    },
+    {
+      "file": "accessible-2d.png",
+      "alt": "Accessible 2D: the same trace without WebGL, showing the input and compiled circuit diagrams, the replay timeline, and a provenance panel naming the generator and seed.",
+      "bytes": 145731,
+      "sha256": "bc08ee64d4440205e3122a6ae2d6344fa80ea296799c3272be76444873688736"
+    },
+    {
+      "file": "mobile-portrait.png",
+      "alt": "QSimCity on a phone in portrait: the city fills the viewport, with the camera-mode row and Legend above it and the replay dock pinned along the bottom.",
+      "bytes": 227287,
+      "sha256": "63a0e8411e792de6892a0dce508d8edf76505be2490394272f02fa3fb2f59b57"
+    }
+  ]
+}

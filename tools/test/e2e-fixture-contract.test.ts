@@ -21,7 +21,7 @@ import { describe, expect, it } from 'vitest';
  * The city projects are exempt: they need WebGL, and they opt into the
  * hooks through `e2eUrl`.
  */
-const CITY_SPECS = new Set(['visual.spec.ts', 'city3d.spec.ts']);
+const CITY_SPECS = new Set(['visual.spec.ts', 'city3d.spec.ts', 'screenshot-budget.spec.ts']);
 
 describe('e2e fixture contract', () => {
   const dir = resolve(process.cwd(), 'tests/e2e');

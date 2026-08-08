@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { scanProhibitedNames } from './check-prohibited-names.js';
 import { scanLanguage } from './check-language.js';
@@ -39,9 +39,22 @@ interface CheckResult {
 
 const results: CheckResult[] = [];
 
+/**
+ * Everything this gate prints, so `release-evidence/goal-check.txt` can be
+ * written from the run instead of maintained by hand. The committed file
+ * had drifted to a commit and a source tree that no longer existed, which
+ * is what a hand-copied transcript does.
+ */
+const transcript: string[] = [];
+
+function say(line: string): void {
+  transcript.push(line);
+  console.log(line);
+}
+
 function record(name: string, status: Status, detail: string): void {
   results.push({ name, status, detail });
-  console.log(`[${status}] ${name}: ${detail}`);
+  say(`[${status}] ${name}: ${detail}`);
 }
 
 function check(name: string, fn: () => string): void {
@@ -69,7 +82,7 @@ const bin = (name: string): string => join(ROOT, 'node_modules', '.bin', name);
 
 const evidenceOptions = { allowDirty: ALLOW_DIRTY };
 
-console.log(
+say(
   `QSimCity completion gate — HEAD ${currentCommit().slice(0, 12)}, ` +
     `source tree ${sourceTreeHash()}`,
 );
@@ -377,6 +390,10 @@ check('Demo recording matches the tree it depicts', () => {
   if (seconds < 300) throw new Error(`demo is ${seconds}s; the submission requires at least 5 min`);
   return `${Math.floor(seconds / 60)}m ${seconds % 60}s, ${manifest.captionCount} captions, tree ${tree}, not uploaded`;
 });
+
+check('Documentation claims match the evidence', () =>
+  run(bin('tsx'), ['tools/docs/check.ts'], 'docs:check'),
+);
 
 check('Meaningful test count (>= 300)', () => {
   const count = countTests();
@@ -817,14 +834,21 @@ check('Fresh-clone verification evidence', () => {
 
 const failed = results.filter((r) => r.status === 'FAIL');
 
-console.log('');
-console.log(`${results.length - failed.length} passed, ${failed.length} failed`);
+say('');
+say(`${results.length - failed.length} passed, ${failed.length} failed`);
+
+if (failed.length === 0) say('GOAL ACHIEVED: QSimCity production v1 is complete.');
+
+// Written on both paths. A transcript that only exists for green runs is no
+// use on the day something goes red, and the committed one had been kept by
+// hand until it named a commit and a source tree that no longer existed.
+// `release-evidence/` sits outside the hashed source tree, so recording this
+// disturbs no envelope.
+writeFileSync(join(ROOT, 'release-evidence', 'goal-check.txt'), `${transcript.join('\n')}\n`);
 
 if (failed.length > 0) {
   console.error('\nUnmet conditions:');
   for (const f of failed) console.error(`  - ${f.name}: ${f.detail}`);
   process.exit(1);
 }
-
-console.log('GOAL ACHIEVED: QSimCity production v1 is complete.');
 void EvidenceError;
